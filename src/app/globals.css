@@ -1,26 +1,196 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
+@theme {
+  --color-border: var(--border);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-card: var(--card);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-destructive: var(--destructive);
+  --radius-lg: var(--radius);
+  --animate-bounce-short: bounce-short 3s ease-in-out infinite;
+  --animate-pulse-glow: pulse-glow 3s ease-in-out infinite;
+  --animate-logo-entrance: logo-entrance 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  --animate-pulse-ring: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  @keyframes bounce-short {
+    0%, 100% { translate: -50% 0px; }
+    50% { translate: -50% -6px; }
+  }
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 12px rgba(255, 71, 126, 0.2); }
+    50% { box-shadow: 0 0 28px rgba(0, 242, 254, 0.45); }
+  }
+  @keyframes logo-entrance {
+    0% { transform: scale(0.3) rotate(-15deg); opacity: 0; filter: blur(10px); }
+    50% { transform: scale(1.15) rotate(5deg); filter: blur(0); }
+    70% { transform: scale(0.97) rotate(-2deg); }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+  @keyframes pulse-ring {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 45, 85, 0.45); }
+    70% { transform: scale(1.05); box-shadow: 0 0 0 25px rgba(255, 45, 85, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 45, 85, 0); }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  :root {
+    /* Vibrant Pink & White Light Mode - approaching a premium iOS aesthetic */
+    --background: #fdf8fa;
+    --foreground: #221217;
+    --card: rgba(255, 255, 255, 0.35); /* Translucent card background */
+    --primary: #ff2d55; /* Premium iOS System Pink */
+    --primary-foreground: #ffffff;
+    --muted: #fef0f3; /* Soft Pink tint */
+    --muted-foreground: #6b5c60; /* Balanced rose-slate gray */
+    --accent: #ffe4e9; /* Soft rose accent */
+    --destructive: #ef4444;
+    --border: rgba(255, 255, 255, 0.55); /* Frost white border */
+    --radius: 1.25rem;
+
+    /* iOS Glassmorphism - Vibrant Liquid Glass */
+    --glass-background: rgba(255, 255, 255, 0.45);
+    --glass-border: rgba(255, 255, 255, 0.65);
+    --glass-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.6), 0 12px 40px 0 rgba(255, 45, 85, 0.05);
+  }
+
+  .dark {
+    /* Obsidian Rose & Plum Dark Mode - Premium and sleek */
+    --background: #0d060a;
+    --foreground: #fdfafc;
+    --card: rgba(26, 12, 20, 0.35); /* Deep translucent rose card */
+    --primary: #ff375f; /* High-Visibility System Pink */
+    --primary-foreground: #ffffff;
+    --muted: #22121b; /* Deep Rose Slate */
+    --muted-foreground: #fbcfe8; /* Soft pink text */
+    --accent: #331526; /* Deep Rose Slate Accent */
+    --destructive: #f43f5e;
+    --border: rgba(255, 255, 255, 0.08);
+    --radius: 1.25rem;
+
+    /* iOS Glassmorphism - Vibrant Liquid Glass */
+    --glass-background: rgba(26, 12, 20, 0.55);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.1), 0 12px 40px 0 rgba(0, 0, 0, 0.45);
+  }
 }
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  body {
+    color: var(--foreground);
+    background-color: var(--background);
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -99;
+    background: radial-gradient(circle at 10% 20%, #fdf5f7 0%, #f7e6ea 44%, #eceef6 90%);
+    pointer-events: none;
+    will-change: transform;
+  }
+  .dark body::before {
+    background: radial-gradient(circle at 10% 20%, #15060f 0%, #0b0711 50%, #030105 100%);
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    background: var(--glass-background);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    position: relative;
+  }
+
+  /* Add glossy sheen highlight for wet glass effect */
+  .glass-panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.04) 50%, transparent 100%);
+    z-index: 1;
+  }
+  
+  .neon-glow {
+    box-shadow: 0 0 24px rgba(255, 45, 85, 0.1), var(--glass-shadow);
+  }
+  
+  .neon-glow-hover:hover {
+    box-shadow: 0 0 30px rgba(255, 45, 85, 0.25) !important; /* Pink glow on hover */
+    border-color: rgba(255, 45, 85, 0.3) !important;
+    transform: translateY(-2px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .text-gradient-primary {
+    background: linear-gradient(135deg, #ff5e97 0%, #ff2d55 50%, #af52de 100%); /* Pink to Violet gradient */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .text-gradient-cyan {
+    background: linear-gradient(135deg, #fbcfe8 0%, #ff8fa3 100%); /* Rose Saffron gradient */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .text-gradient-emerald {
+    background: linear-gradient(135deg, #ff2d55 0%, #a30026 100%); /* Blossom Crimson gradient */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+/* Global Lite / Low-Performance Mode overrides */
+.lite-mode {
+  --glass-background: var(--card) !important;
+  --glass-border: var(--border) !important;
+  --glass-shadow: none !important;
+}
+
+.lite-mode body::before {
+  display: none !important;
+}
+
+.lite-mode body {
+  background: var(--background) !important;
+}
+
+.lite-mode .glass-panel {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+.lite-mode .glass-panel::before {
+  display: none !important;
+}
+
+.lite-mode * {
+  animation: none !important;
+  animation-duration: 0s !important;
+  animation-iteration-count: 0 !important;
+  transition: none !important;
+  transition-duration: 0s !important;
+  scroll-behavior: auto !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+.lite-mode [class*="blur-"] {
+  display: none !important;
+  filter: none !important;
+}
+
