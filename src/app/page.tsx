@@ -108,6 +108,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [activePill, setActivePill] = useState<'reorder' | 'food'>('food');
   const [vegOnly, setVegOnly] = useState(false);
+  const [hasActiveOrder, setHasActiveOrder] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedVendor, setSelectedVendor] = useState<string | null>(null);
   const [activeModule, setActiveModule] = useState<'instamart' | 'kitchen'>('instamart');
@@ -176,6 +177,47 @@ export default function Home() {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     };
   }, []);
+
+  useEffect(() => {
+    async function checkActiveOrder() {
+      if (!user) {
+        setHasActiveOrder(false);
+        return;
+      }
+      try {
+        const { data, error } = await supabase
+          .from('orders')
+          .select('id')
+          .eq('user_id', user.id)
+          .in('status', ['pending', 'packing', 'accepted', 'out_for_delivery'])
+          .limit(1);
+        if (!error && data && data.length > 0) {
+          setHasActiveOrder(true);
+        } else {
+          setHasActiveOrder(false);
+        }
+      } catch (err) {
+        setHasActiveOrder(false);
+      }
+    }
+    checkActiveOrder();
+
+    if (!user) return;
+    const channel = supabase
+      .channel(`active-order-home-sync-${user.id}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'orders', filter: `user_id=eq.${user.id}` },
+        () => {
+          checkActiveOrder();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
 
   const handleInstallClick = async () => {
     if (!deferredPrompt) return;
@@ -1342,13 +1384,17 @@ export default function Home() {
 
             <div className="w-px h-6 bg-zinc-200 shrink-0"></div>
 
-            <div className="flex items-center gap-1.5 px-2 shrink-0">
+            <div 
+              onClick={(e) => {
+                e.stopPropagation();
+                setVegOnly(!vegOnly);
+              }}
+              className="flex items-center gap-1.5 px-2 shrink-0 cursor-pointer select-none"
+              title="Toggle Vegetarian Only"
+            >
               <span className="text-[10px] font-black text-emerald-600 uppercase tracking-wider">Veg</span>
               <button
-                onClick={() => {
-                  setVegOnly(!vegOnly);
-                  alert(!vegOnly ? "🥗 Showing Vegetarian items only!" : "Showing all items");
-                }}
+                type="button"
                 className={`relative w-8 h-4 rounded-full transition-colors duration-300 flex items-center ${
                   vegOnly ? 'bg-emerald-600' : 'bg-zinc-300'
                 }`}
@@ -1914,84 +1960,82 @@ export default function Home() {
       </div>
 
       {/* 📱 Mobile Sticky Bottom Navigation Bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-[999] md:hidden bg-card/95 backdrop-blur border-t border-border/80 px-4 py-2.5 flex justify-between items-center shadow-[0_-8px_30px_rgb(0,0,0,0.12)]">
-        <button
-          onClick={() => {
-            setActiveSuperService('food');
-            setActiveModule('kitchen');
-            setActivePill('food');
-            setSelectedCategory(null);
-            alert("🍲 Switched to Cloud Kitchen Meals!");
-          }}
-          className={`flex flex-col items-center justify-center gap-0.5 flex-1 transition-all ${
-            activeSuperService === 'food' && activePill === 'food' ? 'text-primary scale-105 font-black' : 'text-muted-foreground font-bold'
-          }`}
-        >
-          <span className="text-lg">🍲</span>
-          <span className="text-[9px] uppercase tracking-wider">Food</span>
-        </button>
+      {!hasActiveOrder && cart.length === 0 && (
+        <div className="fixed bottom-0 left-0 right-0 z-[999] md:hidden bg-card/95 backdrop-blur border-t border-border/80 px-4 py-2.5 flex justify-between items-center shadow-[0_-8px_30px_rgb(0,0,0,0.12)]">
+          <button
+            onClick={() => {
+              setActiveSuperService('food');
+              setActiveModule('kitchen');
+              setActivePill('food');
+              setSelectedCategory(null);
+            }}
+            className={`flex flex-col items-center justify-center gap-0.5 flex-1 transition-all ${
+              activeSuperService === 'food' && activePill === 'food' ? 'text-primary scale-105 font-black' : 'text-muted-foreground font-bold'
+            }`}
+          >
+            <span className="text-lg">🍲</span>
+            <span className="text-[9px] uppercase tracking-wider">Food</span>
+          </button>
 
-        <button
-          onClick={() => {
-            setStudentMode(true);
-            setSearchQuery("Combo");
-            alert("⚡ Bolt: Express student meals & combos activated!");
-          }}
-          className={`flex flex-col items-center justify-center gap-0.5 flex-grow relative transition-all ${
-            studentMode ? 'text-primary scale-105 font-black' : 'text-muted-foreground font-bold'
-          }`}
-        >
-          <div className="relative">
-            <span className="text-lg text-amber-500">⚡</span>
-            <span className="absolute -top-1.5 -right-5 bg-red-500 text-white text-[7px] font-black px-1.5 py-0.5 rounded-full scale-90 tracking-tighter">15 MIN</span>
-          </div>
-          <span className="text-[9px] uppercase tracking-wider">Bolt</span>
-        </button>
+          <button
+            onClick={() => {
+              setStudentMode(true);
+              setSearchQuery("Combo");
+            }}
+            className={`flex flex-col items-center justify-center gap-0.5 flex-grow relative transition-all ${
+              studentMode ? 'text-primary scale-105 font-black' : 'text-muted-foreground font-bold'
+            }`}
+          >
+            <div className="relative">
+              <span className="text-lg text-amber-500">⚡</span>
+              <span className="absolute -top-1.5 -right-5 bg-red-500 text-white text-[7px] font-black px-1.5 py-0.5 rounded-full scale-90 tracking-tighter">15 MIN</span>
+            </div>
+            <span className="text-[9px] uppercase tracking-wider">Bolt</span>
+          </button>
 
-        <button
-          onClick={() => {
-            setSearchQuery("offer");
-            alert("🏷️ Switched to the 99 Store & Deals!");
-          }}
-          className={`flex flex-col items-center justify-center gap-0.5 flex-grow transition-all ${
-            searchQuery.toLowerCase().includes('offer') ? 'text-primary scale-105 font-black' : 'text-muted-foreground font-bold'
-          }`}
-        >
-          <div className="relative">
-            <span className="text-lg">☁️</span>
-            <span className="absolute -top-1.5 -right-3 text-emerald-500 font-extrabold text-[8px] bg-emerald-500/10 px-1 rounded-full">99</span>
-          </div>
-          <span className="text-[9px] uppercase tracking-wider">99 Store</span>
-        </button>
+          <button
+            onClick={() => {
+              setSearchQuery("offer");
+            }}
+            className={`flex flex-col items-center justify-center gap-0.5 flex-grow transition-all ${
+              searchQuery.toLowerCase().includes('offer') ? 'text-primary scale-105 font-black' : 'text-muted-foreground font-bold'
+            }`}
+          >
+            <div className="relative">
+              <span className="text-lg">☁️</span>
+              <span className="absolute -top-1.5 -right-3 text-emerald-500 font-extrabold text-[8px] bg-emerald-500/10 px-1 rounded-full">99</span>
+            </div>
+            <span className="text-[9px] uppercase tracking-wider">99 Store</span>
+          </button>
 
-        <button
-          onClick={() => router.push('/cart')}
-          className="flex flex-col items-center justify-center gap-0.5 flex-grow relative text-muted-foreground font-bold hover:text-primary transition-all"
-        >
-          <div className="relative">
-            <span className="text-lg">🛒</span>
-            {cart.length > 0 && (
-              <span className="absolute -top-1.5 -right-2 bg-primary text-primary-foreground text-[8px] font-black w-4.5 h-4.5 rounded-full flex items-center justify-center shadow-sm">
-                {cart.length}
-              </span>
-            )}
-          </div>
-          <span className="text-[9px] uppercase tracking-wider">Card</span>
-        </button>
+          <button
+            onClick={() => router.push('/cart')}
+            className="flex flex-col items-center justify-center gap-0.5 flex-grow relative text-muted-foreground font-bold hover:text-primary transition-all"
+          >
+            <div className="relative">
+              <span className="text-lg">🛒</span>
+              {cart.length > 0 && (
+                <span className="absolute -top-1.5 -right-2 bg-primary text-primary-foreground text-[8px] font-black w-4.5 h-4.5 rounded-full flex items-center justify-center shadow-sm">
+                  {cart.length}
+                </span>
+              )}
+            </div>
+            <span className="text-[9px] uppercase tracking-wider">Card</span>
+          </button>
 
-        <button
-          onClick={() => {
-            setActivePill('reorder');
-            alert("🔄 Switched to Reorder list!");
-          }}
-          className={`flex flex-col items-center justify-center gap-0.5 flex-grow transition-all ${
-            activePill === 'reorder' ? 'text-primary scale-105 font-black' : 'text-muted-foreground font-bold'
-          }`}
-        >
-          <span className="text-lg">🔄</span>
-          <span className="text-[9px] uppercase tracking-wider">Reorder</span>
-        </button>
-      </div>
+          <button
+            onClick={() => {
+              setActivePill('reorder');
+            }}
+            className={`flex flex-col items-center justify-center gap-0.5 flex-grow transition-all ${
+              activePill === 'reorder' ? 'text-primary scale-105 font-black' : 'text-muted-foreground font-bold'
+            }`}
+          >
+            <span className="text-lg">🔄</span>
+            <span className="text-[9px] uppercase tracking-wider">Reorder</span>
+          </button>
+        </div>
+      )}
 
       {/* Floating AI Assistant Chat Button and Panel */}
       <div className={`fixed ${cart.length > 0 ? 'bottom-40' : 'bottom-24'} sm:bottom-24 right-4 sm:right-6 z-[9999] flex flex-col items-end gap-3 max-w-[calc(100vw-2rem)] sm:max-w-none`}>
