@@ -150,6 +150,10 @@ export default function Home() {
   // AI Modal State
   const [aiModal, setAiModal] = useState<{ title: string; subtitle: string; content: string; icon: string } | null>(null);
 
+  // Animated Location Selector states
+  const [showLocationSelector, setShowLocationSelector] = useState(false);
+  const [savingLocation, setSavingLocation] = useState(false);
+
   // AI Assistant states
   const [showAiChat, setShowAiChat] = useState(false);
   const [aiChatQuery, setAiChatQuery] = useState('');
@@ -1120,6 +1124,10 @@ export default function Home() {
                 text: `📍 Location Detected! Welcome to Velto! 🚀 We are actively delivering to your doorstep in ${displayName}.`,
                 type: 'success'
               });
+              showToast(`📍 Location set to ${displayName}!`, 'success');
+              setTimeout(() => {
+                setShowLocationSelector(false);
+              }, 1500);
             } else {
               setServiceMessage({
                 text: `📍 Detected doorstep address: "${formattedAddress}". Velto is coming to your area soon! 📦 Stand by for updates.`,
@@ -1156,31 +1164,39 @@ export default function Home() {
       return;
     }
 
-    const inputLower = locationInput.toLowerCase().trim();
-    // Supported cities: Lucknow, Delhi, Bangalore, Mumbai, Moradabad, Sambhal, Chandausi, Bhind
-    const SUPPORTED_CITIES = ['lucknow', 'delhi', 'bangalore', 'banlore', 'mumbai', 'moradabad', 'sambhal', 'chandausi', 'bhind', 'bhiind'];
+    setSavingLocation(true);
+    setTimeout(() => {
+      const inputLower = locationInput.toLowerCase().trim();
+      // Supported cities: Lucknow, Delhi, Bangalore, Mumbai, Moradabad, Sambhal, Chandausi, Bhind
+      const SUPPORTED_CITIES = ['lucknow', 'delhi', 'bangalore', 'banlore', 'mumbai', 'moradabad', 'sambhal', 'chandausi', 'bhind', 'bhiind'];
 
-    const matchedCity = SUPPORTED_CITIES.find(city => inputLower.includes(city));
+      const matchedCity = SUPPORTED_CITIES.find(city => inputLower.includes(city));
 
-    if (matchedCity) {
-      // Standardize display name
-      let displayName = matchedCity.charAt(0).toUpperCase() + matchedCity.slice(1);
-      if (displayName === 'Banlore') displayName = 'Bangalore';
-      if (displayName === 'Bhiind') displayName = 'Bhind';
-      
-      localStorage.setItem('selectedCity', displayName);
-      localStorage.setItem('deliveryAddress', locationInput.trim());
-      setCurrentLocation(displayName);
-      setServiceMessage({ 
-        text: `Welcome to Velto! 🚀 We are actively delivering fresh essentials in ${displayName}!`, 
-        type: 'success' 
-      });
-    } else {
-      setServiceMessage({ 
-        text: `We are expanding fast! Velto is coming to "${locationInput.trim()}" very soon. 📦 Stand by for updates!`, 
-        type: 'warning' 
-      });
-    }
+      if (matchedCity) {
+        // Standardize display name
+        let displayName = matchedCity.charAt(0).toUpperCase() + matchedCity.slice(1);
+        if (displayName === 'Banlore') displayName = 'Bangalore';
+        if (displayName === 'Bhiind') displayName = 'Bhind';
+        
+        localStorage.setItem('selectedCity', displayName);
+        localStorage.setItem('deliveryAddress', locationInput.trim());
+        setCurrentLocation(displayName);
+        setServiceMessage({ 
+          text: `Welcome to Velto! 🚀 We are actively delivering fresh essentials in ${displayName}!`, 
+          type: 'success' 
+        });
+        showToast(`📍 Location set to ${displayName}!`, 'success');
+        setTimeout(() => {
+          setShowLocationSelector(false);
+        }, 1000);
+      } else {
+        setServiceMessage({ 
+          text: `We are expanding fast! Velto is coming to "${locationInput.trim()}" very soon. 📦 Stand by for updates!`, 
+          type: 'warning' 
+        });
+      }
+      setSavingLocation(false);
+    }, 1200);
   };
 
   const handleSearchChange = (query: string) => {
@@ -1403,7 +1419,7 @@ export default function Home() {
 
         {/* Location Selector Bar */}
         <div className="flex justify-between items-center z-10">
-          <div className="flex items-center gap-2.5 cursor-pointer group" onClick={handleDetectLocation}>
+          <div className="flex items-center gap-2.5 cursor-pointer group" onClick={() => setShowLocationSelector(true)}>
             <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white shrink-0 group-hover:scale-105 transition-transform">
               <MapPin size={18} className="text-[#ffd700]" />
             </div>
@@ -1423,10 +1439,10 @@ export default function Home() {
             </div>
             <button 
               onClick={() => router.push('/profile')}
-              className="w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white hover:bg-white/20 hover:scale-105 active:scale-95 transition-all shadow-md"
+              className="w-10 h-10 rounded-full bg-primary/20 hover:bg-primary/30 border border-primary/30 flex items-center justify-center text-white hover:scale-105 active:scale-95 transition-all shadow-md font-black text-xs uppercase"
               title="My Orders Profile"
             >
-              <UserIcon size={18} />
+              {user?.email ? user.email[0] : <UserIcon size={18} />}
             </button>
           </div>
         </div>
@@ -1706,6 +1722,7 @@ export default function Home() {
                     : 'border-border bg-card hover:border-emerald-500/30'
                 }`}
               >
+                <span className="absolute top-2.5 right-3.5 text-[7px] bg-emerald-500/10 text-emerald-500 font-extrabold px-1.5 py-0.5 rounded-full uppercase tracking-wider">10 Min</span>
                 <div className="absolute top-0 right-0 -mt-4 -mr-4 w-16 h-16 rounded-full bg-emerald-500/10 blur-md"></div>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-xl shrink-0">
@@ -1735,6 +1752,7 @@ export default function Home() {
                     : 'border-border bg-card hover:border-rose-500/30'
                 }`}
               >
+                <span className="absolute top-2.5 right-3.5 text-[7px] bg-rose-500/10 text-rose-500 font-extrabold px-1.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse">Live</span>
                 <div className="absolute top-0 right-0 -mt-4 -mr-4 w-16 h-16 rounded-full bg-rose-500/10 blur-md"></div>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-2xl bg-rose-500/10 text-rose-500 flex items-center justify-center text-xl shrink-0">
@@ -1762,6 +1780,7 @@ export default function Home() {
                     : 'border-border bg-card hover:border-cyan-500/30'
                 }`}
               >
+                <span className="absolute top-2.5 right-3.5 text-[7px] bg-cyan-500/10 text-cyan-500 font-extrabold px-1.5 py-0.5 rounded-full uppercase tracking-wider">24/7 SOS</span>
                 <div className="absolute top-0 right-0 -mt-4 -mr-4 w-16 h-16 rounded-full bg-cyan-500/10 blur-md"></div>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-2xl bg-cyan-500/10 text-cyan-500 flex items-center justify-center text-xl shrink-0">
@@ -1789,6 +1808,7 @@ export default function Home() {
                     : 'border-border bg-card hover:border-amber-500/30'
                 }`}
               >
+                <span className="absolute top-2.5 right-3.5 text-[7px] bg-amber-500/10 text-amber-500 font-extrabold px-1.5 py-0.5 rounded-full uppercase tracking-wider">Same Day</span>
                 <div className="absolute top-0 right-0 -mt-4 -mr-4 w-16 h-16 rounded-full bg-amber-500/10 blur-md"></div>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center text-xl shrink-0">
@@ -2091,7 +2111,7 @@ export default function Home() {
 
                           <div className="absolute top-3 left-3 z-20">
                             <span className="bg-rose-500 text-white text-[8px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider flex items-center gap-0.5 shadow-sm">
-                              ★ one
+                              ★ Top Seller
                             </span>
                           </div>
 
@@ -2189,17 +2209,23 @@ export default function Home() {
                           }
                         }
                       }}
-                      className={`flex flex-col items-center justify-center gap-1.5 cursor-pointer shrink-0 snap-center transition-all duration-300 hover:scale-105 ${
+                      className={`flex flex-col items-center justify-center gap-1.5 cursor-pointer shrink-0 snap-center transition-all duration-300 hover:scale-105 active:scale-95 ${
                         isSelected 
-                          ? 'ring-2 ring-primary rounded-full p-1' 
+                          ? 'scale-105' 
                           : ''
                       }`}
                     >
-                      <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border border-border shadow-md bg-white flex items-center justify-center">
+                      <div className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border-2 shadow-md bg-white flex items-center justify-center transition-all duration-300 ${
+                        isSelected 
+                          ? 'border-primary ring-4 ring-primary/20 scale-105 rotate-3' 
+                          : 'border-border hover:border-primary/40'
+                      }`}>
                         <img 
                           src={cat.img} 
                           alt={cat.name} 
-                          className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                          className={`w-full h-full object-cover transition-transform duration-300 ${
+                            isSelected ? 'scale-110' : 'hover:scale-110'
+                          }`}
                         />
                       </div>
                       <span className={`font-black text-[9px] sm:text-xs text-center transition-colors uppercase tracking-wider ${
@@ -2531,10 +2557,20 @@ export default function Home() {
         </button>
       </div>
 
-      {/* 📍 FORCED LOCATION SELECTOR OVERLAY */}
-      {!currentLocation && (
+      {/* 📍 FORCED/MANUAL LOCATION SELECTOR OVERLAY */}
+      {(!currentLocation || showLocationSelector) && (
         <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-background/60 backdrop-blur-xl p-4 animate-in fade-in duration-300">
-          <div className="w-full max-w-lg bg-card border border-border/85 rounded-3xl p-6 sm:p-8 shadow-2xl relative space-y-6 overflow-hidden glass-panel">
+          <div className="w-full max-w-lg bg-card border border-border/85 rounded-3xl p-6 sm:p-8 shadow-2xl relative space-y-6 overflow-hidden glass-panel text-left">
+            {/* Close button if location is already set */}
+            {currentLocation && (
+              <button 
+                onClick={() => setShowLocationSelector(false)}
+                className="absolute top-4 right-4 text-muted-foreground hover:text-foreground text-sm font-black cursor-pointer p-1"
+              >
+                ✕
+              </button>
+            )}
+
             {/* Ambient Pink Glow Blob */}
             {!lowInternetMode && (
               <>
@@ -2589,13 +2625,21 @@ export default function Home() {
                     onChange={e => setLocationInput(e.target.value)}
                     placeholder={t('placeholderCity', language)}
                     className="flex-1 bg-transparent border-none focus:outline-none px-1 text-xs sm:text-sm font-semibold"
-                    onKeyDown={e => e.key === 'Enter' && handleExplore()}
+                    onKeyDown={e => e.key === 'Enter' && !savingLocation && handleExplore()}
                   />
                   <button
                     onClick={handleExplore}
-                    className="bg-primary text-primary-foreground px-4 py-2.5 rounded-lg font-bold text-xs sm:text-sm hover:bg-primary/95 transition-colors whitespace-nowrap"
+                    disabled={savingLocation}
+                    className="bg-primary text-primary-foreground px-4 py-2.5 rounded-lg font-bold text-xs sm:text-sm hover:bg-primary/95 transition-colors whitespace-nowrap flex items-center justify-center gap-1.5 min-w-[70px]"
                   >
-                    {t('verify', language)}
+                    {savingLocation ? (
+                      <>
+                        <div className="w-3.5 h-3.5 rounded-full border-2 border-current border-t-transparent animate-spin"></div>
+                        Saving
+                      </>
+                    ) : (
+                      t('verify', language)
+                    )}
                   </button>
                 </div>
               </div>
@@ -2617,6 +2661,7 @@ export default function Home() {
                       key={city}
                       onClick={() => {
                         setLocationInput(city);
+                        setSavingLocation(true);
                         setTimeout(() => {
                           localStorage.setItem('selectedCity', city);
                           localStorage.setItem('deliveryAddress', `${city} Central Plaza Hub`);
@@ -2625,9 +2670,14 @@ export default function Home() {
                             text: `Welcome to Velto! 🚀 We are actively delivering fresh essentials in ${city}!`, 
                             type: 'success' 
                           });
-                        }, 50);
+                          setSavingLocation(false);
+                          showToast(`📍 Location set to ${city}!`, 'success');
+                          setTimeout(() => {
+                            setShowLocationSelector(false);
+                          }, 1000);
+                        }, 1200);
                       }}
-                      className="bg-accent/40 border border-border hover:border-primary/40 hover:bg-primary/5 text-foreground px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all shadow-inner"
+                      className="bg-accent/40 border border-border hover:border-primary/40 hover:bg-primary/5 text-foreground px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all shadow-inner cursor-pointer"
                     >
                       {city}
                     </button>
