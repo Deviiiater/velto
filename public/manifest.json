@@ -1,0 +1,19 @@
+{
+  "name": "Velto - Instant Delivery & Super App",
+  "short_name": "Velto",
+  "description": "Groceries and essentials delivered in 10 minutes by Velto",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#f59e0b",
+  "orientation": "portrait",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
