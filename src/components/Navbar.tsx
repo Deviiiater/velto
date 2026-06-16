@@ -74,8 +74,12 @@ export function Navbar() {
     }
   };
 
+  const isHomepage = pathname === '/';
+
   return (
-    <header className="border-b border-border/40 backdrop-blur-md bg-background/80 p-3 sm:p-4 flex justify-between items-center sticky top-0 z-50 shadow-lg shadow-black/10">
+    <header className={`border-b border-border/40 backdrop-blur-md bg-background/80 p-3 sm:p-4 flex justify-between items-center sticky top-0 z-50 shadow-lg shadow-black/10 ${
+      isHomepage ? 'hidden md:flex' : 'flex'
+    }`}>
       <div className="flex items-center gap-4 sm:gap-8 shrink-0">
         <Link href="/" className="flex items-center gap-3 shrink-0">
           <img src="/logo.png" alt="Velto Logo" className="h-9 w-auto object-contain hover:scale-105 transition-transform duration-300 shrink-0" />

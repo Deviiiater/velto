@@ -1,5 +1,5 @@
 'use client';
-import { Search, MapPin, Clock, ShoppingBag, Apple, Leaf, Egg, Cookie, CupSoda, Flame, Plus, Sparkles, Zap, AlertCircle, Compass, HelpCircle, Mic, Bot, Send, Dumbbell, Coffee, Heart, Utensils, Calendar, ShieldCheck, Tag, Sparkle, Store, Users, DollarSign, Shield, HeartHandshake, Navigation, Pill, Truck, Wallet, Wrench, Megaphone } from 'lucide-react';
+import { Search, MapPin, Clock, ShoppingBag, Apple, Leaf, Egg, Cookie, CupSoda, Flame, Plus, Sparkles, Zap, AlertCircle, Compass, HelpCircle, Mic, Bot, Send, Dumbbell, Coffee, Heart, Utensils, Calendar, ShieldCheck, Tag, Sparkle, Store, Users, DollarSign, Shield, HeartHandshake, Navigation, Pill, Truck, Wallet, Wrench, Megaphone, ChevronDown, User as UserIcon } from 'lucide-react';
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
@@ -106,6 +106,8 @@ export default function Home() {
 
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activePill, setActivePill] = useState<'reorder' | 'food'>('food');
+  const [vegOnly, setVegOnly] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedVendor, setSelectedVendor] = useState<string | null>(null);
   const [activeModule, setActiveModule] = useState<'instamart' | 'kitchen'>('instamart');
@@ -1278,1205 +1280,718 @@ export default function Home() {
           </div>
         </div>
       )}
-      {/* 🚀 Multi-Service Super App Selector Menu */}
-      <section className="glass-panel border border-border/40 rounded-3xl p-6 shadow-xl relative overflow-hidden">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-border/60 pb-3 mb-3">
-          <div className="space-y-0.5">
-            <span className="text-[9px] font-black uppercase text-primary tracking-widest bg-primary/10 px-2.5 py-0.5 rounded-full shadow-sm">
-              Velto Super App
-            </span>
-            <h2 className="text-sm font-black text-foreground">Select Super Service</h2>
+      {/* 🚀 Deep Purple Top Header Area (Location, Search, Marquee, Promo cards) */}
+      <div className="-mx-4 -mt-4 p-5 sm:-mx-8 sm:-mt-8 sm:p-8 bg-gradient-to-b from-[#3a014c] to-[#20002b] text-white rounded-b-[2.5rem] flex flex-col gap-5 relative overflow-hidden shadow-2xl pb-8">
+        {/* Ambient glows */}
+        <div className="absolute top-0 right-0 -mt-10 -mr-10 w-48 h-48 rounded-full bg-primary/20 blur-[60px] pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-48 h-48 rounded-full bg-amber-500/10 blur-[60px] pointer-events-none"></div>
+
+        {/* Location Selector Bar */}
+        <div className="flex justify-between items-center z-10">
+          <div className="flex items-center gap-2.5 cursor-pointer group" onClick={handleDetectLocation}>
+            <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white shrink-0 group-hover:scale-105 transition-transform">
+              <MapPin size={18} className="text-[#ffd700]" />
+            </div>
+            <div className="flex flex-col text-left">
+              <div className="flex items-center gap-1">
+                <span className="text-sm font-black tracking-tight text-white flex items-center gap-1">Work <ChevronDown size={14} className="text-[#ffd700] group-hover:translate-y-0.5 transition-transform" /></span>
+              </div>
+              <span className="text-[10px] text-zinc-300 font-semibold max-w-[200px] sm:max-w-xs truncate">
+                {locationInput || currentLocation || 'Detecting delivery location...'}
+              </span>
+            </div>
           </div>
 
-          {/* 🎓 Student Mode Toggle */}
-          <button
-            onClick={() => {
-              setStudentMode(!studentMode);
-              if (!studentMode) {
-                alert("🎓 Student Mode Active! Swapped to high-value budget combos, midnight snacks, and study packs.");
-                speakResponse("Student Mode active. Check out cheap snacks and budget combos below.");
-                setSearchQuery("Combo");
-              } else {
-                setSearchQuery("");
-              }
-            }}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider border transition-all ${
-              studentMode 
-                ? 'bg-primary text-primary-foreground border-primary shadow-md shadow-primary/20 animate-bounce' 
-                : 'bg-accent/40 border-border hover:bg-primary hover:text-primary-foreground text-muted-foreground'
-            }`}
-          >
-            <Users size={12} />
-            {studentMode ? '🎓 Student Mode: On' : '🎓 Student Mode'}
-          </button>
-        </div>
-
-        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-          {[
-            { id: 'grocery', name: 'Grocery', desc: '10-Min Delivery', icon: <ShoppingBag size={16} /> },
-            { id: 'food', name: 'Food/Kitchen', desc: 'Cloud Kitchens', icon: <Utensils size={16} /> },
-            { id: 'pharmacy', name: 'Pharmacy', desc: 'Medicines', icon: <Pill size={16} /> },
-            { id: 'courier', name: 'Courier', desc: 'Send Packages', icon: <Truck size={16} /> },
-            { id: 'bills', name: 'Bills/Pay', desc: 'Recharge/Utility', icon: <Wallet size={16} /> },
-            { id: 'services', name: 'Services', desc: 'Home Cleaner', icon: <Wrench size={16} /> }
-          ].map(service => {
-            const isActive = activeSuperService === service.id;
-            return (
-              <button
-                key={service.id}
-                onClick={() => {
-                  setActiveSuperService(service.id);
-                  if (service.id === 'food') {
-                    setActiveModule('kitchen');
-                  } else {
-                    setActiveModule('instamart');
-                  }
-                  alert(`Activated Super Service: ${service.name}`);
-                }}
-                className={`flex flex-col items-center justify-center p-2.5 sm:p-3 rounded-xl border text-center transition-all hover:scale-[1.03] duration-300 ${
-                  isActive 
-                    ? 'border-primary bg-primary/10 ring-1 ring-primary neon-glow' 
-                    : 'border-border/40 bg-muted/20 hover:border-primary/30 hover:bg-muted/40'
-                }`}
-              >
-                <div className={`p-1.5 sm:p-2 rounded-lg mb-1 flex items-center justify-center ${
-                  isActive ? 'bg-primary text-primary-foreground shadow-md' : 'bg-background text-muted-foreground'
-                }`}>
-                  {service.icon}
-                </div>
-                <span className="text-[10px] font-black text-foreground block">{service.name}</span>
-                <span className="text-[8px] text-muted-foreground font-semibold block mt-0.5">{service.desc}</span>
-              </button>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className="relative overflow-hidden bg-gradient-to-br from-card via-background to-accent/20 rounded-2xl p-4 sm:p-6 md:p-8 border border-border/50 shadow-xl flex flex-col md:flex-row items-center gap-4 sm:gap-6 neon-glow">
-        {!lowInternetMode && (
-          <>
-            <div className="absolute top-0 right-0 -mt-10 -mr-10 w-48 h-48 rounded-full bg-primary/10 blur-[80px] pointer-events-none"></div>
-            <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-48 h-48 rounded-full bg-cyan-500/5 blur-[80px] pointer-events-none"></div>
-          </>
-        )}
-        <div className="flex-1 space-y-4 text-center md:text-left flex flex-col items-center md:items-start w-full relative z-10">
-          <div className="flex flex-col sm:flex-row gap-2">
-            <div className="inline-flex items-center gap-2 bg-primary/15 text-primary px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold shadow-sm">
-              <Clock size={16} /> {t('deliveredIn10', language)}
+          <div className="flex items-center gap-2">
+            <div className="hidden sm:flex items-center gap-1 bg-[#ffd700]/20 border border-[#ffd700]/30 text-[#ffd700] px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm animate-pulse">
+              👑 1st Year Free Pass
             </div>
+            <button 
+              onClick={() => router.push('/profile')}
+              className="w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white hover:bg-white/20 hover:scale-105 active:scale-95 transition-all shadow-md"
+              title="My Orders Profile"
+            >
+              <UserIcon size={18} />
+            </button>
+          </div>
+        </div>
+
+        {/* Custom Search bar with Voice search & Veg selector */}
+        <div className="w-full flex flex-col gap-2 z-10">
+          <div className="w-full bg-white rounded-2xl p-1.5 flex items-center gap-2 shadow-lg">
+            <Search className="text-zinc-400 ml-2.5 shrink-0" size={18} />
+            <input
+              type="text"
+              placeholder="Search for 'EatRight' or fresh meals..."
+              value={searchQuery}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              className="flex-1 bg-transparent border-none focus:outline-none text-zinc-800 text-xs sm:text-sm font-bold placeholder:text-zinc-400 min-w-0 py-1.5 px-1"
+            />
+            
             <button
-              type="button"
-              onClick={() => {
-                setEmergencyMode(!emergencyMode);
-                if (!emergencyMode) {
-                  alert("🚨 Emergency SOS Delivery Activated! Priority riders assigned. Instant dispatch on health, baby, & sanitary essentials.");
-                  speakResponse("Emergency SOS Mode active. Only displaying essential pharmacy, babies, and chargers.");
-                  setSearchQuery("Medicine");
-                } else {
-                  setSearchQuery("");
+              onClick={startVoiceListening}
+              className={`p-2 rounded-xl transition-all flex items-center justify-center shrink-0 ${
+                voiceListening 
+                  ? 'bg-red-500 text-white animate-pulse shadow-md shadow-red-500/30' 
+                  : 'hover:bg-zinc-100 text-orange-500'
+              }`}
+              title="Voice Ordering"
+            >
+              <Mic size={16} />
+            </button>
+
+            <div className="w-px h-6 bg-zinc-200 shrink-0"></div>
+
+            <div className="flex items-center gap-1.5 px-2 shrink-0">
+              <span className="text-[10px] font-black text-emerald-600 uppercase tracking-wider">Veg</span>
+              <button
+                onClick={() => {
+                  setVegOnly(!vegOnly);
+                  alert(!vegOnly ? "🥗 Showing Vegetarian items only!" : "Showing all items");
+                }}
+                className={`relative w-8 h-4 rounded-full transition-colors duration-300 flex items-center ${
+                  vegOnly ? 'bg-emerald-600' : 'bg-zinc-300'
+                }`}
+                aria-label="Toggle vegetarian filter"
+              >
+                <span className={`absolute top-0.5 left-0.5 w-3 h-3 rounded-full bg-white shadow-sm transition-transform duration-300 ${
+                  vegOnly ? 'translate-x-4' : 'translate-x-0'
+                }`}></span>
+              </button>
+            </div>
+          </div>
+
+          {/* Spell suggestions */}
+          {spellingSuggestions.length > 0 && (
+            <div className="bg-white/10 border border-white/20 rounded-xl p-2 flex items-center flex-wrap gap-1.5 text-xs text-white">
+              <span className="font-bold text-zinc-300">Suggestions:</span>
+              {spellingSuggestions.map((sug, idx) => (
+                <button 
+                  key={idx}
+                  onClick={() => handleSearchChange(sug)}
+                  className="bg-white/20 hover:bg-white/30 text-white px-2.5 py-1 rounded-lg font-black tracking-tight transition-all text-[10px] uppercase"
+                >
+                  {sug}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {voiceStatus && (
+            <div className="bg-primary/20 border border-primary/30 text-xs font-bold text-white p-2.5 rounded-xl animate-pulse">
+              🎤 {voiceStatus}
+            </div>
+          )}
+        </div>
+
+        {/* FOODIE VERSE Banner */}
+        <div className="w-full bg-[#ffd700] text-[#3a014c] rounded-2xl p-4 flex justify-between items-center relative overflow-hidden shadow-inner z-10 border border-[#ffd700]/40">
+          <div className="flex flex-col text-left">
+            <div className="flex items-center gap-1.5">
+              <span className="text-xl font-black italic tracking-tighter uppercase text-[#3a014c] drop-shadow-sm">FOODIE VERSE</span>
+              <span className="bg-[#3a014c] text-[#ffd700] text-[8px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider">ORDER NOW</span>
+            </div>
+            <span className="text-xs font-black tracking-tight uppercase mt-0.5">Flat ₹200 OFF & MORE</span>
+          </div>
+          <div className="text-2xl animate-bounce shrink-0">🍕</div>
+        </div>
+
+        {/* Deal/Announcement Cards Slider (Horizontal Scroll) */}
+        {announcements.length > 0 && (
+          <div className="w-full flex flex-col gap-2 z-10 mt-1">
+            <div className="flex justify-between items-center px-1">
+              <span className="text-[10px] font-black uppercase text-zinc-300 tracking-wider">Active Deals & Highlights</span>
+              <span className="text-[8px] bg-white/20 px-2 py-0.5 rounded text-white font-bold uppercase">{announcements.length} Deals</span>
+            </div>
+
+            <div className="flex overflow-x-auto gap-4 pb-2 scrollbar-hide snap-x flex-nowrap w-full">
+              {announcements.map((ann) => {
+                let cardBg = 'from-[#5a187a] to-[#360447]';
+                let icon = <Megaphone className="text-[#ffd700]" size={16} />;
+                let badgeText = 'DEAL';
+                let badgeColor = 'bg-[#ffd700]/25 text-[#ffd700]';
+                
+                if (ann.type === 'sos') {
+                  cardBg = 'from-[#8b0000] to-[#4c0202]';
+                  icon = <AlertCircle className="text-white animate-pulse" size={16} />;
+                  badgeText = 'SOS';
+                  badgeColor = 'bg-white/25 text-white';
+                } else if (ann.type === 'diet') {
+                  cardBg = 'from-[#1a492f] to-[#0f2a1b]';
+                  icon = <Dumbbell className="text-emerald-400" size={16} />;
+                  badgeText = 'DIET';
+                  badgeColor = 'bg-emerald-400/20 text-emerald-400';
+                } else if (ann.type === 'promo') {
+                  cardBg = 'from-[#916b0b] to-[#473403]';
+                  icon = <Tag className="text-[#ffd700]" size={16} />;
+                  badgeText = 'CODE';
+                  badgeColor = 'bg-[#ffd700]/20 text-[#ffd700]';
+                } else if (ann.type === 'offer') {
+                  cardBg = 'from-[#0b6375] to-[#04343e]';
+                  icon = <ShoppingBag className="text-cyan-400" size={16} />;
+                  badgeText = 'OFFER';
+                  badgeColor = 'bg-cyan-400/25 text-cyan-400';
                 }
+
+                return (
+                  <div 
+                    key={ann.id}
+                    className={`w-64 shrink-0 snap-center rounded-2xl p-4 bg-gradient-to-br ${cardBg} border border-white/10 shadow-lg flex flex-col justify-between gap-3 text-left`}
+                  >
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span className={`text-[8px] font-black tracking-widest px-2 py-0.5 rounded-full uppercase ${badgeColor}`}>
+                          {badgeText}
+                        </span>
+                        <span className="text-[8px] text-zinc-300 font-medium">
+                          {new Date(ann.created_at).toLocaleDateString(undefined, { dateStyle: 'short' })}
+                        </span>
+                      </div>
+                      <h3 className="text-xs font-black text-white flex items-center gap-1.5 line-clamp-1">
+                        {icon}
+                        {ann.title}
+                      </h3>
+                      <p className="text-[10px] text-zinc-200 line-clamp-2 leading-snug">
+                        {ann.content}
+                      </p>
+                    </div>
+                    
+                    {ann.type === 'diet' && (
+                      <button
+                        onClick={() => {
+                          setSearchQuery('healthy');
+                          alert("🥗 Diet Filter Applied! Showing health items.");
+                        }}
+                        className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-[9px] uppercase py-1.5 rounded-lg transition-all cursor-pointer"
+                      >
+                        Apply Diet Filter
+                      </button>
+                    )}
+                    {ann.type === 'sos' && (
+                      <button
+                        onClick={() => {
+                          setEmergencyMode(true);
+                          setSearchQuery('Medicine');
+                          alert("🚨 SOS Mode Activated!");
+                        }}
+                        className="w-full bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-[9px] uppercase py-1.5 rounded-lg transition-all cursor-pointer"
+                      >
+                        Request Dispatch
+                      </button>
+                    )}
+                    {ann.type === 'promo' && (
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText("HEAL20");
+                          alert("📋 Code 'HEAL20' copied!");
+                        }}
+                        className="w-full bg-[#ffd700] hover:bg-[#ffe043] text-black font-extrabold text-[9px] uppercase py-1.5 rounded-lg transition-all cursor-pointer"
+                      >
+                        Copy: HEAL20
+                      </button>
+                    )}
+                    {ann.type === 'offer' && (
+                      <button
+                        onClick={() => {
+                          setSearchQuery('Offer');
+                          alert("🎉 Special Offers Applied!");
+                        }}
+                        className="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-extrabold text-[9px] uppercase py-1.5 rounded-lg transition-all cursor-pointer"
+                      >
+                        View Offers
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ─── WHITE/CARD CONTENT BODY CONTAINER ─── */}
+      <div className="flex flex-col gap-8 mt-6">
+        {/* Toggle Pills: REORDER vs FOOD IN 15 MINS */}
+        <div className="flex justify-center w-full">
+          <div className="bg-zinc-100 dark:bg-zinc-800/80 p-1.5 rounded-full flex items-center gap-1 shadow-sm w-full max-w-sm border border-zinc-200/80 dark:border-zinc-700">
+            <button
+              onClick={() => {
+                setActivePill('reorder');
               }}
-              className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider border transition-all ${
-                emergencyMode 
-                  ? 'bg-rose-500 text-white border-rose-600 animate-pulse shadow-md shadow-rose-500/20' 
-                  : 'bg-card border-border hover:bg-rose-500/10 hover:text-rose-500 text-muted-foreground'
+              className={`flex-1 text-center py-2 px-4 rounded-full text-xs font-black uppercase tracking-wider transition-all duration-300 cursor-pointer ${
+                activePill === 'reorder'
+                  ? 'bg-white dark:bg-zinc-900 text-primary shadow-md'
+                  : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800'
               }`}
             >
-              <ShieldCheck size={14} />
-              {emergencyMode ? 'Emergency Active (10m Priority)' : 'Emergency Mode (SOS)'}
+              Reorder
             </button>
-            {currentLocation && (
-              <div className="inline-flex items-center gap-1.5 text-xs font-bold text-green-500 bg-green-500/10 border border-green-500/20 px-3.5 py-1.5 rounded-full">
-                <MapPin size={12} className="stroke-[2.5]" /> Active Service Area: {currentLocation}
-              </div>
-            )}
-          </div>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight leading-[1.1] max-w-xl">
-            Groceries delivered <br className="hidden sm:inline"/><span className="text-gradient-primary">in minutes.</span>
-          </h1>
-          <p className="text-xs sm:text-sm text-muted-foreground max-w-lg">
-            Fresh produce, daily essentials, hot meals, and tiffin plans delivered straight to your door. Experience the fastest delivery in the city.
-          </p>
-          
-          <div className="flex flex-col gap-3 w-full max-w-md">
-            <div className="flex w-full items-center space-x-1 sm:space-x-2 bg-card p-1.5 sm:p-2 rounded-xl border border-border focus-within:ring-2 focus-within:ring-primary transition-all">
-              <MapPin className="text-muted-foreground ml-1.5" size={18} />
-              <input 
-                type="text" 
-                value={locationInput}
-                onChange={e => setLocationInput(e.target.value)}
-                placeholder="Enter delivery location (e.g. Lucknow, Delhi...)" 
-                className="flex-1 bg-transparent border-none focus:outline-none px-1.5 text-xs sm:text-sm min-w-0"
-              />
-              <button
-                type="button"
-                onClick={handleDetectLocation}
-                disabled={detectingLocation}
-                className={`p-2 rounded-xl text-muted-foreground hover:text-primary transition-colors flex items-center justify-center mr-1 ${
-                  detectingLocation ? 'animate-spin text-primary' : ''
-                }`}
-                title="Use Current Doorstep Location"
-              >
-                <Navigation size={18} className={detectingLocation ? '' : 'rotate-45 text-primary'} />
-              </button>
-              <button 
-                onClick={handleExplore}
-                className="bg-primary text-primary-foreground px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg font-semibold text-xs hover:bg-primary/90 transition-colors whitespace-nowrap"
-              >
-                Explore
-              </button>
-            </div>
-
-            {serviceMessage.text && (
-              <div className={`w-full p-3.5 rounded-xl text-xs font-bold border transition-all leading-relaxed ${
-                serviceMessage.type === 'success' ? 'bg-green-500/10 text-green-500 border-green-500/20' : 'bg-amber-500/10 text-amber-500 border-amber-500/20'
-              }`}>
-                {serviceMessage.text}
-              </div>
-            )}
+            <button
+              onClick={() => {
+                setActivePill('food');
+              }}
+              className={`flex-1 text-center py-2 px-4 rounded-full text-xs font-black uppercase tracking-wider transition-all duration-300 cursor-pointer ${
+                activePill === 'food'
+                  ? 'bg-white dark:bg-zinc-900 text-primary shadow-md'
+                  : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800'
+              }`}
+            >
+              Food In 15 Mins
+            </button>
           </div>
         </div>
-        
-        <div className="flex-1 w-full">
-          <DeliveryRiderAnimation />
-        </div>
-      </section>
 
-      {/* 📢 Active Broadcasts & Diet Programs */}
-      {announcements.length > 0 && (
+        {/* 🍔 Product Horizontal Sliders */}
         <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-black text-foreground flex items-center gap-1.5 uppercase tracking-wider">
-              <Megaphone className="text-primary animate-pulse" size={16} /> Platform Broadcasts & Diets
+          <div className="flex justify-between items-center">
+            <h2 className="text-sm font-black text-foreground uppercase tracking-wider flex items-center gap-1.5">
+              <span>{activePill === 'reorder' ? '🔄 Quick Refills & Reorder' : '🍲 Live Cloud Kitchens & Meals'}</span>
             </h2>
             <span className="text-[10px] font-bold text-muted-foreground bg-accent px-2 py-0.5 rounded-md">
-              {announcements.length} Active
+              Slider View
             </span>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {announcements.map((ann) => {
-              // Custom styles and icons based on type
-              let borderClass = 'border-indigo-500/20 bg-indigo-500/5 hover:border-indigo-500/40';
-              let icon = <Megaphone className="text-indigo-400" size={18} />;
-              let badgeText = 'ANNOUNCEMENT';
-              let badgeColor = 'bg-indigo-500/10 text-indigo-400';
-              
-              if (ann.type === 'sos') {
-                borderClass = 'border-rose-500/30 bg-rose-500/5 hover:border-rose-500/50 animate-pulse';
-                icon = <AlertCircle className="text-rose-400" size={18} />;
-                badgeText = 'SOS ALERT';
-                badgeColor = 'bg-rose-500/20 text-rose-400';
-              } else if (ann.type === 'diet') {
-                borderClass = 'border-emerald-500/20 bg-emerald-500/5 hover:border-emerald-500/40';
-                icon = <Dumbbell className="text-emerald-400" size={18} />;
-                badgeText = 'DIET PROGRAM';
-                badgeColor = 'bg-emerald-500/10 text-emerald-400';
-              } else if (ann.type === 'promo') {
-                borderClass = 'border-amber-500/20 bg-amber-500/5 hover:border-amber-500/40';
-                icon = <Tag className="text-amber-400" size={18} />;
-                badgeText = 'PROMO';
-                badgeColor = 'bg-amber-500/10 text-amber-400';
-              } else if (ann.type === 'offer') {
-                borderClass = 'border-cyan-500/20 bg-cyan-500/5 hover:border-cyan-500/40';
-                icon = <ShoppingBag className="text-cyan-400" size={18} />;
-                badgeText = 'SPECIAL OFFER';
-                badgeColor = 'bg-cyan-500/10 text-cyan-400';
-              }
 
+          {activePill === 'reorder' ? (
+            <div className="flex overflow-x-auto gap-4 pb-4 scrollbar-hide snap-x flex-nowrap w-full">
+              {refillItems.map((item) => {
+                const nameKey = item.name.split(' ')[0];
+                const matchedProd = products.find(p => p.name.toLowerCase().includes(nameKey.toLowerCase()));
+                
+                return (
+                  <div 
+                    key={item.id}
+                    className="w-56 shrink-0 snap-center bg-card border border-border rounded-3xl p-4 flex flex-col justify-between gap-3 shadow-md hover:shadow-lg transition-all hover:border-primary text-left"
+                  >
+                    <div className="space-y-1">
+                      <div className="flex justify-between items-start">
+                        <span className="bg-primary/10 text-primary text-[8px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider">
+                          Refill Item
+                        </span>
+                        <span className="text-[8px] text-rose-500 font-bold animate-pulse">
+                          {item.daysLeft} Day Left
+                        </span>
+                      </div>
+                      <h4 className="font-black text-xs text-foreground mt-1 line-clamp-1">{item.name}</h4>
+                      <p className="text-[9px] text-muted-foreground font-semibold">Last: {item.lastBought}</p>
+                    </div>
+
+                    <div className="space-y-1">
+                      <div className="w-full h-1.5 bg-accent rounded-full overflow-hidden">
+                        <div style={{ width: `${100 - item.progress}%` }} className="h-full bg-amber-500 rounded-full" />
+                      </div>
+                      <div className="flex justify-between text-[8px] font-bold text-muted-foreground">
+                        <span>{100 - item.progress}% Left</span>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        if (matchedProd) {
+                          addToCart(matchedProd);
+                          alert(`🛒 Added ${matchedProd.name} to basket!`);
+                        } else {
+                          alert(`Could not find ${item.name} in store!`);
+                        }
+                      }}
+                      className="w-full bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-wider py-2 rounded-xl hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
+                    >
+                      One-Tap Reorder
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="flex overflow-x-auto gap-4 pb-4 scrollbar-hide snap-x flex-nowrap w-full">
+              {(() => {
+                let displayProducts = products;
+                if (studentMode) {
+                  displayProducts = products.filter(p => 
+                    p.name.toLowerCase().includes('combo') || 
+                    p.description?.toLowerCase().includes('combo') ||
+                    p.category?.toLowerCase().includes('combo') ||
+                    p.name.toLowerCase().includes('student') ||
+                    p.description?.toLowerCase().includes('student')
+                  );
+                } else {
+                  displayProducts = products.filter(p => p.category && ['cloud kitchen', 'tiffin service'].includes(p.category.toLowerCase()));
+                }
+
+                if (vegOnly) {
+                  displayProducts = displayProducts.filter(p => {
+                    const normName = p.name.toLowerCase();
+                    return !normName.includes('chicken') && !normName.includes('fish') && !normName.includes('meat') && !normName.includes('egg');
+                  });
+                }
+
+                if (searchQuery.trim()) {
+                  const q = searchQuery.toLowerCase().trim();
+                  displayProducts = displayProducts.filter(p => matchesSearchQuery(p.name, p.description || '', p.category || '', q));
+                }
+
+                if (displayProducts.length === 0) {
+                  return (
+                    <div className="w-full text-center py-8 text-xs font-bold text-muted-foreground border border-dashed border-border rounded-3xl bg-accent/10">
+                      No matching food products found. Try changing filters or search query!
+                    </div>
+                  );
+                }
+
+                return displayProducts.map((product) => {
+                  const ratingSeed = (3.9 + (product.id ? product.id.charCodeAt(0) % 11 : 4) / 10).toFixed(1);
+                  const deliveryTime = product.id ? (product.id.charCodeAt(0) % 4) * 5 + 15 : 20;
+                  const isVeg = !product.name.toLowerCase().includes('fish') && 
+                                !product.name.toLowerCase().includes('meat') && 
+                                !product.name.toLowerCase().includes('chicken') && 
+                                !product.name.toLowerCase().includes('egg');
+
+                  let restaurantName = "Hotel Kings Kitchen";
+                  let cuisine = "North Indian";
+                  
+                  if (product.name.includes('Chai')) {
+                    restaurantName = "Apna Singh Tea Stall";
+                    cuisine = "Tea & Fast Food";
+                  } else if (product.name.includes('Tiffin') || product.name.includes('Lunch')) {
+                    restaurantName = "Apna Singh Dhaba";
+                    cuisine = "Tiffin Service";
+                  } else if (product.name.includes('Combo')) {
+                    restaurantName = "Khana Khazana Kitchen";
+                    cuisine = "Combos & Snacks";
+                  }
+
+                  return (
+                    <div 
+                      key={product.id}
+                      className="w-56 shrink-0 snap-center bg-card border border-border rounded-3xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lg relative flex flex-col justify-between text-left"
+                    >
+                      <button className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-background/80 backdrop-blur flex items-center justify-center text-muted-foreground hover:text-rose-500 transition-colors shadow-sm cursor-pointer">
+                        <Heart size={14} />
+                      </button>
+
+                      <div className="absolute top-3 left-3 z-20">
+                        <span className="bg-rose-500 text-white text-[8px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider flex items-center gap-0.5 shadow-sm">
+                          ★ one
+                        </span>
+                      </div>
+
+                      <div className="relative w-full aspect-[4/3] bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
+                        {product.image_url ? (
+                          <img 
+                            src={product.image_url} 
+                            alt={product.name} 
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-zinc-400 bg-gradient-to-br from-primary/10 to-transparent">
+                            <Utensils size={32} className="opacity-40" />
+                          </div>
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-2.5">
+                          <span className="text-[9px] font-black text-white uppercase tracking-wider bg-black/40 px-2 py-0.5 rounded-full border border-white/10 backdrop-blur-sm">
+                            ITEMS AT ₹{product.price}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="p-3 space-y-1.5 flex-1 flex flex-col justify-between">
+                        <div>
+                          <h4 className="font-black text-xs sm:text-sm text-foreground line-clamp-1 leading-tight">{restaurantName}</h4>
+                          <p className="text-[10px] font-bold text-muted-foreground line-clamp-1 mt-0.5">{product.name}</p>
+                          
+                          <div className="flex items-center gap-1.5 mt-1">
+                            <div className="bg-emerald-600 text-white px-1.5 py-0.5 rounded-md text-[9px] font-black flex items-center gap-0.5">
+                              <span>★</span>
+                              <span>{ratingSeed}</span>
+                            </div>
+                            <span className="text-[9px] font-bold text-muted-foreground">•</span>
+                            <span className="text-[9px] font-black text-foreground">{deliveryTime}-{deliveryTime + 5} mins</span>
+                          </div>
+                        </div>
+
+                        <div className="flex justify-between items-center border-t border-border/40 pt-2 mt-2">
+                          <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-tight flex items-center gap-1">
+                            <span className={`w-2 h-2 rounded-full inline-block ${isVeg ? 'bg-green-500' : 'bg-red-500'}`} />
+                            {cuisine}
+                          </span>
+                          <button 
+                            onClick={() => {
+                              addToCart(product);
+                              alert(`🛒 Added ${product.name} to basket!`);
+                            }}
+                            className="bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-xl hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                          >
+                            ADD
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                });
+              })()}
+            </div>
+          )}
+        </section>
+
+        {/* 🍕 "What's on your mind?" Categories Slider */}
+        <section className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h2 className="text-sm font-black text-foreground uppercase tracking-wider">What's on your mind?</h2>
+            {selectedCategory && (
+              <button 
+                onClick={() => setSelectedCategory(null)}
+                className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors"
+              >
+                Clear Filter ✕
+              </button>
+            )}
+          </div>
+          <div className="flex overflow-x-auto gap-4 pb-4 scrollbar-hide flex-nowrap w-full snap-x">
+            {activeCategories.map((cat, i) => {
+              const isSelected = selectedCategory?.toLowerCase() === cat.name.toLowerCase();
               return (
                 <div 
-                  key={ann.id}
-                  className={`glass-panel border p-5 rounded-2xl transition-all duration-300 flex flex-col justify-between gap-3 ${borderClass}`}
+                  key={i} 
+                  onClick={() => setSelectedCategory(isSelected ? null : cat.name)}
+                  className={`flex flex-col items-center justify-center gap-1.5 cursor-pointer shrink-0 snap-center transition-all duration-300 hover:scale-105 ${
+                    isSelected 
+                      ? 'ring-2 ring-primary rounded-full p-1' 
+                      : ''
+                  }`}
                 >
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className={`text-[9px] font-black tracking-widest px-2.5 py-0.5 rounded-full uppercase ${badgeColor}`}>
-                        {badgeText}
-                      </span>
-                      <span className="text-[9px] text-muted-foreground font-medium">
-                        {new Date(ann.created_at).toLocaleDateString(undefined, { dateStyle: 'short' })}
-                      </span>
-                    </div>
-                    <h3 className="text-sm font-black text-foreground flex items-center gap-1.5 leading-tight">
-                      {icon}
-                      {ann.title}
-                    </h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      {ann.content}
-                    </p>
+                  <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border border-border shadow-md bg-white flex items-center justify-center">
+                    <img 
+                      src={cat.img} 
+                      alt={cat.name} 
+                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                    />
                   </div>
-                  
-                  {/* Action buttons based on type */}
-                  {ann.type === 'diet' && (
-                    <button
-                      onClick={() => {
-                        setSearchQuery('healthy');
-                        alert("🥗 Diet Filter Applied! Showing high-fiber, low-calorie, and nutritious essentials.");
-                        speakResponse("Diet filter applied. Check out healthy foods in the list.");
-                      }}
-                      className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-[10px] uppercase tracking-wider py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-[0.98]"
-                    >
-                      <Dumbbell size={12} /> Apply Diet Filter
-                    </button>
-                  )}
-                  {ann.type === 'sos' && (
-                    <button
-                      onClick={() => {
-                        setEmergencyMode(true);
-                        setSearchQuery('Medicine');
-                        alert("🚨 SOS Mode Activated! Prioritizing healthcare, hydration, and hygiene packages.");
-                        speakResponse("Emergency SOS Mode active. Only showing priority items.");
-                      }}
-                      className="w-full bg-rose-500 hover:bg-rose-600 text-white font-extrabold text-[10px] uppercase tracking-wider py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-[0.98]"
-                    >
-                      <AlertCircle size={12} /> Request SOS Dispatch
-                    </button>
-                  )}
-                  {ann.type === 'promo' && (
-                    <button
-                      onClick={() => {
-                        navigator.clipboard.writeText("HEAL20");
-                        alert("📋 Promo Code 'HEAL20' copied to clipboard!");
-                      }}
-                      className="w-full bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-[10px] uppercase tracking-wider py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-[0.98]"
-                    >
-                      <Tag size={12} /> Copy Code: HEAL20
-                    </button>
-                  )}
-                  {ann.type === 'offer' && (
-                    <button
-                      onClick={() => {
-                        setSearchQuery('Offer');
-                        alert("🎉 Offers Applied! Showing discounted items and special combos.");
-                        speakResponse("Showing all special offers.");
-                      }}
-                      className="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-extrabold text-[10px] uppercase tracking-wider py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-[0.98]"
-                    >
-                      <ShoppingBag size={12} /> View Active Offers
-                    </button>
-                  )}
+                  <span className={`font-black text-[9px] sm:text-xs text-center transition-colors uppercase tracking-wider ${
+                    isSelected ? 'text-primary' : 'text-zinc-500 dark:text-zinc-300'
+                  }`}>
+                    {getCategoryTranslation(cat.name)}
+                  </span>
                 </div>
               );
             })}
           </div>
         </section>
-      )}
 
-      {/* Swiggy-Style Split Navigation Panels */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Module 1: Instamart */}
-        <div 
-          onClick={() => {
-            setActiveModule('instamart');
-            setActiveSuperService('grocery');
-            setSelectedCategory(null);
-          }}
-          className={`cursor-pointer group relative overflow-hidden rounded-2xl p-4 sm:p-5 border transition-all duration-500 ${
-            activeModule === 'instamart'
-              ? 'border-primary ring-2 ring-primary/40 bg-primary/10 shadow-lg neon-glow -translate-y-1'
-              : 'border-border/40 bg-card hover:border-primary/40 hover:-translate-y-1 hover:shadow-lg'
-          }`}
-        >
-          {!lowInternetMode && (
-            <div className={`absolute -right-8 -bottom-8 w-32 h-32 rounded-full blur-2xl opacity-50 will-change-transform transition-opacity duration-500 ${
-              activeModule === 'instamart' ? 'bg-primary/20' : 'bg-primary/5 opacity-0 group-hover:opacity-100'
-            }`}></div>
-          )}
-
-          <div className="flex justify-between items-center relative z-10">
-            <div className="space-y-1.5">
-              <span className="text-[9px] font-black uppercase tracking-widest text-primary bg-primary/10 px-2.5 py-0.5 rounded-full flex items-center gap-1 w-fit shadow-sm">
-                <Zap size={8} className="fill-primary" /> Velto Instamart
-              </span>
-              <h3 className="text-lg font-black tracking-tight text-foreground">{t('groceryTitle', language)}</h3>
-              <p className="text-[11px] text-muted-foreground font-medium max-w-xs leading-relaxed">
-                {t('groceryDesc', language)}
-              </p>
-            </div>
-            <div className="w-14 h-14 rounded-xl overflow-hidden shadow-inner flex items-center justify-center border border-border bg-background transition-transform duration-500 group-hover:scale-[1.05]">
-              <img 
-                src="https://images.unsplash.com/photo-1542838132-92c53300491e?w=150" 
-                alt="Instamart" 
-                className="w-full h-full object-cover"
-              />
-            </div>
+        {/* 🥦 Rest of Categories & Services (Instamart, etc.) */}
+        <section className="space-y-4 pt-2 border-t border-border/40">
+          <div className="flex justify-between items-center">
+            <h3 className="text-sm font-black text-foreground uppercase tracking-wider">Explore Services</h3>
           </div>
-        </div>
-
-        {/* Module 2: Cloud Kitchen & Tiffins */}
-        <div 
-          onClick={() => {
-            setActiveModule('kitchen');
-            setActiveSuperService('food');
-            setSelectedCategory(null);
-          }}
-          className={`cursor-pointer group relative overflow-hidden rounded-2xl p-4 sm:p-5 border transition-all duration-500 ${
-            activeModule === 'kitchen'
-              ? 'border-amber-500 ring-2 ring-amber-500/40 bg-amber-500/10 shadow-lg -translate-y-1'
-              : 'border-border/40 bg-card hover:border-amber-500/40 hover:-translate-y-1 hover:shadow-lg'
-          }`}
-        >
-          {!lowInternetMode && (
-            <div className={`absolute -right-8 -bottom-8 w-32 h-32 rounded-full blur-2xl opacity-50 will-change-transform transition-opacity duration-500 ${
-              activeModule === 'kitchen' ? 'bg-amber-500/20' : 'bg-amber-500/5 opacity-0 group-hover:opacity-100'
-            }`}></div>
-          )}
-
-          <div className="flex justify-between items-center relative z-10">
-            <div className="space-y-1.5">
-              <span className="text-[9px] font-black uppercase tracking-widest text-amber-500 bg-amber-500/10 px-2.5 py-0.5 rounded-full flex items-center gap-1 w-fit shadow-sm">
-                <Flame size={8} className="fill-amber-500" /> Velto Kitchen & Tiffins
-              </span>
-              <h3 className="text-lg font-black tracking-tight text-foreground">{t('mealsTitle', language)}</h3>
-              <p className="text-[11px] text-muted-foreground font-medium max-w-xs leading-relaxed">
-                {t('mealsDesc', language)}
-              </p>
-            </div>
-            <div className="w-14 h-14 rounded-xl overflow-hidden shadow-inner flex items-center justify-center border border-border bg-background transition-transform duration-500 group-hover:scale-[1.05]">
-              <img 
-                src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=150" 
-                alt="Cloud Kitchen" 
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Auto Refill System */}
-      <section className="glass-panel border border-border/40 rounded-2xl p-4 sm:p-5 shadow-lg space-y-3">
-        <div className="flex justify-between items-center border-b border-border pb-3">
-          <div className="space-y-1">
-            <h3 className="text-lg font-black tracking-tight flex items-center gap-2 text-foreground">
-              <Calendar className="text-primary w-5 h-5 animate-bounce" /> {t('replenishTitle', language)}
-            </h3>
-            <p className="text-xs text-muted-foreground font-semibold">
-              {t('replenishDesc', language)}
-            </p>
-          </div>
-          <button
-            onClick={() => {
-              // Add all refill items to cart
-              refillItems.forEach(item => {
-                const nameKey = item.name.split(' ')[0];
-                const matchedProd = products.find(p => p.name.toLowerCase().includes(nameKey.toLowerCase()));
-                if (matchedProd) {
-                  addToCart(matchedProd);
-                }
-              });
-              alert(language === 'hi' ? "🛒 ऑटो रिफिल सक्रिय! दूध, ब्रेड और टमाटर आपकी कार्ट में जोड़े गए हैं।" : language === 'hinglish' ? "🛒 Auto Refill ho gaya bhaiya! Milk, bread aur tomatoes cart me add kar diye hain." : "🛒 Auto Refill Triggered! Added milk, bread, & tomatoes to your cart.");
-              speakResponse(language === 'hi' ? "ऑटो रिफिल सक्रिय। आवश्यक सामान कार्ट में जोड़ दिया गया है।" : language === 'hinglish' ? "Auto refill ho gaya hai. Aapka saaman basket me daal diya hai." : "Auto refill triggered. Added your running low essentials to the basket.");
-            }}
-            className="bg-primary text-primary-foreground text-xs font-black uppercase py-2.5 px-4 rounded-xl shadow-md shadow-primary/10 transition-all hover:bg-primary/95 active:scale-95 hover:scale-[1.02] duration-200"
-          >
-            {t('refillAll', language)}
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {refillItems.map(item => (
-            <div key={item.id} className="bg-muted/30 border border-border/30 rounded-xl p-3 flex flex-col justify-between space-y-2 hover:border-primary/30 transition-colors">
-              <div className="flex justify-between items-start gap-1">
-                <div>
-                  <h4 className="text-xs font-black text-foreground">{item.name}</h4>
-                  <p className="text-[10px] text-muted-foreground font-semibold">{t('lastOrdered', language)}: {item.lastBought}</p>
-                </div>
-                <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${
-                  item.daysLeft <= 1 
-                    ? 'bg-rose-500/10 text-rose-500 animate-pulse' 
-                    : 'bg-amber-500/10 text-amber-500'
-                }`}>
-                  {item.daysLeft === 1 ? t('refillTomorrow', language) : t('inDays', language).replace('{days}', String(item.daysLeft))}
-                </span>
-              </div>
-
-              {/* Progress indicator */}
-              <div className="space-y-1">
-                <div className="w-full h-2 bg-accent rounded-full overflow-hidden shadow-inner">
-                  <div 
-                    style={{ width: `${100 - item.progress}%` }} 
-                    className={`h-full rounded-full transition-all ${
-                      item.progress >= 70 ? 'bg-rose-500' : item.progress >= 40 ? 'bg-amber-500' : 'bg-emerald-500'
-                    }`}
-                  ></div>
-                </div>
-                <div className="flex justify-between text-[9px] font-bold text-muted-foreground">
-                  <span>{100 - item.progress}% {t('remaining', language)}</span>
-                  <span>{t('usageRate', language)}</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 🔍 Smart Search Console */}
-      <section className="glass-panel border border-border/40 rounded-2xl p-4 sm:p-5 shadow-lg space-y-3 relative overflow-hidden">
-        {!lowInternetMode && (
-          <div className={`absolute right-0 top-0 -mr-6 -mt-6 w-20 h-20 rounded-full blur-xl ${
-            activeModule === 'instamart' ? 'bg-primary/5' : 'bg-amber-500/5'
-          }`}></div>
-        )}
-
-        <div className="relative z-10 flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center">
-          <div className="space-y-1 flex-grow">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div>
-                <h3 className="text-lg font-black tracking-tight flex items-center gap-1.5">
-                  <Search size={18} className="text-primary animate-pulse" /> Smart Search Desk
-                </h3>
-                <p className="text-xs text-muted-foreground font-medium">
-                  Fuzzy matching & spelling correction auto-suggestions in real-time.
-                </p>
-              </div>
-              <button
-                onClick={startVoiceListening}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 text-xs font-black uppercase py-2.5 px-4 rounded-xl transition-all flex items-center gap-2 self-start sm:self-center"
-              >
-                <Mic size={14} className="animate-pulse text-white" />
-                <span>🗣️ Tap to Speak / बोलकर आर्डर करें</span>
-              </button>
-            </div>
-          </div>
-
-          <div className="flex-1 max-w-md relative">
-            <div className="relative flex items-center bg-background border border-border rounded-xl focus-within:ring-2 focus-within:ring-primary focus-within:border-primary transition-all p-1.5">
-              <Search className="text-muted-foreground ml-2.5 flex-shrink-0" size={18} />
-              <input
-                type="text"
-                placeholder={t('searchPlaceholder', language)}
-                value={searchQuery}
-                onChange={(e) => handleSearchChange(e.target.value)}
-                className="flex-1 bg-transparent border-none focus:outline-none px-2 text-sm font-medium placeholder:text-muted-foreground/60 min-w-0"
-              />
-              <button
-                onClick={startVoiceListening}
-                className={`p-2 rounded-xl transition-all mr-1 flex items-center justify-center ${
-                  voiceListening ? 'bg-red-500 text-white animate-pulse shadow-red-500/30 shadow-lg' : 'bg-accent hover:bg-accent/80 text-muted-foreground hover:text-foreground'
-                }`}
-                title="Voice Ordering (Hindi / Hinglish / English)"
-              >
-                <Mic size={15} />
-              </button>
-              {searchQuery && (
+          
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+            {[
+              { id: 'grocery', name: 'Grocery Shop', desc: '10-Min Delivery', icon: <ShoppingBag size={16} /> },
+              { id: 'food', name: 'Food Delivery', desc: 'Cloud Kitchens', icon: <Utensils size={16} /> },
+              { id: 'pharmacy', name: 'Pharmacy Meds', desc: 'SOS Medicine', icon: <Pill size={16} /> },
+              { id: 'courier', name: 'Send Courier', desc: 'Same-Day Package', icon: <Truck size={16} /> },
+              { id: 'bills', name: 'Utility Bills', desc: 'Recharge & Pay', icon: <Wallet size={16} /> },
+              { id: 'services', name: 'Home Services', desc: 'Deep Cleaning', icon: <Wrench size={16} /> }
+            ].map(service => {
+              const isActive = activeSuperService === service.id;
+              return (
                 <button
-                  onClick={() => handleSearchChange('')}
-                  className="bg-accent hover:bg-accent/80 text-muted-foreground hover:text-foreground text-[10px] font-black uppercase tracking-wider px-2.5 py-1.5 rounded-lg transition-colors mr-1"
-                >
-                  Clear
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Voice status banner */}
-        {voiceStatus && (
-          <div className="relative z-10 bg-primary/10 border border-primary/20 text-xs font-bold text-primary p-2.5 rounded-xl animate-pulse">
-            🎤 {voiceStatus}
-          </div>
-        )}
-
-        {/* 🎤 PENDING VOICE CONFIRMATION INTERACTIVE WIDGET */}
-        {pendingVoiceProduct && (
-          <div className="relative z-10 bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4.5 space-y-3 animate-in zoom-in-95 duration-200 glass-panel">
-            <div className="flex justify-between items-center">
-              <span className="text-[10px] font-black uppercase tracking-wider text-amber-500 bg-amber-500/10 px-2.5 py-0.5 rounded-full">
-                Voice Confirmation Required
-              </span>
-              <button 
-                onClick={() => {
-                  pendingVoiceProductRef.current = null;
-                  setPendingVoiceProduct(null);
-                }}
-                className="text-muted-foreground hover:text-foreground text-xs"
-              >
-                ✕
-              </button>
-            </div>
-            <p className="text-xs font-bold text-foreground leading-relaxed">
-              Did you mean to add <span className="text-primary font-black">{pendingVoiceProduct.quantity} x {pendingVoiceProduct.product.name}</span> (₹{pendingVoiceProduct.product.price * pendingVoiceProduct.quantity}) to your basket?
-            </p>
-            <div className="flex gap-2 pt-1">
-              <button
-                onClick={() => {
-                  for (let i = 0; i < pendingVoiceProduct.quantity; i++) {
-                    addToCart(pendingVoiceProduct.product);
-                  }
-                  pendingVoiceProductRef.current = null;
-                  setPendingVoiceProduct(null);
-                  speakResponse("Added to basket!");
-                }}
-                className="flex-grow bg-primary text-primary-foreground hover:bg-primary/95 text-xs font-black py-2.5 rounded-xl transition-all shadow-md uppercase tracking-wider cursor-pointer"
-              >
-                Yes, Add
-              </button>
-              <button
-                onClick={() => {
-                  pendingVoiceProductRef.current = null;
-                  setPendingVoiceProduct(null);
-                  speakResponse("Cancelled.");
-                }}
-                className="flex-grow bg-accent text-accent-foreground hover:bg-accent/80 text-xs font-black py-2.5 rounded-xl transition-all shadow-md uppercase tracking-wider cursor-pointer"
-              >
-                No, Cancel
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Mood-based Discovery Filters */}
-        <div className="relative z-10 flex flex-wrap gap-2.5 pt-1.5 items-center">
-          <span className="text-[10px] font-black uppercase text-muted-foreground/80 tracking-wider mr-1">
-            {t('moodTitle', language)}
-          </span>
-          {[
-            { id: 'cravings', name: t('moodCravings', language), icon: <Coffee size={12} className="text-amber-500" /> },
-            { id: 'gym', name: t('moodGym', language), icon: <Dumbbell size={12} className="text-emerald-500" /> },
-            { id: 'date', name: t('moodDate', language), icon: <Heart size={12} className="text-rose-500" /> },
-            { id: 'home', name: t('moodHome', language), icon: <Utensils size={12} className="text-orange-500" /> }
-          ].map(mood => (
-            <button
-              key={mood.id}
-              onClick={() => {
-                const targetMood = selectedMood === mood.id ? null : mood.id;
-                setSelectedMood(targetMood);
-                if (targetMood === 'cravings') {
-                  setSearchQuery('Snack');
-                  setSelectedCategory('Snacks');
-                } else if (targetMood === 'gym') {
-                  setSearchQuery('Fruit');
-                  setSelectedCategory('Fresh Fruits');
-                } else if (targetMood === 'date') {
-                  setActiveModule('kitchen');
-                  setActiveSuperService('food');
-                  setSearchQuery('Gourmet');
-                  setSelectedCategory(null);
-                } else if (targetMood === 'home') {
-                  setActiveModule('kitchen');
-                  setActiveSuperService('food');
-                  setSearchQuery('Tiffin');
-                  setSelectedCategory(null);
-                } else {
-                  setSearchQuery('');
-                  setSelectedCategory(null);
-                }
-              }}
-              className="flex items-center gap-1.5 bg-accent/40 hover:bg-accent border border-border/80 rounded-xl px-3 py-1.5 text-xs font-bold transition-all hover:border-primary shadow-sm"
-            >
-              {mood.icon}
-              <span>{mood.name}</span>
-            </button>
-          ))}
-        </div>
-
-        {/* Immersive Mood Playlist & Combo Panel */}
-        {selectedMood && (() => {
-          interface MoodSetting {
-            name: string;
-            theme: string;
-            tagline: string;
-            song: string;
-            comboName: string;
-            items: string[];
-            eqColor: string;
-          }
-          const MOOD_DATA: Record<string, MoodSetting> = {
-            cravings: {
-              name: 'Late Night Cravings 🍕',
-              theme: 'from-purple-900/20 via-indigo-900/10 to-background border-purple-500/20',
-              tagline: 'Munchies, chocolates, and carbonated fuzzy goodness for the midnight vibe.',
-              song: 'Lofi Chill Hip Hop - Midnight Coffee',
-              comboName: 'Midnight Snack Bundle',
-              items: ['chips', 'pepsi'],
-              eqColor: 'bg-purple-500'
-            },
-            gym: {
-              name: 'Gym Mode Activated 🏋️',
-              theme: 'from-emerald-950/20 via-teal-900/10 to-background border-emerald-500/20',
-              tagline: 'High protein energy fuel, raw organic vitamins, and dynamic beats.',
-              song: 'Synthwave Workout - Pump Up Radio',
-              comboName: 'Clean Protein Stack',
-              items: ['banana'],
-              eqColor: 'bg-emerald-500'
-            },
-            date: {
-              name: 'Romantic Date Night 🕯️',
-              theme: 'from-rose-950/20 via-pink-900/10 to-background border-rose-500/20',
-              tagline: 'Gourmet delicacies, sweet tooth builders, and smooth acoustic melodies.',
-              song: 'Acoustic Jazz Cafe - Warm Candles',
-              comboName: 'Gourmet Date Platter',
-              items: ['paneer', 'cake'],
-              eqColor: 'bg-rose-500'
-            },
-            home: {
-              name: 'Home-style Comfort 🏡',
-              theme: 'from-orange-950/20 via-amber-900/10 to-background border-amber-500/20',
-              tagline: 'Warm home-cooked tiffins, fresh farm tomatoes, and soothing ambient flute.',
-              song: 'Traditional Flute - Peaceful Fields',
-              comboName: 'Ghar Ka Khana combo',
-              items: ['bread', 'tomato'],
-              eqColor: 'bg-orange-500'
-            }
-          };
-
-          const activeMood = MOOD_DATA[selectedMood];
-          if (!activeMood) return null;
-
-          return (
-            <div className={`relative z-10 bg-gradient-to-br ${activeMood.theme} border rounded-2xl p-4 sm:p-5 space-y-4 animate-in fade-in zoom-in-95 duration-300`}>
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="space-y-1">
-                  <span className="text-[9px] font-black uppercase tracking-widest text-primary bg-primary/10 px-2.5 py-0.5 rounded-full">
-                    {t('moodZone', language)}
-                  </span>
-                  <h4 className="text-sm font-black text-foreground">{activeMood.name}</h4>
-                  <p className="text-xs text-muted-foreground font-semibold max-w-md">{activeMood.tagline}</p>
-                </div>
-                <div className="bg-background/90 border border-border/80 p-2.5 rounded-xl flex items-center gap-3 w-fit self-start sm:self-center shadow-inner">
-                  <div className="flex gap-0.5 items-end h-4 w-4">
-                    <span className={`w-0.5 h-2 rounded-full animate-bounce ${activeMood.eqColor}`} style={{ animationDelay: '0.1s' }}></span>
-                    <span className={`w-0.5 h-3 rounded-full animate-bounce ${activeMood.eqColor}`} style={{ animationDelay: '0.3s' }}></span>
-                    <span className={`w-0.5 h-1 rounded-full animate-bounce ${activeMood.eqColor}`} style={{ animationDelay: '0.5s' }}></span>
-                    <span className={`w-0.5 h-4 rounded-full animate-bounce ${activeMood.eqColor}`} style={{ animationDelay: '0.2s' }}></span>
-                  </div>
-                  <div className="text-[10px] font-extrabold text-foreground">
-                    <span className="block text-[8px] font-bold text-muted-foreground uppercase tracking-widest">{t('playingAmbience', language)}</span>
-                    {activeMood.song}
-                  </div>
-                  <button 
-                    onClick={() => {
-                      alert(`🎵 Simulated Audio Playback: "${activeMood.song}"`);
-                      speakResponse(language === 'hi' ? `आपके ${selectedMood} मूड के लिए एम्बिएंट संगीत चल रहा है।` : language === 'hinglish' ? `Ambient music play ho raha hai aapke ${selectedMood} mood ke liye.` : `Playing ambient music matches for your ${selectedMood} mood.`);
-                    }}
-                    className="p-1.5 rounded-lg bg-primary hover:bg-primary/95 text-primary-foreground text-[10px] font-black"
-                  >
-                    {t('play', language)}
-                  </button>
-                </div>
-              </div>
-              <div className="pt-2 border-t border-border/40 flex flex-col sm:flex-row justify-between sm:items-center gap-3 bg-primary/5 p-3 rounded-xl">
-                <div>
-                  <span className="text-[9px] font-extrabold uppercase text-muted-foreground">{t('aiCuratedBundle', language)}</span>
-                  <h5 className="text-xs font-black text-foreground">{activeMood.comboName}</h5>
-                </div>
-                <button
+                  key={service.id}
                   onClick={() => {
-                    let addedCount = 0;
-                    activeMood.items.forEach(keyword => {
-                      const matchedItem = products.find(p => p.name.toLowerCase().includes(keyword));
-                      if (matchedItem) {
-                        addToCart(matchedItem);
-                        addedCount++;
-                      }
-                    });
-                    alert(language === 'hi' ? `🛒 कार्ट में ${addedCount} आइटम जोड़े गए!` : language === 'hinglish' ? `🛒 Basket me ${addedCount} items add kar diye!` : `🛒 Added ${addedCount} bundle items to your cart!`);
-                    speakResponse(language === 'hi' ? `${activeMood.comboName} बंडल जोड़ा गया।` : language === 'hinglish' ? `${activeMood.comboName} bundle add ho gaya hai.` : `Added the ${activeMood.comboName} bundle to your basket.`);
+                    setActiveSuperService(service.id);
+                    if (service.id === 'food') {
+                      setActiveModule('kitchen');
+                      setActivePill('food');
+                    } else {
+                      setActiveModule('instamart');
+                      setActivePill('reorder');
+                    }
+                    alert(`Activated: ${service.name}`);
                   }}
-                  className="bg-primary hover:bg-primary/95 text-primary-foreground text-[10px] font-black uppercase py-1.5 px-3 rounded-lg"
+                  className={`flex flex-col items-center justify-center p-3 rounded-2xl border text-center transition-all duration-300 ${
+                    isActive 
+                      ? 'border-primary bg-primary/10 ring-1 ring-primary' 
+                      : 'border-border/40 bg-muted/20 hover:border-primary/20'
+                  }`}
                 >
-                  {t('addComboBundle', language)}
+                  <div className={`p-2 rounded-xl mb-1.5 flex items-center justify-center ${
+                    isActive ? 'bg-primary text-primary-foreground shadow-sm animate-pulse' : 'bg-background text-muted-foreground'
+                  }`}>
+                    {service.icon}
+                  </div>
+                  <span className="text-[10px] font-black text-foreground block uppercase tracking-tight">{service.name}</span>
+                  <span className="text-[8px] text-muted-foreground font-semibold block mt-0.5">{service.desc}</span>
                 </button>
-              </div>
-            </div>
-          );
-        })()}
+              );
+            })}
+          </div>
+        </section>
 
-        {/* Spelling suggestions alert box */}
-        {spellingSuggestions.length > 0 && (
-          <div className="relative z-10 bg-primary/5 border border-primary/10 rounded-xl p-3.5 flex flex-wrap items-center gap-2 text-xs font-semibold text-primary animate-in fade-in slide-in-from-top-2 duration-200">
-            <Sparkles size={14} className="text-primary animate-pulse" />
-            <span>Did you mean:</span>
-            <div className="flex flex-wrap gap-1.5">
-              {spellingSuggestions.map((suggestion, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => handleSearchChange(suggestion)}
-                  className="bg-background border border-primary/20 text-primary hover:bg-primary/10 hover:border-primary px-3 py-1 rounded-lg text-xs font-extrabold transition-all shadow-sm"
-                >
-                  {suggestion}
-                </button>
+        {/* 🛒 ALL ITEMS LIST (Collapsible / Toggleable) */}
+        <section className="space-y-4 pt-2 border-t border-border/40 pb-12">
+          <div className="flex justify-between items-center">
+            <h2 className="text-sm font-black text-foreground uppercase tracking-wider">
+              {selectedCategory 
+                ? `${getCategoryTranslation(selectedCategory)} Items` 
+                : `${activeSuperService.toUpperCase()} Catalog`}
+            </h2>
+            {selectedCategory && (
+              <button 
+                onClick={() => setSelectedCategory(null)}
+                className="text-xs font-bold text-primary bg-primary/10 border border-primary/20 px-3 py-1 rounded-full hover:bg-primary/20 transition-all"
+              >
+                Show All ✕
+              </button>
+            )}
+          </div>
+
+          {loading ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="h-48 bg-accent/50 animate-pulse rounded-2xl"></div>
               ))}
             </div>
-          </div>
-        )}
-
-        {/* Instant Search Results Dropdown inside Smart Search Desk */}
-        {(() => {
-          if (!searchQuery.trim()) return null;
-          
-          const q = searchQuery.toLowerCase().trim();
-          let moduleProducts = products;
-          if (studentMode) {
-            moduleProducts = products.filter(p => 
-              p.name.toLowerCase().includes('combo') || 
-              p.description?.toLowerCase().includes('combo') ||
-              p.category?.toLowerCase().includes('combo') ||
-              p.name.toLowerCase().includes('student') ||
-              p.description?.toLowerCase().includes('student')
-            );
-          } else {
-            if (activeSuperService === 'grocery') {
-              moduleProducts = products.filter(p => p.category && !['cloud kitchen', 'tiffin service', 'pharmacy', 'courier', 'bills & recharge', 'home services'].includes(p.category.toLowerCase()));
-            } else if (activeSuperService === 'food') {
-              moduleProducts = products.filter(p => p.category && ['cloud kitchen', 'tiffin service'].includes(p.category.toLowerCase()));
-            } else if (activeSuperService === 'pharmacy') {
-              moduleProducts = products.filter(p => p.category && p.category.toLowerCase() === 'pharmacy');
-            } else if (activeSuperService === 'courier') {
-              moduleProducts = products.filter(p => p.category && p.category.toLowerCase() === 'courier');
-            } else if (activeSuperService === 'bills') {
-              moduleProducts = products.filter(p => p.category && p.category.toLowerCase() === 'bills & recharge');
-            } else if (activeSuperService === 'services') {
-              moduleProducts = products.filter(p => p.category && p.category.toLowerCase() === 'home services');
-            }
-          }
-            
-          const searchResults = moduleProducts.filter(p => 
-            matchesSearchQuery(p.name, p.description || '', p.category || '', q)
-          );
-
-          return (
-            <div className="relative z-10 border-t border-border/60 pt-4 mt-2 space-y-3 animate-in fade-in duration-200">
-              <div className="flex justify-between items-center px-1">
-                <span className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
-                  <Zap size={12} className="text-primary fill-primary animate-pulse" /> Instant Search Results ({searchResults.length})
-                </span>
-                {searchResults.length > 0 && (
-                  <span className="text-[10px] font-bold text-emerald-500 animate-pulse bg-emerald-500/10 px-2.5 py-0.5 rounded-full">
-                    {t('instantAddHelper', language)}
-                  </span>
-                )}
-              </div>
-
-              {searchResults.length === 0 ? (
-                <div className="space-y-4">
-                  <div className="p-5 text-center border border-dashed border-border rounded-2xl bg-accent/10 flex flex-col items-center justify-center gap-2">
-                    <HelpCircle size={24} className="text-muted-foreground/60" />
-                    <p className="text-xs font-bold text-muted-foreground">{t('noMatches', language)} &quot;{searchQuery}&quot;.</p>
-                  </div>
-
-                  {/* Kids Zone: Sweet suggestions for chocolate, cake, and cookies */}
-                  <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4 space-y-3 animate-in fade-in duration-300">
-                    <div className="flex items-center gap-2">
-                      <span className="text-base">🍭</span>
-                      <div>
-                        <h4 className="text-xs font-black uppercase text-primary tracking-wider">
-                          {t('kidsZoneTitle', language)}
-                        </h4>
-                        <p className="text-[10px] text-muted-foreground font-semibold">
-                          {t('kidsZoneDesc', language)}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[250px] overflow-y-auto pr-1">
-                      {(() => {
-                        const realCookies = products.find(p => p.name.toLowerCase().includes('cookie'));
-                        const realChocolate = products.find(p => p.name.toLowerCase().includes('dark chocolate'));
-                        const realShake = products.find(p => p.name.toLowerCase().includes('milkshake'));
-
-                        const kidsSuggestions = [
-                          realCookies || {
-                            id: 'fallback-cookies',
-                            name: 'Chocolate Chip Cookies',
-                            description: 'Crunchy baked cookies with rich cocoa chocolate chips.',
-                            price: 49,
-                            category: 'Snacks',
-                            image_url: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=150'
-                          },
-                          {
-                            id: 'mock-chocolate-cake',
-                            name: 'Rich Chocolate Fudge Cake Slice',
-                            description: 'Layers of moist chocolate cake with fudgy icing. Kid favorite!',
-                            price: 79,
-                            category: 'Snacks',
-                            image_url: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=150'
-                          },
-                          realChocolate || {
-                            id: 'fallback-chocolate',
-                            name: 'Premium Dark Chocolate',
-                            description: '70% rich cocoa Belgian dark chocolate bar, smooth finish.',
-                            price: 99,
-                            category: 'Snacks',
-                            image_url: 'https://images.unsplash.com/photo-1548907040-4d42b52125bf?w=150'
-                          },
-                          realShake || {
-                            id: 'fallback-shake',
-                            name: 'Chocolate Milkshake',
-                            description: 'Creamy chocolate milkshake with rich cocoa syrup.',
-                            price: 55,
-                            category: 'Snacks',
-                            image_url: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=150'
-                          }
-                        ];
-
-                        return kidsSuggestions.map((product) => {
-                          const aesthetics = getCategoryAesthetics(product.category);
-                          const isAdded = addedProductId === product.id;
-                          return (
-                            <div 
-                              key={product.id}
-                              className="bg-card border border-border/80 rounded-xl p-3 flex justify-between items-center gap-3 hover:border-primary transition-all duration-300 shadow-sm"
-                            >
-                              <div className="flex items-center gap-3 min-w-0">
-                                <div className={`relative w-12 h-12 rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0 ${aesthetics.bg}`}>
-                                  {product.image_url ? (
-                                    <img 
-                                      src={product.image_url} 
-                                      alt={product.name} 
-                                      className="w-full h-full object-cover" 
-                                    />
-                                  ) : (
-                                    <div className="scale-75">{aesthetics.icon}</div>
-                                  )}
-                                </div>
-                                <div className="min-w-0">
-                                  <h4 className="font-extrabold text-xs text-foreground truncate">{product.name}</h4>
-                                  <p className="text-[10px] text-muted-foreground truncate leading-relaxed max-w-[170px]">{product.description}</p>
-                                  <span className="font-black text-xs text-foreground block mt-0.5">₹{product.price}</span>
-                                </div>
-                              </div>
-
-                              <button
-                                onClick={() => handleInstantAdd(product as any)}
-                                className={`font-black text-[11px] px-3 py-2 rounded-lg flex items-center gap-1.5 transition-all active:scale-95 shadow-sm flex-shrink-0 border ${
-                                  isAdded 
-                                    ? 'bg-emerald-500 border-emerald-400 text-white'
-                                    : 'bg-primary border-primary text-primary-foreground hover:bg-primary/95'
-                                }`}
-                              >
-                                {isAdded ? <span>Added ✓</span> : <><Plus size={12} className="stroke-[3]" /><span>ADD</span></>}
-                              </button>
-                            </div>
-                          );
-                        });
-                      })()}
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[300px] overflow-y-auto pr-1">
-                  {searchResults.map((product) => {
-                    const aesthetics = getCategoryAesthetics(product.category);
-                    const isAdded = addedProductId === product.id;
-                    
-                    return (
-                      <div 
-                        key={product.id}
-                        className="bg-background border border-border/80 rounded-xl p-3 flex justify-between items-center gap-3 hover:border-primary transition-all duration-300 shadow-sm"
-                      >
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className={`relative w-12 h-12 rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0 ${aesthetics.bg}`}>
-                            {product.image_url ? (
-                              <img 
-                                src={product.image_url} 
-                                alt={product.name} 
-                                className="w-full h-full object-cover" 
-                              />
-                            ) : (
-                              <div className="scale-75">{aesthetics.icon}</div>
-                            )}
-                          </div>
-                          <div className="min-w-0">
-                            <h4 className="font-extrabold text-xs text-foreground truncate">{product.name}</h4>
-                            <p className="text-[10px] text-muted-foreground truncate leading-relaxed max-w-[200px]">{product.description}</p>
-                            <span className="font-black text-xs text-foreground block mt-0.5">₹{product.price}</span>
-                          </div>
-                        </div>
-
-                        <button
-                          onClick={() => handleInstantAdd(product)}
-                          className={`font-black text-[11px] px-3 py-2 rounded-lg flex items-center gap-1.5 transition-all active:scale-95 shadow-sm flex-shrink-0 border ${
-                            isAdded 
-                              ? 'bg-emerald-500 border-emerald-400 text-white shadow-emerald-500/10'
-                              : 'bg-primary border-primary text-primary-foreground hover:bg-primary/95 shadow-primary/10'
-                          }`}
-                        >
-                          {isAdded ? (
-                            <span>Added ✓</span>
-                          ) : (
-                            <>
-                              <Plus size={12} className="stroke-[3]" />
-                              <span>ADD</span>
-                            </>
-                          )}
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          );
-        })()}
-      </section>
-
-      {/* 🏪 Hyperlocal Community Commerce */}
-      <section className="bg-gradient-to-r from-emerald-500/5 via-primary/5 to-transparent border border-border/80 rounded-2xl p-4 sm:p-5 shadow-sm space-y-3">
-        <div className="flex justify-between items-center">
-          <div>
-            <h3 className="text-lg font-black tracking-tight flex items-center gap-2">
-              <Store size={18} className="text-primary" /> Hyperlocal Community Hubs
-            </h3>
-            <p className="text-xs text-muted-foreground font-semibold">
-              Directly supporting local bakers, home chefs, and organic street vendors near you.
-            </p>
-          </div>
-          {selectedVendor && (
-            <button 
-              onClick={() => setSelectedVendor(null)}
-              className="text-xs font-bold text-primary bg-primary/10 border border-primary/20 px-3 py-1 rounded-full hover:bg-primary/20 transition-all"
-            >
-              Clear Vendor ✕
-            </button>
-          )}
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          {[
-            { id: 'bakery', name: "Baker's Pride", desc: 'Local Home Baker', icon: <Apple size={14} className="text-amber-500" /> },
-            { id: 'chef', name: "Maa's Kitchen", desc: 'Gourmet Home Chef', icon: <Utensils size={14} className="text-rose-500" /> },
-            { id: 'produce', name: 'Green Farms', desc: 'Fresh Local Produce', icon: <Leaf size={14} className="text-emerald-500" /> },
-            { id: 'street', name: 'Chaurasia Sweets', desc: 'Street Food Vendor', icon: <Cookie size={14} className="text-orange-500" /> }
-          ].map(vendor => {
-            const isSelected = selectedVendor === vendor.id;
-            return (
-              <button
-                key={vendor.id}
-                onClick={() => {
-                  setSelectedVendor(isSelected ? null : vendor.id);
-                  // Apply search filter terms for mock products matching vendor specialties
-                  if (!isSelected) {
-                    if (vendor.id === 'bakery') {
-                      setSearchQuery('Bread');
-                      setSelectedCategory(null);
-                    } else if (vendor.id === 'chef') {
-                      setActiveModule('kitchen');
-                      setActiveSuperService('food');
-                      setSearchQuery('Paneer');
-                      setSelectedCategory(null);
-                    } else if (vendor.id === 'produce') {
-                      setSearchQuery('Fruit');
-                      setSelectedCategory('Fresh Fruits');
-                    } else if (vendor.id === 'street') {
-                      setSearchQuery('Samosa');
-                      setSelectedCategory(null);
-                    }
-                  } else {
-                    setSearchQuery('');
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+              {(() => {
+                let moduleProducts = products;
+                if (studentMode) {
+                  moduleProducts = products.filter(p => 
+                    p.name.toLowerCase().includes('combo') || 
+                    p.description?.toLowerCase().includes('combo') ||
+                    p.category?.toLowerCase().includes('combo') ||
+                    p.name.toLowerCase().includes('student') ||
+                    p.description?.toLowerCase().includes('student')
+                  );
+                } else {
+                  if (activeSuperService === 'grocery') {
+                    moduleProducts = products.filter(p => p.category && !['cloud kitchen', 'tiffin service', 'pharmacy', 'courier', 'bills & recharge', 'home services'].includes(p.category.toLowerCase()));
+                  } else if (activeSuperService === 'food') {
+                    moduleProducts = products.filter(p => p.category && ['cloud kitchen', 'tiffin service'].includes(p.category.toLowerCase()));
+                  } else if (activeSuperService === 'pharmacy') {
+                    moduleProducts = products.filter(p => p.category && p.category.toLowerCase() === 'pharmacy');
+                  } else if (activeSuperService === 'courier') {
+                    moduleProducts = products.filter(p => p.category && p.category.toLowerCase() === 'courier');
+                  } else if (activeSuperService === 'bills') {
+                    moduleProducts = products.filter(p => p.category && p.category.toLowerCase() === 'bills & recharge');
+                  } else if (activeSuperService === 'services') {
+                    moduleProducts = products.filter(p => p.category && p.category.toLowerCase() === 'home services');
                   }
-                }}
-                className={`flex flex-col items-start p-3 rounded-xl border text-left transition-all hover:scale-[1.02] shadow-sm ${
-                  isSelected 
-                    ? 'border-primary bg-primary/5 ring-1 ring-primary' 
-                    : 'border-border bg-card hover:border-primary/40'
-                }`}
-              >
-                <div className="w-8 h-8 rounded-xl bg-accent flex items-center justify-center mb-2.5">
-                  {vendor.icon}
-                </div>
-                <span className="text-xs font-black text-foreground block">{vendor.name}</span>
-                <span className="text-[10px] text-muted-foreground font-medium block mt-0.5">{vendor.desc}</span>
-              </button>
-            );
-          })}
-        </div>
-      </section>
+                }
 
-      {/* 🔮 Predictive Ordering Prompt */}
-      <section className="bg-gradient-to-r from-amber-500/10 to-primary/10 border border-amber-500/20 rounded-3xl p-5 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-        <div className="space-y-1">
-          <div className="inline-flex items-center gap-1 bg-amber-500/15 text-amber-500 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider">
-            ☕ Daily Chai Vibe Predictor
-          </div>
-          <h3 className="text-xs font-black text-foreground">It's 4:30 PM: Ready for your evening ginger tea & samosa session?</h3>
-          <p className="text-[11px] text-muted-foreground font-semibold">
-            Based on your past orders, we predicted your daily refresh schedule.
-          </p>
-        </div>
+                if (vegOnly) {
+                  moduleProducts = moduleProducts.filter(p => {
+                    const normName = p.name.toLowerCase();
+                    return !normName.includes('chicken') && !normName.includes('fish') && !normName.includes('meat') && !normName.includes('egg');
+                  });
+                }
+
+                let filtered = selectedCategory 
+                  ? moduleProducts.filter(p => p.category?.toLowerCase() === selectedCategory.toLowerCase())
+                  : moduleProducts;
+                
+                if (searchQuery.trim()) {
+                  const q = searchQuery.toLowerCase().trim();
+                  filtered = filtered.filter(p => 
+                    matchesSearchQuery(p.name, p.description || '', p.category || '', q)
+                  );
+                }
+
+                if (filtered.length === 0) {
+                  return (
+                    <div className="col-span-full py-8 text-center text-xs font-bold text-muted-foreground border border-dashed border-border rounded-3xl bg-accent/10">
+                      No items matching current criteria. Try resetting query or categories.
+                    </div>
+                  );
+                }
+
+                return filtered.map(product => (
+                  <ProductCard key={product.id} product={product} />
+                ));
+              })()}
+            </div>
+          )}
+        </section>
+      </div>
+
+      {/* 📱 Mobile Sticky Bottom Navigation Bar */}
+      <div className="fixed bottom-0 left-0 right-0 z-[999] md:hidden bg-card/95 backdrop-blur border-t border-border/80 px-4 py-2.5 flex justify-between items-center shadow-[0_-8px_30px_rgb(0,0,0,0.12)]">
         <button
           onClick={() => {
-            const hotChai = products.find(p => p.name.toLowerCase().includes("chai"));
-            const samosa = products.find(p => p.name.toLowerCase().includes("samosa"));
-            let addedCount = 0;
-            if (hotChai) { addToCart(hotChai); addedCount++; }
-            if (samosa) { addToCart(samosa); addedCount++; }
-            alert(`🛒 Chai Time Bundle added! Loaded ${addedCount} items to your basket.`);
-            speakResponse("Added your predicted evening tea and samosas to the cart.");
+            setActiveSuperService('food');
+            setActiveModule('kitchen');
+            setActivePill('food');
+            setSelectedCategory(null);
+            alert("🍲 Switched to Cloud Kitchen Meals!");
           }}
-          className="bg-amber-500 hover:bg-amber-600 text-white text-xs font-black uppercase py-2 px-4 rounded-xl shadow-md transition-all whitespace-nowrap"
+          className={`flex flex-col items-center justify-center gap-0.5 flex-1 transition-all ${
+            activeSuperService === 'food' && activePill === 'food' ? 'text-primary scale-105 font-black' : 'text-muted-foreground font-bold'
+          }`}
         >
-          One-Click Reorder
+          <span className="text-lg">🍲</span>
+          <span className="text-[9px] uppercase tracking-wider">Food</span>
         </button>
-      </section>
 
-      {/* Categories Section */}
-      <section className="space-y-4">
-        <div className="flex justify-between items-center">
-          <h2 className="text-xl font-bold tracking-tight">Shop by Category</h2>
-          {selectedCategory && (
-            <button 
-              onClick={() => setSelectedCategory(null)}
-              className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors"
-            >
-              Show All Categories ✕
-            </button>
-          )}
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {activeCategories.map((cat, i) => {
-            const isSelected = selectedCategory?.toLowerCase() === cat.name.toLowerCase();
-            return (
-              <div 
-                key={i} 
-                onClick={() => setSelectedCategory(isSelected ? null : cat.name)}
-                className={`bg-card border rounded-xl p-3 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-md group ${
-                  isSelected 
-                    ? 'ring-2 ring-primary border-primary bg-primary/5 shadow-md shadow-primary/5' 
-                    : `border-border ${cat.bg}`
-                }`}
-              >
-                <div className="relative w-12 h-12 rounded-full overflow-hidden border border-border/40 bg-background shadow-inner flex items-center justify-center transition-all duration-300 group-hover:scale-105">
-                  <img 
-                    src={cat.img} 
-                    alt={cat.name} 
-                    className="w-full h-full object-cover"
-                  />
-                  <div className={`absolute -bottom-1 -right-1 p-1 rounded-full bg-background border border-border/40 shadow-sm ${cat.color}`}>
-                    {cat.icon}
-                  </div>
-                </div>
-                <span className={`font-bold text-sm text-center transition-colors ${
-                  isSelected ? 'text-primary' : 'text-foreground group-hover:text-primary'
-                }`}>
-                  {getCategoryTranslation(cat.name)}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* Products Section */}
-      <section className="space-y-4">
-        <div className="flex justify-between items-center">
-          <h2 className="text-xl font-bold tracking-tight">
-            {selectedCategory 
-              ? `${getCategoryTranslation(selectedCategory)} ${language === 'hi' ? 'सामान' : 'Essentials'}` 
-              : activeModule === 'instamart' 
-              ? t('instamartTitle', language) 
-              : t('kitchenTitle', language)}
-          </h2>
-          {selectedCategory && (
-            <button 
-              onClick={() => setSelectedCategory(null)}
-              className="text-xs font-bold text-primary bg-primary/10 border border-primary/20 px-3.5 py-1.5 rounded-full hover:bg-primary/20 transition-all flex items-center gap-1"
-            >
-              Clear Filter ✕
-            </button>
-          )}
-        </div>
-        
-        {loading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-             {[...Array(6)].map((_, i) => (
-                <div key={i} className="h-64 bg-accent/50 animate-pulse rounded-2xl"></div>
-             ))}
+        <button
+          onClick={() => {
+            setStudentMode(true);
+            setSearchQuery("Combo");
+            alert("⚡ Bolt: Express student meals & combos activated!");
+          }}
+          className={`flex flex-col items-center justify-center gap-0.5 flex-grow relative transition-all ${
+            studentMode ? 'text-primary scale-105 font-black' : 'text-muted-foreground font-bold'
+          }`}
+        >
+          <div className="relative">
+            <span className="text-lg text-amber-500">⚡</span>
+            <span className="absolute -top-1.5 -right-5 bg-red-500 text-white text-[7px] font-black px-1.5 py-0.5 rounded-full scale-90 tracking-tighter">15 MIN</span>
           </div>
-        ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-            {(() => {
-              let moduleProducts = products;
-              if (studentMode) {
-                moduleProducts = products.filter(p => 
-                  p.name.toLowerCase().includes('combo') || 
-                  p.description?.toLowerCase().includes('combo') ||
-                  p.category?.toLowerCase().includes('combo') ||
-                  p.name.toLowerCase().includes('student') ||
-                  p.description?.toLowerCase().includes('student')
-                );
-              } else {
-                if (activeSuperService === 'grocery') {
-                  moduleProducts = products.filter(p => p.category && !['cloud kitchen', 'tiffin service', 'pharmacy', 'courier', 'bills & recharge', 'home services'].includes(p.category.toLowerCase()));
-                } else if (activeSuperService === 'food') {
-                  moduleProducts = products.filter(p => p.category && ['cloud kitchen', 'tiffin service'].includes(p.category.toLowerCase()));
-                } else if (activeSuperService === 'pharmacy') {
-                  moduleProducts = products.filter(p => p.category && p.category.toLowerCase() === 'pharmacy');
-                } else if (activeSuperService === 'courier') {
-                  moduleProducts = products.filter(p => p.category && p.category.toLowerCase() === 'courier');
-                } else if (activeSuperService === 'bills') {
-                  moduleProducts = products.filter(p => p.category && p.category.toLowerCase() === 'bills & recharge');
-                } else if (activeSuperService === 'services') {
-                  moduleProducts = products.filter(p => p.category && p.category.toLowerCase() === 'home services');
-                }
-              }
+          <span className="text-[9px] uppercase tracking-wider">Bolt</span>
+        </button>
 
-              let filtered = selectedCategory 
-                ? moduleProducts.filter(p => p.category?.toLowerCase() === selectedCategory.toLowerCase())
-                : moduleProducts;
-              
-              if (searchQuery.trim()) {
-                const q = searchQuery.toLowerCase().trim();
-                filtered = filtered.filter(p => 
-                  matchesSearchQuery(p.name, p.description || '', p.category || '', q)
-                );
-              }
-              
-              if (filtered.length === 0) {
-                const realCookies = products.find(p => p.name.toLowerCase().includes('cookie'));
-                const realChocolate = products.find(p => p.name.toLowerCase().includes('dark chocolate'));
-                const mockCake = {
-                  id: 'mock-chocolate-cake',
-                  name: 'Rich Chocolate Fudge Cake',
-                  description: 'Moist chocolate cake with fudgy icing. Kid favorite!',
-                  price: 79,
-                  category: 'Snacks',
-                  image_url: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=150'
-                };
-                const mockCookies = {
-                  id: 'mock-cookies',
-                  name: 'Choco Chip Cookies',
-                  description: 'Crunchy baked cookies with rich cocoa.',
-                  price: 49,
-                  category: 'Snacks',
-                  image_url: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=150'
-                };
-
-                return (
-                  <div className="col-span-full flex flex-col gap-6">
-                    <div className="flex flex-col items-center justify-center gap-4 border border-dashed border-border rounded-3xl bg-accent/15 p-8 text-center">
-                      <Search size={36} className="text-muted-foreground/50" />
-                      <p className="text-sm font-bold text-muted-foreground">No exact matches found for &quot;{searchQuery}&quot;.</p>
-                    </div>
-
-                    <div className="bg-primary/5 border border-primary/20 rounded-3xl p-5 sm:p-6 shadow-sm">
-                      <div className="flex items-center gap-3 mb-5">
-                        <span className="text-2xl">🍭</span>
-                        <div>
-                          <h4 className="text-sm font-black uppercase text-primary tracking-wider">
-                            {t('kidsZoneTitle', language)}
-                          </h4>
-                          <p className="text-xs text-muted-foreground font-semibold">
-                            {t('kidsZoneDesc', language)}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                        <ProductCard product={realChocolate || mockCake} />
-                        <ProductCard product={realCookies || mockCookies} />
-                      </div>
-                    </div>
-                  </div>
-                );
-              }
-              
-              return filtered.map(product => (
-                <ProductCard key={product.id} product={product} />
-              ));
-            })()}
+        <button
+          onClick={() => {
+            setSearchQuery("offer");
+            alert("🏷️ Switched to the 99 Store & Deals!");
+          }}
+          className={`flex flex-col items-center justify-center gap-0.5 flex-grow transition-all ${
+            searchQuery.toLowerCase().includes('offer') ? 'text-primary scale-105 font-black' : 'text-muted-foreground font-bold'
+          }`}
+        >
+          <div className="relative">
+            <span className="text-lg">☁️</span>
+            <span className="absolute -top-1.5 -right-3 text-emerald-500 font-extrabold text-[8px] bg-emerald-500/10 px-1 rounded-full">99</span>
           </div>
-        )}
-      </section>
+          <span className="text-[9px] uppercase tracking-wider">99 Store</span>
+        </button>
+
+        <button
+          onClick={() => router.push('/cart')}
+          className="flex flex-col items-center justify-center gap-0.5 flex-grow relative text-muted-foreground font-bold hover:text-primary transition-all"
+        >
+          <div className="relative">
+            <span className="text-lg">🛒</span>
+            {cart.length > 0 && (
+              <span className="absolute -top-1.5 -right-2 bg-primary text-primary-foreground text-[8px] font-black w-4.5 h-4.5 rounded-full flex items-center justify-center shadow-sm">
+                {cart.length}
+              </span>
+            )}
+          </div>
+          <span className="text-[9px] uppercase tracking-wider">Card</span>
+        </button>
+
+        <button
+          onClick={() => {
+            setActivePill('reorder');
+            alert("🔄 Switched to Reorder list!");
+          }}
+          className={`flex flex-col items-center justify-center gap-0.5 flex-grow transition-all ${
+            activePill === 'reorder' ? 'text-primary scale-105 font-black' : 'text-muted-foreground font-bold'
+          }`}
+        >
+          <span className="text-lg">🔄</span>
+          <span className="text-[9px] uppercase tracking-wider">Reorder</span>
+        </button>
+      </div>
 
       {/* Floating AI Assistant Chat Button and Panel */}
       <div className={`fixed ${cart.length > 0 ? 'bottom-40' : 'bottom-24'} sm:bottom-24 right-4 sm:right-6 z-[9999] flex flex-col items-end gap-3 max-w-[calc(100vw-2rem)] sm:max-w-none`}>
