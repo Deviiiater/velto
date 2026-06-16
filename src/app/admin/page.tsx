@@ -112,19 +112,18 @@ export default function AdminDashboard() {
   const [editPrice, setEditPrice] = useState<number>(0);
   const [editStock, setEditStock] = useState<number>(0);
 
-  // Announcements states
   type Announcement = {
     id: string;
     title: string;
     content: string;
-    type: 'announcement' | 'diet' | 'promo' | 'sos';
+    type: 'announcement' | 'diet' | 'promo' | 'sos' | 'offer';
     created_at: string;
   };
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [announcementsLoading, setAnnouncementsLoading] = useState(true);
   const [annTitle, setAnnTitle] = useState('');
   const [annContent, setAnnContent] = useState('');
-  const [annType, setAnnType] = useState<'announcement' | 'diet' | 'promo' | 'sos'>('announcement');
+  const [annType, setAnnType] = useState<'announcement' | 'diet' | 'promo' | 'sos' | 'offer'>('announcement');
   const [annSubmitting, setAnnSubmitting] = useState(false);
 
   // Vendor Approval states
@@ -1418,6 +1417,7 @@ export default function AdminDashboard() {
                         <option value="diet">🥗 Diet Program/Plan</option>
                         <option value="promo">🎉 Promotional Discount</option>
                         <option value="sos">🚨 Emergency SOS Notice</option>
+                        <option value="offer">🎁 Special Offer / Deals</option>
                       </select>
                     </div>
                   </div>
@@ -1462,6 +1462,7 @@ export default function AdminDashboard() {
                                 ann.type === 'sos' ? 'bg-red-500/10 text-red-500 border-red-500/20' :
                                 ann.type === 'diet' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' :
                                 ann.type === 'promo' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
+                                ann.type === 'offer' ? 'bg-cyan-500/10 text-cyan-500 border-cyan-500/20' :
                                 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20'
                               }`}>
                                 {ann.type}

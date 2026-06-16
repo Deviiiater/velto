@@ -140,12 +140,26 @@ export default function LoginPage() {
           if (signUpError) throw signUpError;
         }
 
+        // Fetch role strictly for redirection
+        const { data: profile } = await supabase
+          .from('users')
+          .select('role')
+          .eq('phone', mobile.trim())
+          .maybeSingle();
+
+        const role = profile?.role || 'customer';
+
         // Wipe cached addresses to force refresh
         localStorage.removeItem('selectedCity');
         localStorage.removeItem('deliveryAddress');
         if (address) localStorage.setItem('deliveryAddress', address);
 
-        router.push('/');
+        if (role === 'admin') router.push('/admin');
+        else if (role === 'rider') router.push('/rider-panel');
+        else if (role === 'kitchen') router.push('/kitchen');
+        else if (role === 'warehouse') router.push('/warehouse');
+        else if (role === 'vendor') router.push('/vendor');
+        else router.push('/');
       } else {
         // Create new Auth User
         const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
@@ -200,7 +214,7 @@ export default function LoginPage() {
         if (error) throw error;
         alert('Check your email for the confirmation link!');
       } else {
-        const { error } = await supabase.auth.signInWithPassword({
+        const { data: signInData, error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
@@ -210,7 +224,25 @@ export default function LoginPage() {
         localStorage.removeItem('selectedCity');
         localStorage.removeItem('deliveryAddress');
         
-        router.push('/');
+        if (signInData && signInData.user) {
+          // Fetch user profile strictly
+          const { data: profile } = await supabase
+            .from('users')
+            .select('role')
+            .eq('id', signInData.user.id)
+            .maybeSingle();
+          
+          const role = profile?.role || signInData.user.user_metadata?.role || 'customer';
+          
+          if (role === 'admin') router.push('/admin');
+          else if (role === 'rider') router.push('/rider-panel');
+          else if (role === 'kitchen') router.push('/kitchen');
+          else if (role === 'warehouse') router.push('/warehouse');
+          else if (role === 'vendor') router.push('/vendor');
+          else router.push('/');
+        } else {
+          router.push('/');
+        }
       }
     } catch (err: any) {
       setError(err.message || 'An error occurred during email authentication.');

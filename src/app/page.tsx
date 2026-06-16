@@ -153,7 +153,7 @@ export default function Home() {
     id: string;
     title: string;
     content: string;
-    type: 'announcement' | 'diet' | 'promo' | 'sos';
+    type: 'announcement' | 'diet' | 'promo' | 'sos' | 'offer';
     created_at: string;
   };
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
@@ -1312,6 +1312,11 @@ export default function Home() {
                 icon = <Tag className="text-amber-400" size={18} />;
                 badgeText = 'PROMO';
                 badgeColor = 'bg-amber-500/10 text-amber-400';
+              } else if (ann.type === 'offer') {
+                borderClass = 'border-cyan-500/20 bg-cyan-500/5 hover:border-cyan-500/40';
+                icon = <ShoppingBag className="text-cyan-400" size={18} />;
+                badgeText = 'SPECIAL OFFER';
+                badgeColor = 'bg-cyan-500/10 text-cyan-400';
               }
 
               return (
@@ -1372,6 +1377,18 @@ export default function Home() {
                       className="w-full bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-[10px] uppercase tracking-wider py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-[0.98]"
                     >
                       <Tag size={12} /> Copy Code: HEAL20
+                    </button>
+                  )}
+                  {ann.type === 'offer' && (
+                    <button
+                      onClick={() => {
+                        setSearchQuery('Offer');
+                        alert("🎉 Offers Applied! Showing discounted items and special combos.");
+                        speakResponse("Showing all special offers.");
+                      }}
+                      className="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-extrabold text-[10px] uppercase tracking-wider py-2 rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-[0.98]"
+                    >
+                      <ShoppingBag size={12} /> View Active Offers
                     </button>
                   )}
                 </div>

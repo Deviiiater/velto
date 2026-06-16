@@ -157,7 +157,7 @@ CREATE TABLE IF NOT EXISTS public.announcements (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   title TEXT NOT NULL,
   content TEXT NOT NULL,
-  type TEXT DEFAULT 'announcement' CHECK (type IN ('announcement', 'diet', 'promo', 'sos')),
+  type TEXT DEFAULT 'announcement' CHECK (type IN ('announcement', 'diet', 'promo', 'sos', 'offer')),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
