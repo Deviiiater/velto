@@ -3,7 +3,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 import { useSettings } from '@/context/SettingsContext';
 import { supabase } from '@/lib/supabase';
-import { ShoppingCart, LogOut, User as UserIcon, Package, Bike, Shield, Sun, Moon, Trash2, Settings, Globe, Crown, ZapOff } from 'lucide-react';
+import { ShoppingCart, LogOut, User as UserIcon, Package, Bike, Shield, Sun, Moon, Trash2, Settings, Globe, Crown, ZapOff, Home } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
@@ -75,20 +75,28 @@ export function Navbar() {
   };
 
   return (
-    <header className="border-b border-border/40 backdrop-blur-md bg-background/80 p-4 flex justify-between items-center sticky top-0 z-50 shadow-lg shadow-black/10">
-      <div className="flex items-center gap-8">
-        <Link href="/" className="flex items-center gap-3">
-          <img src="/logo.png" alt="Velto Logo" className="h-9 w-auto object-contain hover:scale-105 transition-transform duration-300" />
+    <header className="border-b border-border/40 backdrop-blur-md bg-background/80 p-3 sm:p-4 flex justify-between items-center sticky top-0 z-50 shadow-lg shadow-black/10">
+      <div className="flex items-center gap-4 sm:gap-8 shrink-0">
+        <Link href="/" className="flex items-center gap-3 shrink-0">
+          <img src="/logo.png" alt="Velto Logo" className="h-9 w-auto object-contain hover:scale-105 transition-transform duration-300 shrink-0" />
           <div className="hidden md:flex flex-col border-l border-border/80 pl-3">
             <span className="text-[11px] font-black text-foreground tracking-tight">Velto Dispatch</span>
             <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Delivering Freshness. Under 10 Mins. ⚡</span>
           </div>
         </Link>
       </div>
-      <nav className="flex items-center gap-4">
+      <nav className="flex items-center gap-2 sm:gap-4">
+        {/* Mobile Home Option */}
+        <Link 
+          href="/" 
+          className="p-2.5 hover:bg-primary/10 hover:text-primary rounded-xl transition-all text-muted-foreground border border-border/60 bg-muted/40 shadow-sm md:hidden flex items-center justify-center hover:scale-[1.03] active:scale-95 duration-200 shrink-0"
+          title="Home"
+        >
+          <Home size={18} />
+        </Link>
         
         {loading ? (
-          <div className="w-20 h-8 bg-accent animate-pulse rounded-md"></div>
+          <div className="w-10 sm:w-20 h-8 bg-accent animate-pulse rounded-md"></div>
         ) : user ? (
           <>
             <span className="text-sm font-medium hidden lg:block text-muted-foreground font-mono">
@@ -96,11 +104,11 @@ export function Navbar() {
             </span>
             <Link 
               href="/profile" 
-              className="px-4 py-2 hover:bg-primary/10 hover:text-primary rounded-xl transition-all text-muted-foreground flex items-center gap-1.5 text-xs font-black uppercase tracking-wider border border-border/60 bg-muted/40 shadow-sm hover:scale-[1.03] active:scale-95 duration-200"
+              className="p-2.5 sm:px-4 sm:py-2 hover:bg-primary/10 hover:text-primary rounded-xl transition-all text-muted-foreground flex items-center gap-1.5 text-xs font-black uppercase tracking-wider border border-border/60 bg-muted/40 shadow-sm hover:scale-[1.03] active:scale-95 duration-200 shrink-0"
               title={t('myOrders', language)}
             >
               <Package size={16} className="text-primary animate-pulse" />
-              <span>{t('myOrders', language)}</span>
+              <span className="hidden md:inline">{t('myOrders', language)}</span>
             </Link>
             <button 
               onClick={() => supabase.auth.signOut()} 
@@ -225,14 +233,16 @@ export function Navbar() {
           )}
         </button>
  
-        <div className="flex items-center gap-2">
-          <Link href="/cart" className="px-5 py-2.5 text-xs font-black uppercase tracking-wider bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-all shadow-md shadow-primary/20 hover:scale-[1.03] active:scale-95 duration-200 flex items-center gap-2">
-            <ShoppingCart size={18} /> {t('cart', language)} ({cart.length})
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          <Link href="/cart" className="p-2.5 sm:px-5 sm:py-2.5 text-xs font-black uppercase tracking-wider bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-all shadow-md shadow-primary/20 hover:scale-[1.03] active:scale-95 duration-200 flex items-center gap-1.5 shrink-0">
+            <ShoppingCart size={18} /> 
+            <span className="hidden md:inline">{t('cart', language)}</span>
+            <span>({cart.length})</span>
           </Link>
           {cart.length > 0 && (
             <button 
               onClick={() => clearCart()}
-              className="p-2.5 bg-destructive/10 text-destructive border border-destructive/20 rounded-xl hover:bg-destructive hover:text-white transition-all shadow-sm flex items-center justify-center hover:scale-105 active:scale-95 duration-200"
+              className="p-2.5 bg-destructive/10 text-destructive border border-destructive/20 rounded-xl hover:bg-destructive hover:text-white transition-all shadow-sm flex items-center justify-center hover:scale-105 active:scale-95 duration-200 shrink-0"
               title="Clear all basket items"
             >
               <Trash2 size={16} />
