@@ -2052,7 +2052,7 @@ export default function Home() {
                 <div className="space-y-4">
                   <div className="p-5 text-center border border-dashed border-border rounded-2xl bg-accent/10 flex flex-col items-center justify-center gap-2">
                     <HelpCircle size={24} className="text-muted-foreground/60" />
-                    <p className="text-xs font-bold text-muted-foreground">{t('noMatches', language)} "{searchQuery}".</p>
+                    <p className="text-xs font-bold text-muted-foreground">{t('noMatches', language)} &quot;{searchQuery}&quot;.</p>
                   </div>
 
                   {/* Kids Zone: Sweet suggestions for chocolate, cake, and cookies */}
@@ -2446,7 +2446,7 @@ export default function Home() {
                   <div className="col-span-full flex flex-col gap-6">
                     <div className="flex flex-col items-center justify-center gap-4 border border-dashed border-border rounded-3xl bg-accent/15 p-8 text-center">
                       <Search size={36} className="text-muted-foreground/50" />
-                      <p className="text-sm font-bold text-muted-foreground">No exact matches found for "{searchQuery}".</p>
+                      <p className="text-sm font-bold text-muted-foreground">No exact matches found for &quot;{searchQuery}&quot;.</p>
                     </div>
 
                     <div className="bg-primary/5 border border-primary/20 rounded-3xl p-5 sm:p-6 shadow-sm">

@@ -960,9 +960,9 @@ export const SYNONYMS: Record<string, string[]> = {
 };
 
 export function matchesSearchQuery(productName: string, productDesc: string, productCat: string, query: string): boolean {
-  const q = query.toLowerCase().trim();
+  const q = (query || '').toLowerCase().trim();
   if (!q) return false;
-  const name = productName.toLowerCase();
+  const name = (productName || '').toLowerCase();
   const desc = (productDesc || '').toLowerCase();
   const cat = (productCat || '').toLowerCase();
   
