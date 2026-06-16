@@ -148,6 +148,37 @@ export default function Home() {
     }
   ]);
 
+  // PWA Install state
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [showInstallBtn, setShowInstallBtn] = useState(false);
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstallBtn(true);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    if (typeof window !== 'undefined' && window.matchMedia('(display-mode: standalone)').matches) {
+      setShowInstallBtn(false);
+    }
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log(`PWA install outcome: ${outcome}`);
+    setDeferredPrompt(null);
+    setShowInstallBtn(false);
+  };
+
   // Announcements & Diet plans states
   type Announcement = {
     id: string;
@@ -1114,6 +1145,34 @@ export default function Home() {
 
   return (
     <div className="flex flex-col gap-10 sm:gap-12">
+      {/* 📱 PWA Install Banner */}
+      {showInstallBtn && (
+        <div className="bg-primary/10 border border-primary/20 rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-center gap-3 shadow-md animate-in slide-in-from-top-4 duration-300">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">📱</span>
+            <div>
+              <h4 className="text-xs font-black text-foreground uppercase tracking-wider">Install Velto PWA App</h4>
+              <p className="text-[10px] text-muted-foreground font-semibold mt-0.5">
+                Install Velto on your home screen for lightning fast access and offline ordering.
+              </p>
+            </div>
+          </div>
+          <div className="flex gap-2 w-full sm:w-auto">
+            <button
+              onClick={handleInstallClick}
+              className="flex-grow sm:flex-initial bg-primary hover:bg-primary/95 text-primary-foreground text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm active:scale-[0.98] whitespace-nowrap cursor-pointer"
+            >
+              Install App
+            </button>
+            <button
+              onClick={() => setShowInstallBtn(false)}
+              className="bg-accent hover:bg-accent/80 text-muted-foreground hover:text-foreground text-xs font-semibold px-3.5 py-2 rounded-xl transition-all cursor-pointer"
+            >
+              Dismiss
+            </button>
+          </div>
+        </div>
+      )}
       {/* 🚀 Multi-Service Super App Selector Menu */}
       <section className="glass-panel border border-border/40 rounded-3xl p-6 shadow-xl relative overflow-hidden">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-border/60 pb-3 mb-3">
@@ -2315,9 +2374,9 @@ export default function Home() {
       </section>
 
       {/* Floating AI Assistant Chat Button and Panel */}
-      <div className="fixed bottom-24 right-6 z-[9999] flex flex-col items-end gap-3">
+      <div className="fixed bottom-24 right-4 sm:right-6 z-[9999] flex flex-col items-end gap-3 max-w-[calc(100vw-2rem)] sm:max-w-none">
         {showAiChat && (
-          <div className="w-80 sm:w-96 h-[400px] bg-card/95 backdrop-blur border border-border/80 rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200">
+          <div className="w-[calc(100vw-2rem)] sm:w-96 h-[400px] bg-card/95 backdrop-blur border border-border/80 rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200">
             {/* Header */}
             <div className="bg-primary/5 border-b border-border/60 p-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
