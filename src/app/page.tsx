@@ -1487,7 +1487,10 @@ export default function Home() {
               {spellingSuggestions.map((sug, idx) => (
                 <button 
                   key={idx}
-                  onClick={() => handleSearchChange(sug)}
+                  onClick={() => {
+                    setSearchQuery(sug);
+                    setSpellingSuggestions([]);
+                  }}
                   className="bg-white/20 hover:bg-white/30 text-white px-2.5 py-1 rounded-lg font-black tracking-tight transition-all text-[10px] uppercase"
                 >
                   {sug}
@@ -1684,6 +1687,124 @@ export default function Home() {
         ) : (
           /* 🏠 Standard Browse View */
           <>
+            {/* 🚲 Interactive Delivery Rider Animation */}
+            <DeliveryRiderAnimation />
+
+            {/* 🚀 Quick Super-Service Selector Grid */}
+            <div className="grid grid-cols-2 gap-3.5">
+              <button 
+                onClick={() => {
+                  setActiveSuperService('grocery');
+                  setActiveModule('instamart');
+                  setActivePill('reorder');
+                  setSelectedCategory(null);
+                  showToast("Switched to Grocery Shop!", "success");
+                }}
+                className={`relative overflow-hidden p-4 rounded-3xl border text-left transition-all duration-300 cursor-pointer ${
+                  activeSuperService === 'grocery' 
+                    ? 'border-emerald-500 bg-gradient-to-br from-emerald-500/15 via-background to-emerald-500/5 ring-1 ring-emerald-500 shadow-md scale-[1.02]' 
+                    : 'border-border bg-card hover:border-emerald-500/30'
+                }`}
+              >
+                <div className="absolute top-0 right-0 -mt-4 -mr-4 w-16 h-16 rounded-full bg-emerald-500/10 blur-md"></div>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-xl shrink-0">
+                    🥦
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-black text-foreground uppercase tracking-tight">Grocery Shop</h3>
+                    <p className="text-[9px] text-muted-foreground font-semibold mt-0.5">10-Min doorstep delivery</p>
+                  </div>
+                </div>
+                {activeSuperService === 'grocery' && (
+                  <span className="absolute bottom-2.5 right-3 text-[8px] bg-emerald-500 text-white font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse">Active</span>
+                )}
+              </button>
+
+              <button 
+                onClick={() => {
+                  setActiveSuperService('food');
+                  setActiveModule('kitchen');
+                  setActivePill('food');
+                  setSelectedCategory(null);
+                  showToast("Switched to Food Delivery!", "success");
+                }}
+                className={`relative overflow-hidden p-4 rounded-3xl border text-left transition-all duration-300 cursor-pointer ${
+                  activeSuperService === 'food' 
+                    ? 'border-rose-500 bg-gradient-to-br from-rose-500/15 via-background to-rose-500/5 ring-1 ring-rose-500 shadow-md scale-[1.02]' 
+                    : 'border-border bg-card hover:border-rose-500/30'
+                }`}
+              >
+                <div className="absolute top-0 right-0 -mt-4 -mr-4 w-16 h-16 rounded-full bg-rose-500/10 blur-md"></div>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-rose-500/10 text-rose-500 flex items-center justify-center text-xl shrink-0">
+                    🍲
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-black text-foreground uppercase tracking-tight">Food Delivery</h3>
+                    <p className="text-[9px] text-muted-foreground font-semibold mt-0.5">Cloud Kitchens & Meals</p>
+                  </div>
+                </div>
+                {activeSuperService === 'food' && (
+                  <span className="absolute bottom-2.5 right-3 text-[8px] bg-rose-500 text-white font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse">Active</span>
+                )}
+              </button>
+
+              <button 
+                onClick={() => {
+                  setActiveSuperService('pharmacy');
+                  setSelectedCategory(null);
+                  showToast("Switched to Pharmacy Meds!", "success");
+                }}
+                className={`relative overflow-hidden p-4 rounded-3xl border text-left transition-all duration-300 cursor-pointer ${
+                  activeSuperService === 'pharmacy' 
+                    ? 'border-cyan-500 bg-gradient-to-br from-cyan-500/15 via-background to-cyan-500/5 ring-1 ring-cyan-500 shadow-md scale-[1.02]' 
+                    : 'border-border bg-card hover:border-cyan-500/30'
+                }`}
+              >
+                <div className="absolute top-0 right-0 -mt-4 -mr-4 w-16 h-16 rounded-full bg-cyan-500/10 blur-md"></div>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-cyan-500/10 text-cyan-500 flex items-center justify-center text-xl shrink-0">
+                    💊
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-black text-foreground uppercase tracking-tight">Pharmacy Meds</h3>
+                    <p className="text-[9px] text-muted-foreground font-semibold mt-0.5">SOS Medicine Delivery</p>
+                  </div>
+                </div>
+                {activeSuperService === 'pharmacy' && (
+                  <span className="absolute bottom-2.5 right-3 text-[8px] bg-cyan-500 text-white font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse">Active</span>
+                )}
+              </button>
+
+              <button 
+                onClick={() => {
+                  setActiveSuperService('courier');
+                  setSelectedCategory(null);
+                  showToast("Switched to Courier dispatch!", "success");
+                }}
+                className={`relative overflow-hidden p-4 rounded-3xl border text-left transition-all duration-300 cursor-pointer ${
+                  activeSuperService === 'courier' 
+                    ? 'border-amber-500 bg-gradient-to-br from-amber-500/15 via-background to-amber-500/5 ring-1 ring-amber-500 shadow-md scale-[1.02]' 
+                    : 'border-border bg-card hover:border-amber-500/30'
+                }`}
+              >
+                <div className="absolute top-0 right-0 -mt-4 -mr-4 w-16 h-16 rounded-full bg-amber-500/10 blur-md"></div>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center text-xl shrink-0">
+                    📦
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-black text-foreground uppercase tracking-tight">Send Courier</h3>
+                    <p className="text-[9px] text-muted-foreground font-semibold mt-0.5">Same-Day Package Dispatch</p>
+                  </div>
+                </div>
+                {activeSuperService === 'courier' && (
+                  <span className="absolute bottom-2.5 right-3 text-[8px] bg-amber-500 text-white font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse">Active</span>
+                )}
+              </button>
+            </div>
+
             {/* 🪄 Velto AI TasteGenie Section */}
             <section className="bg-gradient-to-br from-[#ffd700]/15 via-background to-[#9c27b0]/10 border border-[#ffd700]/30 rounded-3xl p-5 shadow-lg relative overflow-hidden">
               <div className="absolute top-0 right-0 -mt-6 -mr-6 w-24 h-24 rounded-full bg-[#9c27b0]/20 blur-xl pointer-events-none animate-pulse"></div>
