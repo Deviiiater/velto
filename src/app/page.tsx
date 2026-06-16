@@ -141,6 +141,15 @@ export default function Home() {
     { id: '3', name: 'Fresh Farm Tomatoes', lastBought: '6 days ago', progress: 75, daysLeft: 4 }
   ]);
 
+  // Premium Toast Notification State
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'error' | 'warning' } | null>(null);
+  const showToast = (message: string, type: 'success' | 'info' | 'error' | 'warning' = 'success') => {
+    setToast({ message, type });
+  };
+
+  // AI Modal State
+  const [aiModal, setAiModal] = useState<{ title: string; subtitle: string; content: string; icon: string } | null>(null);
+
   // AI Assistant states
   const [showAiChat, setShowAiChat] = useState(false);
   const [aiChatQuery, setAiChatQuery] = useState('');
@@ -179,6 +188,13 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 3500);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
+
+  useEffect(() => {
     async function checkActiveOrder() {
       if (!user) {
         setHasActiveOrder(false);
@@ -187,9 +203,10 @@ export default function Home() {
       try {
         const { data, error } = await supabase
           .from('orders')
-          .select('id')
+          .select('id, status')
           .eq('user_id', user.id)
           .in('status', ['pending', 'packing', 'accepted', 'out_for_delivery'])
+          .order('created_at', { ascending: false })
           .limit(1);
         if (!error && data && data.length > 0) {
           setHasActiveOrder(true);
@@ -1023,12 +1040,20 @@ export default function Home() {
       try {
         const { data, error } = await supabase.from('products').select('*');
         if (error) throw error;
+        
+        let merged = [...MOCK_PRODUCTS];
         if (data && data.length > 0) {
           const approved = data.filter((p: any) => p.is_approved !== false);
-          setProducts(approved);
-        } else {
-          setProducts(MOCK_PRODUCTS);
+          approved.forEach((dbProd: any) => {
+            const idx = merged.findIndex(p => p.id === dbProd.id);
+            if (idx >= 0) {
+              merged[idx] = dbProd;
+            } else {
+              merged.push(dbProd);
+            }
+          });
         }
+        setProducts(merged);
       } catch (err) {
         console.error('Error fetching products:', err);
         setProducts(MOCK_PRODUCTS);
@@ -1048,7 +1073,7 @@ export default function Home() {
 
   const handleDetectLocation = () => {
     if (!navigator.geolocation) {
-      alert("Geolocation is not supported by your browser.");
+      showToast("Geolocation is not supported by your browser.", 'error');
       return;
     }
 
@@ -1195,6 +1220,54 @@ export default function Home() {
 
   return (
     <div className="flex flex-col gap-10 sm:gap-12">
+      {/* 🥞 Toast Notification Overlay */}
+      {toast && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100005] w-[90%] max-w-sm bg-zinc-900/95 dark:bg-zinc-950/95 text-white py-3.5 px-4 rounded-2xl shadow-2xl border border-white/10 flex items-center gap-3 backdrop-blur-md animate-in fade-in slide-in-from-top duration-300">
+          <span className="text-base shrink-0">
+            {toast.type === 'success' ? '✅' : toast.type === 'error' ? '❌' : toast.type === 'warning' ? '⚠️' : 'ℹ️'}
+          </span>
+          <p className="text-xs font-black text-white/95 flex-1 leading-tight">{toast.message}</p>
+          <button 
+            onClick={() => setToast(null)}
+            className="text-white/40 hover:text-white text-sm font-black cursor-pointer px-1.5 shrink-0 transition-colors"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
+      {/* 🧙‍♂️ AI TasteGenie Report Modal Overlay */}
+      {aiModal && (
+        <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4 bg-background/85 backdrop-blur-xl animate-in fade-in duration-300">
+          <div className="relative w-full max-w-sm bg-card border border-[#ffd700]/30 rounded-3xl p-6 shadow-2xl flex flex-col gap-4 overflow-hidden glass-panel">
+            <div className="absolute top-0 right-0 -mt-8 -mr-8 w-28 h-28 rounded-full bg-[#9c27b0]/10 blur-2xl pointer-events-none"></div>
+            
+            <div className="flex items-center gap-3">
+              <span className="text-3xl shrink-0">{aiModal.icon}</span>
+              <div>
+                <h3 className="text-xs font-black text-foreground uppercase tracking-wider flex items-center gap-1.5">
+                  Velto AI TasteGenie
+                  <span className="text-[8px] bg-primary/20 text-primary px-2 py-0.5 rounded-full font-black uppercase">Report</span>
+                </h3>
+                <p className="text-[10px] text-muted-foreground font-bold">{aiModal.title}</p>
+              </div>
+            </div>
+
+            <div className="bg-muted/30 border border-border p-4 rounded-2xl space-y-1.5 text-left">
+              <h4 className="font-black text-xs text-foreground uppercase tracking-wide">{aiModal.subtitle}</h4>
+              <p className="text-[11px] text-muted-foreground font-semibold leading-relaxed whitespace-pre-line">{aiModal.content}</p>
+            </div>
+
+            <button
+              onClick={() => setAiModal(null)}
+              className="w-full bg-primary text-primary-foreground text-xs font-black uppercase tracking-wider py-3.5 rounded-2xl hover:scale-[1.02] active:scale-95 transition-all cursor-pointer shadow-md"
+            >
+              Awesome, Got It!
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* 📱 Unified PWA Install Modal Popup (Android & iOS) */}
       {showUnifiedInstallBanner && (
         <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4 bg-background/80 backdrop-blur-xl animate-in fade-in duration-300">
@@ -1506,7 +1579,7 @@ export default function Home() {
                       <button
                         onClick={() => {
                           setSearchQuery('healthy');
-                          alert("🥗 Diet Filter Applied! Showing health items.");
+                          showToast("🥗 Diet Filter Applied! Showing health items.", 'success');
                         }}
                         className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-[9px] uppercase py-1.5 rounded-lg transition-all cursor-pointer"
                       >
@@ -1518,7 +1591,7 @@ export default function Home() {
                         onClick={() => {
                           setEmergencyMode(true);
                           setSearchQuery('Medicine');
-                          alert("🚨 SOS Mode Activated!");
+                          showToast("🚨 SOS Mode Activated!", 'warning');
                         }}
                         className="w-full bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-[9px] uppercase py-1.5 rounded-lg transition-all cursor-pointer"
                       >
@@ -1529,7 +1602,7 @@ export default function Home() {
                       <button
                         onClick={() => {
                           navigator.clipboard.writeText("HEAL20");
-                          alert("📋 Code 'HEAL20' copied!");
+                          showToast("📋 Code 'HEAL20' copied!", 'success');
                         }}
                         className="w-full bg-[#ffd700] hover:bg-[#ffe043] text-black font-extrabold text-[9px] uppercase py-1.5 rounded-lg transition-all cursor-pointer"
                       >
@@ -1540,7 +1613,7 @@ export default function Home() {
                       <button
                         onClick={() => {
                           setSearchQuery('Offer');
-                          alert("🎉 Special Offers Applied!");
+                          showToast("🎉 Special Offers Applied!", 'success');
                         }}
                         className="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-extrabold text-[9px] uppercase py-1.5 rounded-lg transition-all cursor-pointer"
                       >
@@ -1557,409 +1630,599 @@ export default function Home() {
 
       {/* ─── WHITE/CARD CONTENT BODY CONTAINER ─── */}
       <div className="flex flex-col gap-8 mt-6">
-        {/* Toggle Pills: REORDER vs FOOD IN 15 MINS */}
-        <div className="flex justify-center w-full">
-          <div className="bg-zinc-100 dark:bg-zinc-800/80 p-1.5 rounded-full flex items-center gap-1 shadow-sm w-full max-w-sm border border-zinc-200/80 dark:border-zinc-700">
-            <button
-              onClick={() => {
-                setActivePill('reorder');
-              }}
-              className={`flex-1 text-center py-2 px-4 rounded-full text-xs font-black uppercase tracking-wider transition-all duration-300 cursor-pointer ${
-                activePill === 'reorder'
-                  ? 'bg-white dark:bg-zinc-900 text-primary shadow-md'
-                  : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800'
-              }`}
-            >
-              Reorder
-            </button>
-            <button
-              onClick={() => {
-                setActivePill('food');
-              }}
-              className={`flex-1 text-center py-2 px-4 rounded-full text-xs font-black uppercase tracking-wider transition-all duration-300 cursor-pointer ${
-                activePill === 'food'
-                  ? 'bg-white dark:bg-zinc-900 text-primary shadow-md'
-                  : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800'
-              }`}
-            >
-              Food In 15 Mins
-            </button>
-          </div>
-        </div>
-
-        {/* 🍔 Product Horizontal Sliders */}
-        <section className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h2 className="text-sm font-black text-foreground uppercase tracking-wider flex items-center gap-1.5">
-              <span>{activePill === 'reorder' ? '🔄 Quick Refills & Reorder' : '🍲 Live Cloud Kitchens & Meals'}</span>
-            </h2>
-            <span className="text-[10px] font-bold text-muted-foreground bg-accent px-2 py-0.5 rounded-md">
-              Slider View
-            </span>
-          </div>
-
-          {activePill === 'reorder' ? (
-            <div className="flex overflow-x-auto gap-4 pb-4 scrollbar-hide snap-x flex-nowrap w-full">
-              {refillItems.map((item) => {
-                const nameKey = item.name.split(' ')[0];
-                const matchedProd = products.find(p => p.name.toLowerCase().includes(nameKey.toLowerCase()));
-                
-                return (
-                  <div 
-                    key={item.id}
-                    className="w-56 shrink-0 snap-center bg-card border border-border rounded-3xl p-4 flex flex-col justify-between gap-3 shadow-md hover:shadow-lg transition-all hover:border-primary text-left"
-                  >
-                    <div className="space-y-1">
-                      <div className="flex justify-between items-start">
-                        <span className="bg-primary/10 text-primary text-[8px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider">
-                          Refill Item
-                        </span>
-                        <span className="text-[8px] text-rose-500 font-bold animate-pulse">
-                          {item.daysLeft} Day Left
-                        </span>
-                      </div>
-                      <h4 className="font-black text-xs text-foreground mt-1 line-clamp-1">{item.name}</h4>
-                      <p className="text-[9px] text-muted-foreground font-semibold">Last: {item.lastBought}</p>
-                    </div>
-
-                    <div className="space-y-1">
-                      <div className="w-full h-1.5 bg-accent rounded-full overflow-hidden">
-                        <div style={{ width: `${100 - item.progress}%` }} className="h-full bg-amber-500 rounded-full" />
-                      </div>
-                      <div className="flex justify-between text-[8px] font-bold text-muted-foreground">
-                        <span>{100 - item.progress}% Left</span>
-                      </div>
-                    </div>
-
-                    <button
-                      onClick={() => {
-                        if (matchedProd) {
-                          addToCart(matchedProd);
-                          alert(`🛒 Added ${matchedProd.name} to basket!`);
-                        } else {
-                          alert(`Could not find ${item.name} in store!`);
-                        }
-                      }}
-                      className="w-full bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-wider py-2 rounded-xl hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
-                    >
-                      One-Tap Reorder
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="flex overflow-x-auto gap-4 pb-4 scrollbar-hide snap-x flex-nowrap w-full">
-              {(() => {
-                let displayProducts = products;
-                if (studentMode) {
-                  displayProducts = products.filter(p => 
-                    p.name.toLowerCase().includes('combo') || 
-                    p.description?.toLowerCase().includes('combo') ||
-                    p.category?.toLowerCase().includes('combo') ||
-                    p.name.toLowerCase().includes('student') ||
-                    p.description?.toLowerCase().includes('student')
-                  );
-                } else {
-                  displayProducts = products.filter(p => p.category && ['cloud kitchen', 'tiffin service'].includes(p.category.toLowerCase()));
-                }
-
-                if (vegOnly) {
-                  displayProducts = displayProducts.filter(p => {
-                    const normName = p.name.toLowerCase();
-                    return !normName.includes('chicken') && !normName.includes('fish') && !normName.includes('meat') && !normName.includes('egg');
-                  });
-                }
-
-                if (searchQuery.trim()) {
-                  const q = searchQuery.toLowerCase().trim();
-                  displayProducts = displayProducts.filter(p => matchesSearchQuery(p.name, p.description || '', p.category || '', q));
-                }
-
-                if (displayProducts.length === 0) {
-                  return (
-                    <div className="w-full text-center py-8 text-xs font-bold text-muted-foreground border border-dashed border-border rounded-3xl bg-accent/10">
-                      No matching food products found. Try changing filters or search query!
-                    </div>
-                  );
-                }
-
-                return displayProducts.map((product) => {
-                  const ratingSeed = (3.9 + (product.id ? product.id.charCodeAt(0) % 11 : 4) / 10).toFixed(1);
-                  const deliveryTime = product.id ? (product.id.charCodeAt(0) % 4) * 5 + 15 : 20;
-                  const isVeg = !product.name.toLowerCase().includes('fish') && 
-                                !product.name.toLowerCase().includes('meat') && 
-                                !product.name.toLowerCase().includes('chicken') && 
-                                !product.name.toLowerCase().includes('egg');
-
-                  let restaurantName = "Hotel Kings Kitchen";
-                  let cuisine = "North Indian";
-                  
-                  if (product.name.includes('Chai')) {
-                    restaurantName = "Apna Singh Tea Stall";
-                    cuisine = "Tea & Fast Food";
-                  } else if (product.name.includes('Tiffin') || product.name.includes('Lunch')) {
-                    restaurantName = "Apna Singh Dhaba";
-                    cuisine = "Tiffin Service";
-                  } else if (product.name.includes('Combo')) {
-                    restaurantName = "Khana Khazana Kitchen";
-                    cuisine = "Combos & Snacks";
-                  }
-
-                  return (
-                    <div 
-                      key={product.id}
-                      className="w-56 shrink-0 snap-center bg-card border border-border rounded-3xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lg relative flex flex-col justify-between text-left"
-                    >
-                      <button className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-background/80 backdrop-blur flex items-center justify-center text-muted-foreground hover:text-rose-500 transition-colors shadow-sm cursor-pointer">
-                        <Heart size={14} />
-                      </button>
-
-                      <div className="absolute top-3 left-3 z-20">
-                        <span className="bg-rose-500 text-white text-[8px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider flex items-center gap-0.5 shadow-sm">
-                          ★ one
-                        </span>
-                      </div>
-
-                      <div className="relative w-full aspect-[4/3] bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
-                        {product.image_url ? (
-                          <img 
-                            src={product.image_url} 
-                            alt={product.name} 
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-zinc-400 bg-gradient-to-br from-primary/10 to-transparent">
-                            <Utensils size={32} className="opacity-40" />
-                          </div>
-                        )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-2.5">
-                          <span className="text-[9px] font-black text-white uppercase tracking-wider bg-black/40 px-2 py-0.5 rounded-full border border-white/10 backdrop-blur-sm">
-                            ITEMS AT ₹{product.price}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="p-3 space-y-1.5 flex-1 flex flex-col justify-between">
-                        <div>
-                          <h4 className="font-black text-xs sm:text-sm text-foreground line-clamp-1 leading-tight">{restaurantName}</h4>
-                          <p className="text-[10px] font-bold text-muted-foreground line-clamp-1 mt-0.5">{product.name}</p>
-                          
-                          <div className="flex items-center gap-1.5 mt-1">
-                            <div className="bg-emerald-600 text-white px-1.5 py-0.5 rounded-md text-[9px] font-black flex items-center gap-0.5">
-                              <span>★</span>
-                              <span>{ratingSeed}</span>
-                            </div>
-                            <span className="text-[9px] font-bold text-muted-foreground">•</span>
-                            <span className="text-[9px] font-black text-foreground">{deliveryTime}-{deliveryTime + 5} mins</span>
-                          </div>
-                        </div>
-
-                        <div className="flex justify-between items-center border-t border-border/40 pt-2 mt-2">
-                          <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-tight flex items-center gap-1">
-                            <span className={`w-2 h-2 rounded-full inline-block ${isVeg ? 'bg-green-500' : 'bg-red-500'}`} />
-                            {cuisine}
-                          </span>
-                          <button 
-                            onClick={() => {
-                              addToCart(product);
-                              alert(`🛒 Added ${product.name} to basket!`);
-                            }}
-                            className="bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-xl hover:scale-105 active:scale-95 transition-all cursor-pointer"
-                          >
-                            ADD
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                });
-              })()}
-            </div>
-          )}
-        </section>
-
-        {/* 🍕 "What's on your mind?" Categories Slider */}
-        <section className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h2 className="text-sm font-black text-foreground uppercase tracking-wider">What's on your mind?</h2>
-            {selectedCategory && (
+        {searchQuery.trim() ? (
+          /* 🔍 Global Search Results View (Hides other categories to save space) */
+          <section className="space-y-4 pb-12">
+            <div className="flex justify-between items-center">
+              <h2 className="text-sm font-black text-foreground uppercase tracking-wider">
+                Search Results for &quot;{searchQuery}&quot;
+              </h2>
               <button 
-                onClick={() => setSelectedCategory(null)}
-                className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors"
+                onClick={() => handleSearchChange('')}
+                className="text-xs font-bold text-primary bg-primary/10 border border-primary/20 px-3.5 py-1.5 rounded-full hover:bg-primary/20 transition-all cursor-pointer"
               >
-                Clear Filter ✕
+                Clear Search ✕
               </button>
-            )}
-          </div>
-          <div className="flex overflow-x-auto gap-4 pb-4 scrollbar-hide flex-nowrap w-full snap-x">
-            {activeCategories.map((cat, i) => {
-              const isSelected = selectedCategory?.toLowerCase() === cat.name.toLowerCase();
-              return (
-                <div 
-                  key={i} 
-                  onClick={() => setSelectedCategory(isSelected ? null : cat.name)}
-                  className={`flex flex-col items-center justify-center gap-1.5 cursor-pointer shrink-0 snap-center transition-all duration-300 hover:scale-105 ${
-                    isSelected 
-                      ? 'ring-2 ring-primary rounded-full p-1' 
-                      : ''
-                  }`}
-                >
-                  <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border border-border shadow-md bg-white flex items-center justify-center">
-                    <img 
-                      src={cat.img} 
-                      alt={cat.name} 
-                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
-                    />
-                  </div>
-                  <span className={`font-black text-[9px] sm:text-xs text-center transition-colors uppercase tracking-wider ${
-                    isSelected ? 'text-primary' : 'text-zinc-500 dark:text-zinc-300'
-                  }`}>
-                    {getCategoryTranslation(cat.name)}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* 🥦 Rest of Categories & Services (Instamart, etc.) */}
-        <section className="space-y-4 pt-2 border-t border-border/40">
-          <div className="flex justify-between items-center">
-            <h3 className="text-sm font-black text-foreground uppercase tracking-wider">Explore Services</h3>
-          </div>
-          
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
-            {[
-              { id: 'grocery', name: 'Grocery Shop', desc: '10-Min Delivery', icon: <ShoppingBag size={16} /> },
-              { id: 'food', name: 'Food Delivery', desc: 'Cloud Kitchens', icon: <Utensils size={16} /> },
-              { id: 'pharmacy', name: 'Pharmacy Meds', desc: 'SOS Medicine', icon: <Pill size={16} /> },
-              { id: 'courier', name: 'Send Courier', desc: 'Same-Day Package', icon: <Truck size={16} /> },
-              { id: 'bills', name: 'Utility Bills', desc: 'Recharge & Pay', icon: <Wallet size={16} /> },
-              { id: 'services', name: 'Home Services', desc: 'Deep Cleaning', icon: <Wrench size={16} /> }
-            ].map(service => {
-              const isActive = activeSuperService === service.id;
-              return (
-                <button
-                  key={service.id}
-                  onClick={() => {
-                    setActiveSuperService(service.id);
-                    if (service.id === 'food') {
-                      setActiveModule('kitchen');
-                      setActivePill('food');
-                    } else {
-                      setActiveModule('instamart');
-                      setActivePill('reorder');
-                    }
-                    alert(`Activated: ${service.name}`);
-                  }}
-                  className={`flex flex-col items-center justify-center p-3 rounded-2xl border text-center transition-all duration-300 ${
-                    isActive 
-                      ? 'border-primary bg-primary/10 ring-1 ring-primary' 
-                      : 'border-border/40 bg-muted/20 hover:border-primary/20'
-                  }`}
-                >
-                  <div className={`p-2 rounded-xl mb-1.5 flex items-center justify-center ${
-                    isActive ? 'bg-primary text-primary-foreground shadow-sm animate-pulse' : 'bg-background text-muted-foreground'
-                  }`}>
-                    {service.icon}
-                  </div>
-                  <span className="text-[10px] font-black text-foreground block uppercase tracking-tight">{service.name}</span>
-                  <span className="text-[8px] text-muted-foreground font-semibold block mt-0.5">{service.desc}</span>
-                </button>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* 🛒 ALL ITEMS LIST (Collapsible / Toggleable) */}
-        <section className="space-y-4 pt-2 border-t border-border/40 pb-12">
-          <div className="flex justify-between items-center">
-            <h2 className="text-sm font-black text-foreground uppercase tracking-wider">
-              {selectedCategory 
-                ? `${getCategoryTranslation(selectedCategory)} Items` 
-                : `${activeSuperService.toUpperCase()} Catalog`}
-            </h2>
-            {selectedCategory && (
-              <button 
-                onClick={() => setSelectedCategory(null)}
-                className="text-xs font-bold text-primary bg-primary/10 border border-primary/20 px-3 py-1 rounded-full hover:bg-primary/20 transition-all"
-              >
-                Show All ✕
-              </button>
-            )}
-          </div>
-
-          {loading ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="h-48 bg-accent/50 animate-pulse rounded-2xl"></div>
-              ))}
             </div>
-          ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-              {(() => {
-                let moduleProducts = products;
-                if (studentMode) {
-                  moduleProducts = products.filter(p => 
-                    p.name.toLowerCase().includes('combo') || 
-                    p.description?.toLowerCase().includes('combo') ||
-                    p.category?.toLowerCase().includes('combo') ||
-                    p.name.toLowerCase().includes('student') ||
-                    p.description?.toLowerCase().includes('student')
-                  );
-                } else {
-                  if (activeSuperService === 'grocery') {
-                    moduleProducts = products.filter(p => p.category && !['cloud kitchen', 'tiffin service', 'pharmacy', 'courier', 'bills & recharge', 'home services'].includes(p.category.toLowerCase()));
-                  } else if (activeSuperService === 'food') {
-                    moduleProducts = products.filter(p => p.category && ['cloud kitchen', 'tiffin service'].includes(p.category.toLowerCase()));
-                  } else if (activeSuperService === 'pharmacy') {
-                    moduleProducts = products.filter(p => p.category && p.category.toLowerCase() === 'pharmacy');
-                  } else if (activeSuperService === 'courier') {
-                    moduleProducts = products.filter(p => p.category && p.category.toLowerCase() === 'courier');
-                  } else if (activeSuperService === 'bills') {
-                    moduleProducts = products.filter(p => p.category && p.category.toLowerCase() === 'bills & recharge');
-                  } else if (activeSuperService === 'services') {
-                    moduleProducts = products.filter(p => p.category && p.category.toLowerCase() === 'home services');
-                  }
-                }
-
-                if (vegOnly) {
-                  moduleProducts = moduleProducts.filter(p => {
-                    const normName = p.name.toLowerCase();
-                    return !normName.includes('chicken') && !normName.includes('fish') && !normName.includes('meat') && !normName.includes('egg');
-                  });
-                }
-
-                let filtered = selectedCategory 
-                  ? moduleProducts.filter(p => p.category?.toLowerCase() === selectedCategory.toLowerCase())
-                  : moduleProducts;
-                
-                if (searchQuery.trim()) {
+            
+            {loading ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="h-48 bg-accent/50 animate-pulse rounded-2xl"></div>
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+                {(() => {
                   const q = searchQuery.toLowerCase().trim();
-                  filtered = filtered.filter(p => 
+                  let filtered = products.filter(p => 
                     matchesSearchQuery(p.name, p.description || '', p.category || '', q)
                   );
-                }
+                  
+                  if (vegOnly) {
+                    filtered = filtered.filter(p => {
+                      const normName = p.name.toLowerCase();
+                      return !normName.includes('chicken') && !normName.includes('fish') && !normName.includes('meat') && !normName.includes('egg');
+                    });
+                  }
 
-                if (filtered.length === 0) {
+                  if (filtered.length === 0) {
+                    return (
+                      <div className="col-span-full py-12 text-center text-xs font-bold text-muted-foreground border border-dashed border-border rounded-3xl bg-accent/10">
+                        No products matched &quot;{searchQuery}&quot;. Please try another search!
+                      </div>
+                    );
+                  }
+
+                  return filtered.map(product => (
+                    <ProductCard key={product.id} product={product} />
+                  ));
+                })()}
+              </div>
+            )}
+          </section>
+        ) : (
+          /* 🏠 Standard Browse View */
+          <>
+            {/* 🪄 Velto AI TasteGenie Section */}
+            <section className="bg-gradient-to-br from-[#ffd700]/15 via-background to-[#9c27b0]/10 border border-[#ffd700]/30 rounded-3xl p-5 shadow-lg relative overflow-hidden">
+              <div className="absolute top-0 right-0 -mt-6 -mr-6 w-24 h-24 rounded-full bg-[#9c27b0]/20 blur-xl pointer-events-none animate-pulse"></div>
+              
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-xl">🪄</span>
+                <div>
+                  <h3 className="text-sm font-black text-foreground uppercase tracking-wider flex items-center gap-1.5">
+                    Velto AI TasteGenie
+                    <span className="text-[8px] bg-primary/20 text-primary px-2 py-0.5 rounded-full font-black uppercase">PRO</span>
+                  </h3>
+                  <p className="text-[10px] text-muted-foreground font-semibold">Your personal AI Food Chef & Meal Planner</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                <button
+                  onClick={() => {
+                    const chefPicks = [
+                      { name: "Student Study Late-Night Combo", price: 99, desc: "Chai + Instant Noodles + Potato Chips to fuel study sessions!" },
+                      { name: "Chai & Ginger Samosa Evening Combo", price: 60, desc: "Fresh brewing ginger tea flask with 2 hot crunchy samosas." },
+                      { name: "Daily Standard Veg Lunch Plan", price: 999, desc: "Weekly subscription: Home-style Dal, Sabzi, 4 Rotis, Rice, Curd, Salad." }
+                    ];
+                    const pick = chefPicks[Math.floor(Math.random() * chefPicks.length)];
+                    setAiModal({
+                      title: "Chef's Pick Recommendation",
+                      subtitle: `${pick.name} (₹${pick.price})`,
+                      content: `${pick.desc}\n\n🛒 Added to your basket!`,
+                      icon: "👨‍🍳"
+                    });
+                    
+                    const matchedProd = products.find(p => p.name.toLowerCase().includes(pick.name.toLowerCase().split(' ')[0]));
+                    if (matchedProd) {
+                      addToCart(matchedProd);
+                      speakResponse(`Chef's pick added: ${pick.name}`);
+                    }
+                  }}
+                  className="bg-card hover:bg-zinc-50 dark:hover:bg-zinc-800/80 border border-border p-3 rounded-2xl text-left transition-all hover:scale-[1.02] cursor-pointer"
+                >
+                  <span className="text-lg">👨‍🍳</span>
+                  <h4 className="text-[10px] font-black text-foreground uppercase mt-1">Chef's Pick</h4>
+                  <p className="text-[9px] text-muted-foreground mt-0.5 font-medium leading-tight">AI recommends a random tasty combo</p>
+                </button>
+
+                <button
+                  onClick={() => {
+                    const dietCombos = [
+                      { name: "Healthy Morning Workout Combo", price: 110, desc: "1kg Bananas + 120g Greek Yogurt cup." },
+                      { name: "Family Sunday Breakfast Combo", price: 240, desc: "Bread + Butter + 1L Milk pack + 6 Eggs bundle." }
+                    ];
+                    const pick = dietCombos[Math.floor(Math.random() * dietCombos.length)];
+                    setAiModal({
+                      title: "Healthy Diet Suggestion",
+                      subtitle: `${pick.name} (₹${pick.price})`,
+                      content: `${pick.desc}\n\n🥑 Added to your basket!`,
+                      icon: "🥗"
+                    });
+                    
+                    const nameKey = pick.name.split(' ')[0];
+                    const matchedProd = products.find(p => p.name.toLowerCase().includes(nameKey.toLowerCase()));
+                    if (matchedProd) {
+                      addToCart(matchedProd);
+                      speakResponse(`Diet combo added: ${pick.name}`);
+                    }
+                  }}
+                  className="bg-card hover:bg-zinc-50 dark:hover:bg-zinc-800/80 border border-[#1e5235]/30 p-3 rounded-2xl text-left transition-all hover:scale-[1.02] cursor-pointer"
+                >
+                  <span className="text-lg">🥑</span>
+                  <h4 className="text-[10px] font-black text-emerald-600 uppercase mt-1">Diet Planner</h4>
+                  <p className="text-[9px] text-muted-foreground mt-0.5 font-medium leading-tight">AI plans healthy low-cal breakfast</p>
+                </button>
+              </div>
+
+              {/* AI Calorie Calculator Input */}
+              <div className="bg-card/70 border border-border/80 rounded-2xl p-3 flex flex-col gap-2">
+                <span className="text-[9px] font-black text-zinc-500 uppercase tracking-wider">AI Calorie & Macro Estimator</span>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    id="calorieInput"
+                    placeholder="Enter a food item (e.g. Samosa, Paneer Roll, Bread)..."
+                    className="flex-grow bg-background border border-border rounded-xl px-3 py-2 text-[10px] font-semibold focus:outline-none focus:ring-1 focus:ring-primary placeholder:text-muted-foreground/60"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        const inputEl = document.getElementById('calorieInput') as HTMLInputElement;
+                        if (inputEl && inputEl.value.trim()) {
+                          const val = inputEl.value.toLowerCase().trim();
+                          let result = `Estimated macros for 1 serving of "${inputEl.value}":\n\n🔥 Calories: 250 kcal\n💪 Protein: 8g\n🍞 Carbs: 30g\n🥑 Fats: 12g\n\n💡 AI tip: Try our Farm Fresh Tomatoes as a healthy ingredient!`;
+                          if (val.includes('samosa')) {
+                            result = `Estimated macros for 1 Samosa:\n\n🔥 Calories: 260 kcal\n💪 Protein: 3.5g\n🍞 Carbs: 24g\n🥑 Fats: 17g\n\n💡 AI tip: High calorie/fat cheat meal! Swap for a Healthy Morning Workout Combo instead.`;
+                          } else if (val.includes('bread')) {
+                            result = `Estimated macros for 2 slices of Whole Wheat Bread:\n\n🔥 Calories: 150 kcal\n💪 Protein: 6g\n🍞 Carbs: 28g\n🥑 Fats: 1.5g\n\n💡 AI tip: Excellent fiber source! Pair with Full Cream Milk.`;
+                          }
+                          setAiModal({
+                            title: "AI Macro Analysis Report",
+                            subtitle: inputEl.value,
+                            content: result,
+                            icon: "🧙‍♂️"
+                          });
+                          inputEl.value = '';
+                        }
+                      }
+                    }}
+                  />
+                  <button
+                    onClick={() => {
+                      const inputEl = document.getElementById('calorieInput') as HTMLInputElement;
+                      if (inputEl && inputEl.value.trim()) {
+                        const val = inputEl.value.toLowerCase().trim();
+                        let result = `Estimated macros for 1 serving of "${inputEl.value}":\n\n🔥 Calories: 250 kcal\n💪 Protein: 8g\n🍞 Carbs: 30g\n🥑 Fats: 12g\n\n💡 AI tip: Try our Farm Fresh Tomatoes as a healthy ingredient!`;
+                        if (val.includes('samosa')) {
+                          result = `Estimated macros for 1 Samosa:\n\n🔥 Calories: 260 kcal\n💪 Protein: 3.5g\n🍞 Carbs: 24g\n🥑 Fats: 17g\n\n💡 AI tip: High calorie/fat cheat meal! Swap for a Healthy Morning Workout Combo instead.`;
+                        } else if (val.includes('bread')) {
+                          result = `Estimated macros for 2 slices of Whole Wheat Bread:\n\n🔥 Calories: 150 kcal\n💪 Protein: 6g\n🍞 Carbs: 28g\n🥑 Fats: 1.5g\n\n💡 AI tip: Excellent fiber source! Pair with Full Cream Milk.`;
+                        }
+                        setAiModal({
+                          title: "AI Macro Analysis Report",
+                          subtitle: inputEl.value,
+                          content: result,
+                          icon: "🧙‍♂️"
+                        });
+                        inputEl.value = '';
+                      }
+                    }}
+                    className="bg-primary text-primary-foreground hover:bg-primary/95 text-[9px] font-black uppercase py-2 px-3 rounded-xl transition-all cursor-pointer"
+                  >
+                    Analyze
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            {/* Toggle Pills: REORDER vs FOOD IN 15 MINS */}
+            <div className="flex justify-center w-full">
+              <div className="bg-zinc-100 dark:bg-zinc-800/80 p-1.5 rounded-full flex items-center gap-1 shadow-sm w-full max-w-sm border border-zinc-200/80 dark:border-zinc-700">
+                <button
+                  onClick={() => {
+                    setActivePill('reorder');
+                  }}
+                  className={`flex-1 text-center py-2 px-4 rounded-full text-xs font-black uppercase tracking-wider transition-all duration-300 cursor-pointer ${
+                    activePill === 'reorder'
+                      ? 'bg-white dark:bg-zinc-900 text-primary shadow-md'
+                      : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800'
+                  }`}
+                >
+                  Reorder
+                </button>
+                <button
+                  onClick={() => {
+                    setActivePill('food');
+                  }}
+                  className={`flex-1 text-center py-2 px-4 rounded-full text-xs font-black uppercase tracking-wider transition-all duration-300 cursor-pointer ${
+                    activePill === 'food'
+                      ? 'bg-white dark:bg-zinc-900 text-primary shadow-md'
+                      : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800'
+                  }`}
+                >
+                  Food In 15 Mins
+                </button>
+              </div>
+            </div>
+
+            {/* 🍔 Product Horizontal Sliders */}
+            <section className="space-y-4">
+              <div className="flex justify-between items-center">
+                <h2 className="text-sm font-black text-foreground uppercase tracking-wider flex items-center gap-1.5">
+                  <span>{activePill === 'reorder' ? '🔄 Quick Refills & Reorder' : '🍲 Live Cloud Kitchens & Meals'}</span>
+                </h2>
+                <span className="text-[10px] font-bold text-muted-foreground bg-accent px-2 py-0.5 rounded-md">
+                  Slider View
+                </span>
+              </div>
+
+              {activePill === 'reorder' ? (
+                <div className="flex overflow-x-auto gap-4 pb-4 scrollbar-hide snap-x flex-nowrap w-full">
+                  {refillItems.map((item) => {
+                    const nameKey = item.name.split(' ')[0];
+                    const matchedProd = products.find(p => p.name.toLowerCase().includes(nameKey.toLowerCase()));
+                    
+                    return (
+                      <div 
+                        key={item.id}
+                        className="w-56 shrink-0 snap-center bg-card border border-border rounded-3xl p-4 flex flex-col justify-between gap-3 shadow-md hover:shadow-lg transition-all hover:border-primary text-left"
+                      >
+                        <div className="space-y-1">
+                          <div className="flex justify-between items-start">
+                            <span className="bg-primary/10 text-primary text-[8px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider">
+                              Refill Item
+                            </span>
+                            <span className="text-[8px] text-rose-500 font-bold animate-pulse">
+                              {item.daysLeft} Day Left
+                            </span>
+                          </div>
+                          <h4 className="font-black text-xs text-foreground mt-1 line-clamp-1">{item.name}</h4>
+                          <p className="text-[9px] text-muted-foreground font-semibold">Last: {item.lastBought}</p>
+                        </div>
+
+                        <div className="space-y-1">
+                          <div className="w-full h-1.5 bg-accent rounded-full overflow-hidden">
+                            <div style={{ width: `${100 - item.progress}%` }} className="h-full bg-amber-500 rounded-full" />
+                          </div>
+                          <div className="flex justify-between text-[8px] font-bold text-muted-foreground">
+                            <span>{100 - item.progress}% Left</span>
+                          </div>
+                        </div>
+
+                        <button
+                          onClick={() => {
+                            if (matchedProd) {
+                              addToCart(matchedProd);
+                              showToast(`🛒 Added ${matchedProd.name} to basket!`, 'success');
+                            } else {
+                              showToast(`Could not find ${item.name} in store!`, 'error');
+                            }
+                          }}
+                          className="w-full bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-wider py-2 rounded-xl hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
+                        >
+                          One-Tap Reorder
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="flex overflow-x-auto gap-4 pb-4 scrollbar-hide snap-x flex-nowrap w-full">
+                  {(() => {
+                    let displayProducts = products.filter(p => p.category && ['cloud kitchen', 'tiffin service'].includes(p.category.toLowerCase()));
+
+                    if (studentMode) {
+                      displayProducts = products.filter(p => 
+                        p.name.toLowerCase().includes('combo') || 
+                        p.description?.toLowerCase().includes('combo') ||
+                        p.category?.toLowerCase().includes('combo') ||
+                        p.name.toLowerCase().includes('student') ||
+                        p.description?.toLowerCase().includes('student')
+                      );
+                    }
+
+                    if (vegOnly) {
+                      displayProducts = displayProducts.filter(p => {
+                        const normName = p.name.toLowerCase();
+                        return !normName.includes('chicken') && !normName.includes('fish') && !normName.includes('meat') && !normName.includes('egg');
+                      });
+                    }
+
+                    if (displayProducts.length === 0) {
+                      return (
+                        <div className="w-full text-center py-8 text-xs font-bold text-muted-foreground border border-dashed border-border rounded-3xl bg-accent/10">
+                          No matching food products found. Try changing filters or search query!
+                        </div>
+                      );
+                    }
+
+                    return displayProducts.map((product) => {
+                      const ratingSeed = (3.9 + (product.id ? product.id.charCodeAt(0) % 11 : 4) / 10).toFixed(1);
+                      const deliveryTime = product.id ? (product.id.charCodeAt(0) % 4) * 5 + 15 : 20;
+                      const isVeg = !product.name.toLowerCase().includes('fish') && 
+                                    !product.name.toLowerCase().includes('meat') && 
+                                    !product.name.toLowerCase().includes('chicken') && 
+                                    !product.name.toLowerCase().includes('egg');
+
+                      let restaurantName = "Hotel Kings Kitchen";
+                      let cuisine = "North Indian";
+                      
+                      if (product.name.includes('Chai')) {
+                        restaurantName = "Apna Singh Tea Stall";
+                        cuisine = "Tea & Fast Food";
+                      } else if (product.name.includes('Tiffin') || product.name.includes('Lunch')) {
+                        restaurantName = "Apna Singh Dhaba";
+                        cuisine = "Tiffin Service";
+                      } else if (product.name.includes('Combo')) {
+                        restaurantName = "Khana Khazana Kitchen";
+                        cuisine = "Combos & Snacks";
+                      }
+
+                      return (
+                        <div 
+                          key={product.id}
+                          className="w-56 shrink-0 snap-center bg-card border border-border rounded-3xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lg relative flex flex-col justify-between text-left"
+                        >
+                          <button className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-background/80 backdrop-blur flex items-center justify-center text-muted-foreground hover:text-rose-500 transition-colors shadow-sm cursor-pointer">
+                            <Heart size={14} />
+                          </button>
+
+                          <div className="absolute top-3 left-3 z-20">
+                            <span className="bg-rose-500 text-white text-[8px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider flex items-center gap-0.5 shadow-sm">
+                              ★ one
+                            </span>
+                          </div>
+
+                          <div className="relative w-full aspect-[4/3] bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
+                            {product.image_url ? (
+                              <img 
+                                src={product.image_url} 
+                                alt={product.name} 
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-zinc-400 bg-gradient-to-br from-primary/10 to-transparent">
+                                <Utensils size={32} className="opacity-40" />
+                              </div>
+                            )}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-2.5">
+                              <span className="text-[9px] font-black text-white uppercase tracking-wider bg-black/40 px-2 py-0.5 rounded-full border border-white/10 backdrop-blur-sm">
+                                ITEMS AT ₹{product.price}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="p-3 space-y-1.5 flex-1 flex flex-col justify-between">
+                            <div>
+                              <h4 className="font-black text-xs sm:text-sm text-foreground line-clamp-1 leading-tight">{restaurantName}</h4>
+                              <p className="text-[10px] font-bold text-muted-foreground line-clamp-1 mt-0.5">{product.name}</p>
+                              
+                              <div className="flex items-center gap-1.5 mt-1">
+                                <div className="bg-emerald-600 text-white px-1.5 py-0.5 rounded-md text-[9px] font-black flex items-center gap-0.5">
+                                  <span>★</span>
+                                  <span>{ratingSeed}</span>
+                                </div>
+                                <span className="text-[9px] font-bold text-muted-foreground">•</span>
+                                <span className="text-[9px] font-black text-foreground">{deliveryTime}-{deliveryTime + 5} mins</span>
+                              </div>
+                            </div>
+
+                            <div className="flex justify-between items-center border-t border-border/40 pt-2 mt-2">
+                              <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-tight flex items-center gap-1">
+                                <span className={`w-2 h-2 rounded-full inline-block ${isVeg ? 'bg-green-500' : 'bg-red-500'}`} />
+                                {cuisine}
+                              </span>
+                              <button 
+                                onClick={() => {
+                                  addToCart(product);
+                                  showToast(`🛒 Added ${product.name} to basket!`, 'success');
+                                }}
+                                className="bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-xl hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                              >
+                                ADD
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    });
+                  })()}
+                </div>
+              )}
+            </section>
+
+            {/* 🍕 "What's on your mind?" Categories Slider */}
+            <section className="space-y-4">
+              <div className="flex justify-between items-center">
+                <h2 className="text-sm font-black text-foreground uppercase tracking-wider">What's on your mind?</h2>
+                {selectedCategory && (
+                  <button 
+                    onClick={() => setSelectedCategory(null)}
+                    className="text-xs font-bold text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    Clear Filter ✕
+                  </button>
+                )}
+              </div>
+              <div className="flex overflow-x-auto gap-4 pb-4 scrollbar-hide flex-nowrap w-full snap-x">
+                {activeCategories.map((cat, i) => {
+                  const isSelected = selectedCategory?.toLowerCase() === cat.name.toLowerCase();
                   return (
-                    <div className="col-span-full py-8 text-center text-xs font-bold text-muted-foreground border border-dashed border-border rounded-3xl bg-accent/10">
-                      No items matching current criteria. Try resetting query or categories.
+                    <div 
+                      key={i} 
+                      onClick={() => {
+                        const willSelect = !isSelected;
+                        setSelectedCategory(willSelect ? cat.name : null);
+                        
+                        // Smart Auto-switching super service based on category selection
+                        if (willSelect) {
+                          if (['cloud kitchen', 'tiffin service'].includes(cat.name.toLowerCase())) {
+                            setActiveSuperService('food');
+                            setActiveModule('kitchen');
+                          } else if (cat.name.toLowerCase() === 'pharmacy') {
+                            setActiveSuperService('pharmacy');
+                          } else {
+                            setActiveSuperService('grocery');
+                            setActiveModule('instamart');
+                          }
+                        }
+                      }}
+                      className={`flex flex-col items-center justify-center gap-1.5 cursor-pointer shrink-0 snap-center transition-all duration-300 hover:scale-105 ${
+                        isSelected 
+                          ? 'ring-2 ring-primary rounded-full p-1' 
+                          : ''
+                      }`}
+                    >
+                      <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border border-border shadow-md bg-white flex items-center justify-center">
+                        <img 
+                          src={cat.img} 
+                          alt={cat.name} 
+                          className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                        />
+                      </div>
+                      <span className={`font-black text-[9px] sm:text-xs text-center transition-colors uppercase tracking-wider ${
+                        isSelected ? 'text-primary' : 'text-zinc-500 dark:text-zinc-300'
+                      }`}>
+                        {getCategoryTranslation(cat.name)}
+                      </span>
                     </div>
                   );
-                }
+                })}
+              </div>
+            </section>
 
-                return filtered.map(product => (
-                  <ProductCard key={product.id} product={product} />
-                ));
-              })()}
-            </div>
-          )}
-        </section>
+            {/* 🥦 Rest of Categories & Services (Instamart, etc.) */}
+            <section className="space-y-4 pt-2 border-t border-border/40">
+              <div className="flex justify-between items-center">
+                <h3 className="text-sm font-black text-foreground uppercase tracking-wider">Explore Services</h3>
+              </div>
+              
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+                {[
+                  { id: 'grocery', name: 'Grocery Shop', desc: '10-Min Delivery', icon: <ShoppingBag size={16} /> },
+                  { id: 'food', name: 'Food Delivery', desc: 'Cloud Kitchens', icon: <Utensils size={16} /> },
+                  { id: 'pharmacy', name: 'Pharmacy Meds', desc: 'SOS Medicine', icon: <Pill size={16} /> },
+                  { id: 'courier', name: 'Send Courier', desc: 'Same-Day Package', icon: <Truck size={16} /> },
+                  { id: 'bills', name: 'Utility Bills', desc: 'Recharge & Pay', icon: <Wallet size={16} /> },
+                  { id: 'services', name: 'Home Services', desc: 'Deep Cleaning', icon: <Wrench size={16} /> }
+                ].map(service => {
+                  const isActive = activeSuperService === service.id;
+                  return (
+                    <button
+                      key={service.id}
+                      onClick={() => {
+                        setActiveSuperService(service.id);
+                        if (service.id === 'food') {
+                          setActiveModule('kitchen');
+                          setActivePill('food');
+                        } else {
+                          setActiveModule('instamart');
+                          setActivePill('reorder');
+                        }
+                        setSelectedCategory(null);
+                        showToast(`Switched to ${service.name} service`, 'success');
+                      }}
+                      className={`flex flex-col items-center justify-center p-3 rounded-2xl border text-center transition-all duration-300 ${
+                        isActive 
+                          ? 'border-primary bg-primary/10 ring-1 ring-primary' 
+                          : 'border-border/40 bg-muted/20 hover:border-primary/20'
+                      }`}
+                    >
+                      <div className={`p-2 rounded-xl mb-1.5 flex items-center justify-center ${
+                        isActive ? 'bg-primary text-primary-foreground shadow-sm animate-pulse' : 'bg-background text-muted-foreground'
+                      }`}>
+                        {service.icon}
+                      </div>
+                      <span className="text-[10px] font-black text-foreground block uppercase tracking-tight">{service.name}</span>
+                      <span className="text-[8px] text-muted-foreground font-semibold block mt-0.5">{service.desc}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+
+            {/* 🛒 ALL ITEMS LIST (Collapsible / Toggleable) */}
+            <section className="space-y-4 pt-2 border-t border-border/40 pb-12">
+              <div className="flex justify-between items-center">
+                <h2 className="text-sm font-black text-foreground uppercase tracking-wider">
+                  {selectedCategory 
+                    ? `${getCategoryTranslation(selectedCategory)} Items` 
+                    : `${activeSuperService.toUpperCase()} Catalog`}
+                </h2>
+                {selectedCategory && (
+                  <button 
+                    onClick={() => setSelectedCategory(null)}
+                    className="text-xs font-bold text-primary bg-primary/10 border border-primary/20 px-3 py-1 rounded-full hover:bg-primary/20 transition-all cursor-pointer"
+                  >
+                    Show All ✕
+                  </button>
+                )}
+              </div>
+
+              {loading ? (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                  {[...Array(6)].map((_, i) => (
+                    <div key={i} className="h-48 bg-accent/50 animate-pulse rounded-2xl"></div>
+                  ))}
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+                  {(() => {
+                    let moduleProducts = products;
+                    if (studentMode) {
+                      moduleProducts = products.filter(p => 
+                        p.name.toLowerCase().includes('combo') || 
+                        p.description?.toLowerCase().includes('combo') ||
+                        p.category?.toLowerCase().includes('combo') ||
+                        p.name.toLowerCase().includes('student') ||
+                        p.description?.toLowerCase().includes('student')
+                      );
+                    } else {
+                      if (activeSuperService === 'grocery') {
+                        moduleProducts = products.filter(p => p.category && !['cloud kitchen', 'tiffin service', 'pharmacy', 'courier', 'bills & recharge', 'home services'].includes(p.category.toLowerCase()));
+                      } else if (activeSuperService === 'food') {
+                        moduleProducts = products.filter(p => p.category && ['cloud kitchen', 'tiffin service'].includes(p.category.toLowerCase()));
+                      } else if (activeSuperService === 'pharmacy') {
+                        moduleProducts = products.filter(p => p.category && p.category.toLowerCase() === 'pharmacy');
+                      } else if (activeSuperService === 'courier') {
+                        moduleProducts = products.filter(p => p.category && p.category.toLowerCase() === 'courier');
+                      } else if (activeSuperService === 'bills') {
+                        moduleProducts = products.filter(p => p.category && p.category.toLowerCase() === 'bills & recharge');
+                      } else if (activeSuperService === 'services') {
+                        moduleProducts = products.filter(p => p.category && p.category.toLowerCase() === 'home services');
+                      }
+                    }
+
+                    if (vegOnly) {
+                      moduleProducts = moduleProducts.filter(p => {
+                        const normName = p.name.toLowerCase();
+                        return !normName.includes('chicken') && !normName.includes('fish') && !normName.includes('meat') && !normName.includes('egg');
+                      });
+                    }
+
+                    let filtered = selectedCategory 
+                      ? moduleProducts.filter(p => p.category?.toLowerCase() === selectedCategory.toLowerCase())
+                      : moduleProducts;
+
+                    if (filtered.length === 0) {
+                      return (
+                        <div className="col-span-full py-8 text-center text-xs font-bold text-muted-foreground border border-dashed border-border rounded-3xl bg-accent/10">
+                          No items matching current criteria. Try resetting query or categories.
+                        </div>
+                      );
+                    }
+
+                    return filtered.map(product => (
+                      <ProductCard key={product.id} product={product} />
+                    ));
+                  })()}
+                </div>
+              )}
+            </section>
+          </>
+        )}
       </div>
-
-      {/* 📱 Mobile Sticky Bottom Navigation Bar */}
       {!hasActiveOrder && cart.length === 0 && (
         <div className="fixed bottom-0 left-0 right-0 z-[999] md:hidden bg-card/95 backdrop-blur border-t border-border/80 px-4 py-2.5 flex justify-between items-center shadow-[0_-8px_30px_rgb(0,0,0,0.12)]">
           <button
