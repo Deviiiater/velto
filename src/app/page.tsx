@@ -154,6 +154,9 @@ export default function Home() {
   const [showLocationSelector, setShowLocationSelector] = useState(false);
   const [savingLocation, setSavingLocation] = useState(false);
 
+  // Active Deals Auto-slide state
+  const [activeDealIndex, setActiveDealIndex] = useState(0);
+
   // AI Assistant states
   const [showAiChat, setShowAiChat] = useState(false);
   const [aiChatQuery, setAiChatQuery] = useState('');
@@ -260,6 +263,15 @@ export default function Home() {
   };
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [announcementsLoading, setAnnouncementsLoading] = useState(true);
+
+  useEffect(() => {
+    const totalSlides = 1 + (announcements?.length || 0);
+    if (totalSlides <= 1) return;
+    const interval = setInterval(() => {
+      setActiveDealIndex((prev) => (prev + 1) % totalSlides);
+    }, 4500);
+    return () => clearInterval(interval);
+  }, [announcements]);
 
   const fetchAnnouncements = async () => {
     try {
@@ -1522,27 +1534,35 @@ export default function Home() {
           )}
         </div>
 
-        {/* FOODIE VERSE Banner */}
-        <div className="w-full bg-[#ffd700] text-[#3a014c] rounded-2xl p-4 flex justify-between items-center relative overflow-hidden shadow-inner z-10 border border-[#ffd700]/40">
-          <div className="flex flex-col text-left">
-            <div className="flex items-center gap-1.5">
-              <span className="text-xl font-black italic tracking-tighter uppercase text-[#3a014c] drop-shadow-sm">FOODIE VERSE</span>
-              <span className="bg-[#3a014c] text-[#ffd700] text-[8px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider">ORDER NOW</span>
-            </div>
-            <span className="text-xs font-black tracking-tight uppercase mt-0.5">Flat ₹200 OFF & MORE</span>
+        {/* 🎪 Auto-Scrolling Banners & Deals Carousel */}
+        <div className="w-full flex flex-col gap-2 z-10">
+          <div className="flex justify-between items-center px-1">
+            <span className="text-[10px] font-black uppercase text-zinc-300 tracking-wider">Active Banners & Offers</span>
+            <span className="text-[8px] bg-white/20 px-2 py-0.5 rounded text-white font-bold uppercase">
+              {1 + announcements.length} Active
+            </span>
           </div>
-          <div className="text-2xl animate-bounce shrink-0">🍕</div>
-        </div>
 
-        {/* Deal/Announcement Cards Slider (Horizontal Scroll) */}
-        {announcements.length > 0 && (
-          <div className="w-full flex flex-col gap-2 z-10 mt-1">
-            <div className="flex justify-between items-center px-1">
-              <span className="text-[10px] font-black uppercase text-zinc-300 tracking-wider">Active Deals & Highlights</span>
-              <span className="text-[8px] bg-white/20 px-2 py-0.5 rounded text-white font-bold uppercase">{announcements.length} Deals</span>
-            </div>
+          <div className="relative w-full overflow-hidden rounded-3xl">
+            <div 
+              className="flex transition-transform duration-500 ease-in-out"
+              style={{ transform: `translateX(-${activeDealIndex * 100}%)` }}
+            >
+              {/* Slide 0: Default Foodie Verse Banner */}
+              <div className="w-full shrink-0 p-0.5">
+                <div className="w-full bg-[#ffd700] text-[#3a014c] rounded-2xl p-4 flex justify-between items-center relative overflow-hidden shadow-inner border border-[#ffd700]/40 h-[105px]">
+                  <div className="flex flex-col text-left">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xl font-black italic tracking-tighter uppercase text-[#3a014c] drop-shadow-sm">FOODIE VERSE</span>
+                      <span className="bg-[#3a014c] text-[#ffd700] text-[8px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider">ORDER NOW</span>
+                    </div>
+                    <span className="text-xs font-black tracking-tight uppercase mt-0.5">Flat ₹200 OFF & MORE</span>
+                  </div>
+                  <div className="text-2xl animate-bounce shrink-0">🍕</div>
+                </div>
+              </div>
 
-            <div className="flex overflow-x-auto gap-4 pb-2 scrollbar-hide snap-x flex-nowrap w-full">
+              {/* Slides 1+: Supabase Announcements */}
               {announcements.map((ann) => {
                 let cardBg = 'from-[#5a187a] to-[#360447]';
                 let icon = <Megaphone className="text-[#ffd700]" size={16} />;
@@ -1572,79 +1592,93 @@ export default function Home() {
                 }
 
                 return (
-                  <div 
-                    key={ann.id}
-                    className={`w-64 shrink-0 snap-center rounded-2xl p-4 bg-gradient-to-br ${cardBg} border border-white/10 shadow-lg flex flex-col justify-between gap-3 text-left`}
-                  >
-                    <div className="space-y-1">
-                      <div className="flex items-center justify-between">
-                        <span className={`text-[8px] font-black tracking-widest px-2 py-0.5 rounded-full uppercase ${badgeColor}`}>
-                          {badgeText}
-                        </span>
-                        <span className="text-[8px] text-zinc-300 font-medium">
-                          {new Date(ann.created_at).toLocaleDateString(undefined, { dateStyle: 'short' })}
-                        </span>
+                  <div key={ann.id} className="w-full shrink-0 p-0.5">
+                    <div className={`w-full h-[105px] rounded-2xl p-4 bg-gradient-to-br ${cardBg} border border-white/10 shadow-lg flex flex-col justify-between text-left`}>
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span className={`text-[8px] font-black tracking-widest px-2 py-0.5 rounded-full uppercase ${badgeColor}`}>
+                            {badgeText}
+                          </span>
+                          <span className="text-[8px] text-zinc-300 font-medium">
+                            {new Date(ann.created_at).toLocaleDateString(undefined, { dateStyle: 'short' })}
+                          </span>
+                        </div>
+                        <h3 className="text-xs font-black text-white flex items-center gap-1.5 line-clamp-1">
+                          {icon}
+                          {ann.title}
+                        </h3>
+                        <p className="text-[10px] text-zinc-200 line-clamp-1 leading-snug">
+                          {ann.content}
+                        </p>
                       </div>
-                      <h3 className="text-xs font-black text-white flex items-center gap-1.5 line-clamp-1">
-                        {icon}
-                        {ann.title}
-                      </h3>
-                      <p className="text-[10px] text-zinc-200 line-clamp-2 leading-snug">
-                        {ann.content}
-                      </p>
+                      
+                      {ann.type === 'diet' && (
+                        <button
+                          onClick={() => {
+                            setSearchQuery('healthy');
+                            showToast("🥗 Diet Filter Applied! Showing health items.", 'success');
+                          }}
+                          className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-[9px] uppercase py-1 rounded-lg transition-all cursor-pointer"
+                        >
+                          Apply Diet Filter
+                        </button>
+                      )}
+                      {ann.type === 'sos' && (
+                        <button
+                          onClick={() => {
+                            setEmergencyMode(true);
+                            setSearchQuery('Medicine');
+                            showToast("🚨 SOS Mode Activated!", 'warning');
+                          }}
+                          className="w-full bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-[9px] uppercase py-1 rounded-lg transition-all cursor-pointer"
+                        >
+                          Request Dispatch
+                        </button>
+                      )}
+                      {ann.type === 'promo' && (
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText("HEAL20");
+                            showToast("📋 Code 'HEAL20' copied!", 'success');
+                          }}
+                          className="w-full bg-[#ffd700] hover:bg-[#ffe043] text-black font-extrabold text-[9px] uppercase py-1 rounded-lg transition-all cursor-pointer"
+                        >
+                          Copy: HEAL20
+                        </button>
+                      )}
+                      {ann.type === 'offer' && (
+                        <button
+                          onClick={() => {
+                            setSearchQuery('Offer');
+                            showToast("🎉 Special Offers Applied!", 'success');
+                          }}
+                          className="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-extrabold text-[9px] uppercase py-1 rounded-lg transition-all cursor-pointer"
+                        >
+                          View Offers
+                        </button>
+                      )}
                     </div>
-                    
-                    {ann.type === 'diet' && (
-                      <button
-                        onClick={() => {
-                          setSearchQuery('healthy');
-                          showToast("🥗 Diet Filter Applied! Showing health items.", 'success');
-                        }}
-                        className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-[9px] uppercase py-1.5 rounded-lg transition-all cursor-pointer"
-                      >
-                        Apply Diet Filter
-                      </button>
-                    )}
-                    {ann.type === 'sos' && (
-                      <button
-                        onClick={() => {
-                          setEmergencyMode(true);
-                          setSearchQuery('Medicine');
-                          showToast("🚨 SOS Mode Activated!", 'warning');
-                        }}
-                        className="w-full bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-[9px] uppercase py-1.5 rounded-lg transition-all cursor-pointer"
-                      >
-                        Request Dispatch
-                      </button>
-                    )}
-                    {ann.type === 'promo' && (
-                      <button
-                        onClick={() => {
-                          navigator.clipboard.writeText("HEAL20");
-                          showToast("📋 Code 'HEAL20' copied!", 'success');
-                        }}
-                        className="w-full bg-[#ffd700] hover:bg-[#ffe043] text-black font-extrabold text-[9px] uppercase py-1.5 rounded-lg transition-all cursor-pointer"
-                      >
-                        Copy: HEAL20
-                      </button>
-                    )}
-                    {ann.type === 'offer' && (
-                      <button
-                        onClick={() => {
-                          setSearchQuery('Offer');
-                          showToast("🎉 Special Offers Applied!", 'success');
-                        }}
-                        className="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-extrabold text-[9px] uppercase py-1.5 rounded-lg transition-all cursor-pointer"
-                      >
-                        View Offers
-                      </button>
-                    )}
                   </div>
                 );
               })}
             </div>
+            
+            {/* Dot Indicators */}
+            {announcements.length > 0 && (
+              <div className="flex justify-center gap-1.5 mt-2">
+                {[...Array(1 + announcements.length)].map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setActiveDealIndex(idx)}
+                    className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                      activeDealIndex === idx ? 'w-4 bg-[#ffd700]' : 'w-1.5 bg-white/30'
+                    }`}
+                  />
+                ))}
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
 
       {/* ─── WHITE/CARD CONTENT BODY CONTAINER ─── */}
