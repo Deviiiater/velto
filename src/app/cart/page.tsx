@@ -416,22 +416,22 @@ export default function CartPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-8 mt-8">
+    <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-6 lg:gap-8 mt-4 sm:mt-8">
       <Script src="https://checkout.razorpay.com/v1/checkout.js" />
       
       <div className="flex-1 space-y-6">
-        <h1 className="text-2xl font-bold tracking-tight">{t('checkout', language)}</h1>
+        <h1 className="text-xl sm:text-2xl font-black tracking-tight">{t('checkout', language)}</h1>
         
         {/* Group Ordering Console */}
-        <div className="glass-panel border border-border/40 rounded-2xl p-6 shadow-xl space-y-4 relative overflow-hidden">
-          <div className="flex justify-between items-center border-b border-border pb-3">
+        <div className="glass-panel border border-border/40 rounded-2xl p-4 sm:p-6 shadow-xl space-y-4 relative overflow-hidden">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-border pb-3">
             <div className="flex items-center gap-2">
               <Users className="text-primary w-5 h-5" />
-              <h2 className="font-bold text-base sm:text-lg">{t('smartGroupOrdering', language)}</h2>
+              <h2 className="font-black text-sm sm:text-base">{t('smartGroupOrdering', language)}</h2>
             </div>
             <button
               onClick={() => setGroupCartActive(!groupCartActive)}
-              className={`text-xs font-black uppercase px-4 py-2 rounded-xl transition-all border ${
+              className={`text-[10px] sm:text-xs font-black uppercase px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl transition-all border w-full sm:w-auto text-center ${
                 groupCartActive 
                   ? 'bg-destructive/10 text-destructive border-destructive/20 hover:bg-destructive hover:text-white' 
                   : 'bg-primary text-primary-foreground hover:bg-primary/95 border-primary shadow-md'
@@ -504,7 +504,7 @@ export default function CartPage() {
 
         {/* Smart Cart Optimization Banner */}
         {cart.length > 0 && (
-          <div className={`border rounded-2xl p-4.5 transition-all duration-300 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shadow-md ${
+          <div className={`border rounded-2xl p-4 sm:p-5 transition-all duration-300 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shadow-md ${
             isOptimized 
               ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-400' 
               : 'bg-primary/10 border-primary/20 text-foreground'
@@ -528,7 +528,7 @@ export default function CartPage() {
               onClick={() => {
                 setIsOptimized(!isOptimized);
               }}
-              className={`text-xs font-black uppercase px-4 py-2 rounded-xl transition-all shadow-sm ${
+              className={`text-xs font-black uppercase px-4 py-2 rounded-xl transition-all shadow-sm w-full sm:w-auto text-center ${
                 isOptimized 
                   ? 'bg-emerald-500 text-white hover:bg-emerald-600' 
                   : 'bg-primary text-primary-foreground hover:bg-primary/95'
@@ -540,8 +540,8 @@ export default function CartPage() {
         )}
 
         {/* Cart Items */}
-        <div className="glass-panel border border-border/40 rounded-2xl p-5 sm:p-6 shadow-xl space-y-4">
-          <h2 className="font-semibold text-base sm:text-lg border-b border-border pb-2">{t('yourItems', language)} ({cart.length})</h2>
+        <div className="glass-panel border border-border/40 rounded-2xl p-4 sm:p-6 shadow-xl space-y-4">
+          <h2 className="font-black text-sm sm:text-base border-b border-border pb-2">{t('yourItems', language)} ({cart.length})</h2>
           <div className="divide-y divide-border/50 space-y-4">
             {cart.map((item, idx) => (
               <div key={item.id} className={`flex gap-3 sm:gap-4 items-center ${idx > 0 ? 'pt-4' : ''}`}>
@@ -606,8 +606,8 @@ export default function CartPage() {
         )}
 
         {/* Delivery Details */}
-        <div className="glass-panel border border-border/40 rounded-2xl p-6 shadow-xl space-y-6">
-           <h2 className="font-semibold text-lg border-b border-border pb-2">{t('deliveryDetails', language)}</h2>
+        <div className="glass-panel border border-border/40 rounded-2xl p-4 sm:p-6 shadow-xl space-y-6">
+           <h2 className="font-black text-sm sm:text-base border-b border-border pb-2">{t('deliveryDetails', language)}</h2>
            
            <div>
              <label className="block text-sm font-medium mb-1 flex items-center gap-2"><Phone size={16}/> {t('phoneNumber', language)}</label>
@@ -793,13 +793,13 @@ export default function CartPage() {
                     </span>
                   )}
                 </div>
-                <div className="grid grid-cols-5 gap-2">
+                <div className="grid grid-cols-5 gap-1.5 sm:gap-2">
                   {[10, 20, 30, 50, 100].map(tipAmount => (
                     <button
                       key={tipAmount}
                       type="button"
                       onClick={() => setRiderTip(riderTip === tipAmount ? 0 : tipAmount)}
-                      className={`py-2 rounded-xl text-xs font-extrabold border transition-all ${
+                      className={`py-2 px-0.5 sm:px-2 rounded-xl text-[10px] sm:text-xs font-black border transition-all ${
                         riderTip === tipAmount
                           ? 'bg-amber-500 border-amber-500 text-white shadow-md shadow-amber-500/20 scale-105'
                           : 'border-border bg-background hover:bg-accent text-foreground'
@@ -837,7 +837,7 @@ export default function CartPage() {
       </div>
       
       {/* Order Summary & Payment */}
-      <div className="w-full lg:w-96 h-fit p-6 border border-border/40 rounded-2xl glass-panel shadow-xl sticky top-24 space-y-6 neon-glow">
+      <div className="w-full lg:w-96 h-fit p-4 sm:p-6 border border-border/40 rounded-2xl glass-panel shadow-xl sticky top-24 space-y-6 neon-glow">
         {!oneIndiaPass && (
           <div className="bg-gradient-to-br from-amber-500/5 via-yellow-500/5 to-orange-500/5 border border-amber-500/20 p-4 rounded-xl space-y-2.5 animate-in fade-in slide-in-from-bottom duration-300">
             <div className="flex items-start justify-between gap-2">

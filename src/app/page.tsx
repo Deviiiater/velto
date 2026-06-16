@@ -1151,81 +1151,130 @@ export default function Home() {
 
   return (
     <div className="flex flex-col gap-10 sm:gap-12">
-      {/* 📱 Unified PWA Install Banner (Android & iOS) */}
+      {/* 📱 Unified PWA Install Modal Popup (Android & iOS) */}
       {showUnifiedInstallBanner && (
-        <div className="relative overflow-hidden bg-gradient-to-br from-amber-500/10 via-background/60 to-emerald-500/10 border border-border/80 rounded-3xl p-5 sm:p-6 shadow-xl flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 animate-in slide-in-from-top-4 duration-300">
-          {/* Ambient Glows */}
-          <div className="absolute top-0 left-0 w-32 h-32 bg-amber-500/5 rounded-full blur-[40px] pointer-events-none"></div>
-          <div className="absolute bottom-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-[40px] pointer-events-none"></div>
+        <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4 bg-background/80 backdrop-blur-xl animate-in fade-in duration-300">
+          <div className="relative w-full max-w-lg bg-card border border-border/80 rounded-3xl p-6 sm:p-8 shadow-2xl flex flex-col gap-6 overflow-hidden glass-panel">
+            {/* Ambient background glows */}
+            <div className="absolute -right-12 -top-12 w-36 h-36 bg-amber-500/10 rounded-full blur-[40px] pointer-events-none"></div>
+            <div className="absolute -left-12 -bottom-12 w-36 h-36 bg-emerald-500/10 rounded-full blur-[40px] pointer-events-none"></div>
 
-          <div className="flex items-start gap-4 relative z-10 w-full lg:w-auto">
-            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary text-2xl shrink-0 shadow-inner">
-              📲
+            {/* Header */}
+            <div className="flex justify-between items-start relative z-10">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary text-2xl shadow-inner shrink-0">
+                  📲
+                </div>
+                <div>
+                  <h3 className="text-base font-black text-foreground uppercase tracking-tight flex items-center gap-1.5">
+                    Install Velto App <span className="text-[9px] bg-primary/20 text-primary px-2.5 py-0.5 rounded-full font-black uppercase tracking-wider">PWA</span>
+                  </h3>
+                  <p className="text-[10px] text-muted-foreground font-semibold mt-0.5">
+                    Get 10-minute grocery delivery & cloud kitchen meals
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={() => {
+                  setShowUnifiedInstallBanner(false);
+                  localStorage.setItem('velto_pwa_dismissed', 'true');
+                }}
+                className="text-muted-foreground hover:text-foreground text-xs bg-accent hover:bg-accent/80 p-1.5 px-3 rounded-lg font-bold transition-all cursor-pointer"
+              >
+                ✕
+              </button>
             </div>
-            <div className="space-y-1">
-              <h4 className="text-sm font-black text-foreground uppercase tracking-wider flex items-center gap-2">
-                Install Velto App <span className="text-[10px] bg-primary/20 text-primary px-2.5 py-0.5 rounded-full font-black uppercase">PWA</span>
-              </h4>
-              <p className="text-xs text-muted-foreground font-semibold max-w-xl leading-relaxed">
-                Add Velto to your home screen for instant 10-minute deliveries, cloud kitchen food, and home services on both Android & iOS.
-              </p>
-            </div>
-          </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto relative z-10">
-            {/* Android / Desktop Install */}
-            <div className="flex-1 sm:flex-initial flex flex-col gap-1 w-full sm:w-auto">
-              <button
-                onClick={async () => {
-                  if (deferredPrompt) {
-                    await handleInstallClick();
-                  } else {
+            {/* Body Info */}
+            <p className="text-xs text-muted-foreground font-semibold leading-relaxed relative z-10">
+              Add Velto to your mobile device home screen for lighting-fast loading, lower data usage, offline cart support, and instant tracking notifications.
+            </p>
+
+            {/* OS Options Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-10">
+              {/* Android / PC Column */}
+              <div className="bg-background/50 border border-border/60 rounded-2xl p-4 flex flex-col justify-between gap-3 hover:border-amber-500/20 transition-all duration-300">
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">🤖</span>
+                    <h4 className="text-xs font-black text-foreground uppercase tracking-wider">Android / Chrome</h4>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground leading-normal font-medium">
+                    Supports native background sync and notifications. Installs in one-click.
+                  </p>
+                </div>
+                
+                <div className="w-full flex flex-col gap-1">
+                  <button
+                    onClick={async () => {
+                      if (deferredPrompt) {
+                        await handleInstallClick();
+                      } else {
+                        alert(
+                          language === 'hi'
+                            ? "🤖 एंड्रॉइड / क्रोम पर इंस्टॉल करने के लिए: क्रोम मेनू (ऊपर दाएं तीन बिंदु ⋮) पर क्लिक करें और 'होम स्क्रीन पर जोड़ें' या 'ऐप इंस्टॉल करें' चुनें।"
+                            : language === 'hinglish'
+                            ? "🤖 Android / Chrome par install karne ke liye: Chrome menu (top right 3 dots ⋮) par click karein aur 'Add to Home screen' ya 'Install app' select karein."
+                            : "🤖 To install on Android/Chrome: Tap the browser menu (⋮) and select 'Add to Home screen' or 'Install App'."
+                        );
+                      }
+                    }}
+                    className="w-full bg-amber-500 hover:bg-amber-600 text-black text-[11px] font-black uppercase tracking-wider py-2.5 px-4 rounded-xl transition-all shadow-md shadow-amber-500/10 active:scale-[0.98] flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <span>🤖</span> {deferredPrompt ? "Install Now" : "Android Steps"}
+                  </button>
+                  {deferredPrompt && (
+                    <span className="text-[8px] text-center text-amber-500 font-black uppercase tracking-wider animate-pulse">
+                      ⚡ Direct Install Available
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* iOS Column */}
+              <div className="bg-background/50 border border-border/60 rounded-2xl p-4 flex flex-col justify-between gap-3 hover:border-emerald-500/20 transition-all duration-300">
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">🍏</span>
+                    <h4 className="text-xs font-black text-foreground uppercase tracking-wider">Apple iOS (Safari)</h4>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground leading-normal font-medium">
+                    Run standalone directly on Apple Devices. Installed via the Safari Share menu.
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => {
                     alert(
                       language === 'hi'
-                        ? "🤖 एंड्रॉइड / क्रोम पर इंस्टॉल करने के लिए: क्रोम मेनू (ऊपर दाएं तीन बिंदु ⋮) पर क्लिक करें और 'होम स्क्रीन पर जोड़ें' या 'ऐप इंस्टॉल करें' चुनें।"
+                        ? "🍏 आईओएस (सफारी) पर इंस्टॉल करने के लिए:\n\n1. सफारी ब्राउज़र में नीचे 'शेयर' आइकन (↑) पर टैप करें।\n2. मेनू में नीचे स्क्रॉल करें और 'होम स्क्रीन में जोड़ें' (+) चुनें।"
                         : language === 'hinglish'
-                        ? "🤖 Android / Chrome par install karne ke liye: Chrome menu (top right 3 dots ⋮) par click karein aur 'Add to Home screen' ya 'Install app' select karein."
-                        : "🤖 To install on Android/Chrome: Tap the browser menu (⋮) and select 'Add to Home screen' or 'Install App'."
+                        ? "🍏 iOS (Safari) par install karne ke liye:\n\n1. Safari browser mein niche 'Share' icon (↑) par tap karein.\n2. Menu mein niche scroll karein aur 'Add to Home Screen' (+) select karein."
+                        : "🍏 To install on iOS (Safari):\n\n1. Tap the Share button (↑) in the Safari toolbar.\n2. Scroll down and select 'Add to Home Screen' (+)."
                     );
-                  }
-                }}
-                className="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-black text-xs font-black uppercase tracking-wider px-5 py-3 rounded-xl transition-all shadow-md shadow-amber-500/10 active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer animate-pulse-short"
-              >
-                <span>🤖</span> Android / Chrome
-              </button>
-              {deferredPrompt && (
-                <span className="text-[9px] text-center text-amber-500/80 font-black uppercase tracking-wider animate-pulse">
-                  ⚡ Direct Install Available
-                </span>
-              )}
+                  }}
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-black uppercase tracking-wider py-2.5 px-4 rounded-xl transition-all shadow-md shadow-emerald-600/10 active:scale-[0.98] flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <span>🍏</span> iOS Instructions
+                </button>
+              </div>
             </div>
 
-            {/* iOS Safari Install */}
-            <button
-              onClick={() => {
-                alert(
-                  language === 'hi'
-                    ? "🍏 आईओएस (सफारी) पर इंस्टॉल करने के लिए:\n\n1. सफारी ब्राउज़र में नीचे 'शेयर' आइकन (↑) पर टैप करें।\n2. मेनू में नीचे स्क्रॉल करें और 'होम स्क्रीन में जोड़ें' (+) चुनें।"
-                    : language === 'hinglish'
-                    ? "🍏 iOS (Safari) par install karne ke liye:\n\n1. Safari browser mein niche 'Share' icon (↑) par tap karein.\n2. Menu mein niche scroll karein aur 'Add to Home Screen' (+) select karein."
-                    : "🍏 To install on iOS (Safari):\n\n1. Tap the Share button (↑) in the Safari toolbar.\n2. Scroll down and select 'Add to Home Screen' (+)."
-                );
-              }}
-              className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black uppercase tracking-wider px-5 py-3 rounded-xl transition-all shadow-md shadow-emerald-600/10 active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <span>🍏</span> iPhone / iOS (Safari)
-            </button>
-
-            {/* Dismiss Button */}
-            <button
-              onClick={() => {
-                setShowUnifiedInstallBanner(false);
-                localStorage.setItem('velto_pwa_dismissed', 'true');
-              }}
-              className="w-full sm:w-auto bg-accent hover:bg-accent/80 text-muted-foreground hover:text-foreground text-xs font-semibold px-4 py-3 rounded-xl transition-all cursor-pointer text-center"
-            >
-              Dismiss
-            </button>
+            {/* Bottom Actions */}
+            <div className="flex justify-between items-center border-t border-border/60 pt-4 relative z-10 text-[9px] sm:text-[10px]">
+              <span className="text-muted-foreground font-semibold">
+                *Standalone display mode supports full screen view.
+              </span>
+              <button
+                onClick={() => {
+                  setShowUnifiedInstallBanner(false);
+                  localStorage.setItem('velto_pwa_dismissed', 'true');
+                }}
+                className="text-muted-foreground hover:text-foreground font-black uppercase tracking-wider hover:underline transition-all cursor-pointer"
+              >
+                Maybe Later
+              </button>
+            </div>
           </div>
         </div>
       )}
