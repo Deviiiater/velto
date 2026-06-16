@@ -265,7 +265,7 @@ export default function Home() {
   const [announcementsLoading, setAnnouncementsLoading] = useState(true);
 
   useEffect(() => {
-    const totalSlides = 1 + (announcements?.length || 0);
+    const totalSlides = announcements?.length || 0;
     if (totalSlides <= 1) return;
     const interval = setInterval(() => {
       setActiveDealIndex((prev) => (prev + 1) % totalSlides);
@@ -1534,151 +1534,166 @@ export default function Home() {
           )}
         </div>
 
-        {/* 🎪 Auto-Scrolling Banners & Deals Carousel */}
-        <div className="w-full flex flex-col gap-2 z-10">
+        {/* ✨ Featured Highlight Banner (Foodie Verse) */}
+        <div className="w-full flex flex-col gap-1.5 z-10">
           <div className="flex justify-between items-center px-1">
-            <span className="text-[10px] font-black uppercase text-zinc-300 tracking-wider">Active Banners & Offers</span>
-            <span className="text-[8px] bg-white/20 px-2 py-0.5 rounded text-white font-bold uppercase">
-              {1 + announcements.length} Active
+            <span className="text-[10px] font-black uppercase text-zinc-300 tracking-wider">🔥 Special Highlight</span>
+            <span className="text-[8px] bg-[#ffd700]/25 text-[#ffd700] px-2 py-0.5 rounded font-black uppercase tracking-wider animate-pulse">
+              EXCLUSIVE
             </span>
           </div>
-
-          <div className="relative w-full overflow-hidden rounded-3xl">
-            <div 
-              className="flex transition-transform duration-500 ease-in-out"
-              style={{ transform: `translateX(-${activeDealIndex * 100}%)` }}
-            >
-              {/* Slide 0: Default Foodie Verse Banner */}
-              <div className="w-full shrink-0 p-0.5">
-                <div className="w-full bg-[#ffd700] text-[#3a014c] rounded-2xl p-4 flex justify-between items-center relative overflow-hidden shadow-inner border border-[#ffd700]/40 h-[105px]">
-                  <div className="flex flex-col text-left">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-xl font-black italic tracking-tighter uppercase text-[#3a014c] drop-shadow-sm">FOODIE VERSE</span>
-                      <span className="bg-[#3a014c] text-[#ffd700] text-[8px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider">ORDER NOW</span>
-                    </div>
-                    <span className="text-xs font-black tracking-tight uppercase mt-0.5">Flat ₹200 OFF & MORE</span>
-                  </div>
-                  <div className="text-2xl animate-bounce shrink-0">🍕</div>
-                </div>
-              </div>
-
-              {/* Slides 1+: Supabase Announcements */}
-              {announcements.map((ann) => {
-                let cardBg = 'from-[#5a187a] to-[#360447]';
-                let icon = <Megaphone className="text-[#ffd700]" size={16} />;
-                let badgeText = 'DEAL';
-                let badgeColor = 'bg-[#ffd700]/25 text-[#ffd700]';
-                
-                if (ann.type === 'sos') {
-                  cardBg = 'from-[#8b0000] to-[#4c0202]';
-                  icon = <AlertCircle className="text-white animate-pulse" size={16} />;
-                  badgeText = 'SOS';
-                  badgeColor = 'bg-white/25 text-white';
-                } else if (ann.type === 'diet') {
-                  cardBg = 'from-[#1a492f] to-[#0f2a1b]';
-                  icon = <Dumbbell className="text-emerald-400" size={16} />;
-                  badgeText = 'DIET';
-                  badgeColor = 'bg-emerald-400/20 text-emerald-400';
-                } else if (ann.type === 'promo') {
-                  cardBg = 'from-[#916b0b] to-[#473403]';
-                  icon = <Tag className="text-[#ffd700]" size={16} />;
-                  badgeText = 'CODE';
-                  badgeColor = 'bg-[#ffd700]/20 text-[#ffd700]';
-                } else if (ann.type === 'offer') {
-                  cardBg = 'from-[#0b6375] to-[#04343e]';
-                  icon = <ShoppingBag className="text-cyan-400" size={16} />;
-                  badgeText = 'OFFER';
-                  badgeColor = 'bg-cyan-400/25 text-cyan-400';
-                }
-
-                return (
-                  <div key={ann.id} className="w-full shrink-0 p-0.5">
-                    <div className={`w-full h-[105px] rounded-2xl p-4 bg-gradient-to-br ${cardBg} border border-white/10 shadow-lg flex flex-col justify-between text-left`}>
-                      <div className="space-y-1">
-                        <div className="flex items-center justify-between">
-                          <span className={`text-[8px] font-black tracking-widest px-2 py-0.5 rounded-full uppercase ${badgeColor}`}>
-                            {badgeText}
-                          </span>
-                          <span className="text-[8px] text-zinc-300 font-medium">
-                            {new Date(ann.created_at).toLocaleDateString(undefined, { dateStyle: 'short' })}
-                          </span>
-                        </div>
-                        <h3 className="text-xs font-black text-white flex items-center gap-1.5 line-clamp-1">
-                          {icon}
-                          {ann.title}
-                        </h3>
-                        <p className="text-[10px] text-zinc-200 line-clamp-1 leading-snug">
-                          {ann.content}
-                        </p>
-                      </div>
-                      
-                      {ann.type === 'diet' && (
-                        <button
-                          onClick={() => {
-                            setSearchQuery('healthy');
-                            showToast("🥗 Diet Filter Applied! Showing health items.", 'success');
-                          }}
-                          className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-[9px] uppercase py-1 rounded-lg transition-all cursor-pointer"
-                        >
-                          Apply Diet Filter
-                        </button>
-                      )}
-                      {ann.type === 'sos' && (
-                        <button
-                          onClick={() => {
-                            setEmergencyMode(true);
-                            setSearchQuery('Medicine');
-                            showToast("🚨 SOS Mode Activated!", 'warning');
-                          }}
-                          className="w-full bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-[9px] uppercase py-1 rounded-lg transition-all cursor-pointer"
-                        >
-                          Request Dispatch
-                        </button>
-                      )}
-                      {ann.type === 'promo' && (
-                        <button
-                          onClick={() => {
-                            navigator.clipboard.writeText("HEAL20");
-                            showToast("📋 Code 'HEAL20' copied!", 'success');
-                          }}
-                          className="w-full bg-[#ffd700] hover:bg-[#ffe043] text-black font-extrabold text-[9px] uppercase py-1 rounded-lg transition-all cursor-pointer"
-                        >
-                          Copy: HEAL20
-                        </button>
-                      )}
-                      {ann.type === 'offer' && (
-                        <button
-                          onClick={() => {
-                            setSearchQuery('Offer');
-                            showToast("🎉 Special Offers Applied!", 'success');
-                          }}
-                          className="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-extrabold text-[9px] uppercase py-1 rounded-lg transition-all cursor-pointer"
-                        >
-                          View Offers
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+          <div className="relative overflow-hidden rounded-2xl group cursor-pointer transition-transform duration-300 hover:scale-[1.01] active:scale-[0.99] shadow-lg border border-[#ffd700]/30">
+            {/* Shifting Gradient Background */}
+            <div className="absolute inset-0 bg-gradient-to-r from-[#ffd700] via-[#ffe57f] to-[#ffb300] bg-[length:200%_auto] animate-gradient-shift" />
             
-            {/* Dot Indicators */}
-            {announcements.length > 0 && (
-              <div className="flex justify-center gap-1.5 mt-2">
-                {[...Array(1 + announcements.length)].map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setActiveDealIndex(idx)}
-                    className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                      activeDealIndex === idx ? 'w-4 bg-[#ffd700]' : 'w-1.5 bg-white/30'
-                    }`}
-                  />
-                ))}
+            {/* Glass overlay shine */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-shine-effect pointer-events-none" />
+
+            <div className="w-full p-4 flex justify-between items-center relative z-10 h-[105px]">
+              <div className="flex flex-col text-left">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xl font-black italic tracking-tighter uppercase text-[#3a014c] drop-shadow-sm animate-pulse">FOODIE VERSE</span>
+                  <span className="bg-[#3a014c] text-[#ffd700] text-[8px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider">ORDER NOW</span>
+                </div>
+                <span className="text-xs font-black tracking-tight uppercase mt-0.5 text-[#3a014c]">Flat ₹200 OFF & MORE</span>
               </div>
-            )}
+              <div className="text-3xl animate-[bounce_2s_infinite] shrink-0 drop-shadow-md select-none">🍕</div>
+            </div>
           </div>
         </div>
+
+        {/* 🎪 Auto-Scrolling Active Deals Carousel */}
+        {announcements.length > 0 && (
+          <div className="w-full flex flex-col gap-1.5 z-10">
+            <div className="flex justify-between items-center px-1">
+              <span className="text-[10px] font-black uppercase text-zinc-300 tracking-wider">📢 Active Deals & Alerts</span>
+              <span className="text-[8px] bg-white/20 px-2 py-0.5 rounded text-white font-bold uppercase">
+                {announcements.length} Active
+              </span>
+            </div>
+
+            <div className="relative w-full overflow-hidden rounded-3xl">
+              <div 
+                className="flex transition-transform duration-500 ease-in-out"
+                style={{ transform: `translateX(-${activeDealIndex * 100}%)` }}
+              >
+                {announcements.map((ann) => {
+                  let cardBg = 'from-[#5a187a] to-[#360447]';
+                  let icon = <Megaphone className="text-[#ffd700]" size={16} />;
+                  let badgeText = 'DEAL';
+                  let badgeColor = 'bg-[#ffd700]/25 text-[#ffd700]';
+                  
+                  if (ann.type === 'sos') {
+                    cardBg = 'from-[#8b0000] to-[#4c0202]';
+                    icon = <AlertCircle className="text-white animate-pulse" size={16} />;
+                    badgeText = 'SOS';
+                    badgeColor = 'bg-white/25 text-white';
+                  } else if (ann.type === 'diet') {
+                    cardBg = 'from-[#1a492f] to-[#0f2a1b]';
+                    icon = <Dumbbell className="text-emerald-400" size={16} />;
+                    badgeText = 'DIET';
+                    badgeColor = 'bg-emerald-400/20 text-emerald-400';
+                  } else if (ann.type === 'promo') {
+                    cardBg = 'from-[#916b0b] to-[#473403]';
+                    icon = <Tag className="text-[#ffd700]" size={16} />;
+                    badgeText = 'CODE';
+                    badgeColor = 'bg-[#ffd700]/20 text-[#ffd700]';
+                  } else if (ann.type === 'offer') {
+                    cardBg = 'from-[#0b6375] to-[#04343e]';
+                    icon = <ShoppingBag className="text-cyan-400" size={16} />;
+                    badgeText = 'OFFER';
+                    badgeColor = 'bg-cyan-400/25 text-cyan-400';
+                  }
+
+                  return (
+                    <div key={ann.id} className="w-full shrink-0 p-0.5">
+                      <div className={`w-full h-[105px] rounded-2xl p-4 bg-gradient-to-br ${cardBg} border border-white/10 shadow-lg flex flex-col justify-between text-left`}>
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between">
+                            <span className={`text-[8px] font-black tracking-widest px-2 py-0.5 rounded-full uppercase ${badgeColor}`}>
+                              {badgeText}
+                            </span>
+                            <span className="text-[8px] text-zinc-300 font-medium">
+                              {new Date(ann.created_at).toLocaleDateString(undefined, { dateStyle: 'short' })}
+                            </span>
+                          </div>
+                          <h3 className="text-xs font-black text-white flex items-center gap-1.5 line-clamp-1">
+                            {icon}
+                            {ann.title}
+                          </h3>
+                          <p className="text-[10px] text-zinc-200 line-clamp-1 leading-snug">
+                            {ann.content}
+                          </p>
+                        </div>
+                        
+                        {ann.type === 'diet' && (
+                          <button
+                            onClick={() => {
+                              setSearchQuery('healthy');
+                              showToast("🥗 Diet Filter Applied! Showing health items.", 'success');
+                            }}
+                            className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-[9px] uppercase py-1 rounded-lg transition-all cursor-pointer"
+                          >
+                            Apply Diet Filter
+                          </button>
+                        )}
+                        {ann.type === 'sos' && (
+                          <button
+                            onClick={() => {
+                              setEmergencyMode(true);
+                              setSearchQuery('Medicine');
+                              showToast("🚨 SOS Mode Activated!", 'warning');
+                            }}
+                            className="w-full bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-[9px] uppercase py-1 rounded-lg transition-all cursor-pointer"
+                          >
+                            Request Dispatch
+                          </button>
+                        )}
+                        {ann.type === 'promo' && (
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText("HEAL20");
+                              showToast("📋 Code 'HEAL20' copied!", 'success');
+                            }}
+                            className="w-full bg-[#ffd700] hover:bg-[#ffe043] text-black font-extrabold text-[9px] uppercase py-1 rounded-lg transition-all cursor-pointer"
+                          >
+                            Copy: HEAL20
+                          </button>
+                        )}
+                        {ann.type === 'offer' && (
+                          <button
+                            onClick={() => {
+                              setSearchQuery('Offer');
+                              showToast("🎉 Special Offers Applied!", 'success');
+                            }}
+                            className="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-extrabold text-[9px] uppercase py-1 rounded-lg transition-all cursor-pointer"
+                          >
+                            View Offers
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              
+              {/* Dot Indicators */}
+              {announcements.length > 1 && (
+                <div className="flex justify-center gap-1.5 mt-2">
+                  {announcements.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setActiveDealIndex(idx)}
+                      className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                        activeDealIndex === idx ? 'w-4 bg-[#ffd700]' : 'w-1.5 bg-white/30'
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* ─── WHITE/CARD CONTENT BODY CONTAINER ─── */}
