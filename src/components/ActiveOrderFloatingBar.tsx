@@ -70,20 +70,8 @@ export function ActiveOrderFloatingBar() {
     };
   }, [user]);
 
-  // Don't render floating bar if:
-  // 1. No active order
-  // 2. Currently on the live tracking page (redundant)
-  // 3. Currently on dashboard panels (warehouse/rider/admin)
-  if (
-    !activeOrder || 
-    pathname.includes('/orders/') || 
-    pathname.includes('/store-panel') || 
-    pathname.includes('/rider-panel') || 
-    pathname.includes('/kitchen') || 
-    pathname.includes('/warehouse') || 
-    pathname.includes('/login') || 
-    pathname.includes('/admin')
-  ) {
+  // Render floating bar ONLY on the customer homepage ('/')
+  if (!activeOrder || pathname !== '/') {
     return null;
   }
 
