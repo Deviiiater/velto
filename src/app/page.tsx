@@ -1904,11 +1904,21 @@ export default function Home() {
                   return (
                     <>
                       {isFallback && (
-                        <div className="col-span-full p-4 rounded-2xl bg-primary/5 border border-primary/10 text-xs font-bold text-primary flex items-center gap-3 backdrop-blur-md animate-pulse">
-                          <Sparkles className="w-5 h-5 text-primary flex-shrink-0 animate-pulse" />
-                          <div>
-                            <p className="font-extrabold text-sm mb-0.5">No direct matches for &quot;{searchQuery}&quot;</p>
-                            <p className="opacity-85 font-medium">Here are some yummy chocolates, cookies, and cakes for you! 🍫🍪🍰</p>
+                        <div className="col-span-full p-5 rounded-3xl bg-gradient-to-r from-violet-600/10 to-fuchsia-600/10 border border-violet-500/20 text-xs font-bold text-violet-300 flex flex-col md:flex-row items-center gap-4 backdrop-blur-xl shadow-2xl relative overflow-hidden">
+                          {/* Glowing background radial blur */}
+                          <span className="absolute top-0 right-0 w-24 h-24 bg-violet-500/10 rounded-full blur-2xl -z-10"></span>
+                          <span className="absolute bottom-0 left-0 w-24 h-24 bg-fuchsia-500/10 rounded-full blur-2xl -z-10"></span>
+                          
+                          <div className="bg-gradient-to-tr from-violet-600 to-fuchsia-600 p-3 rounded-2xl text-white shadow-lg shadow-violet-500/25 flex-shrink-0 animate-bounce">
+                            <Sparkles className="w-6 h-6 animate-pulse" />
+                          </div>
+                          <div className="flex-1 text-center md:text-left">
+                            <p className="font-black text-sm text-white mb-1 uppercase tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-white via-zinc-200 to-zinc-400">
+                              No Direct Matches for &quot;{searchQuery}&quot;
+                            </p>
+                            <p className="opacity-80 font-medium text-[11px] text-zinc-300">
+                              Don&apos;t worry, we&apos;ve got you covered! Automatically showing mouth-watering chocolates, cookies, and cakes to satisfy your cravings. 🍫🍪🍰
+                            </p>
                           </div>
                         </div>
                       )}
