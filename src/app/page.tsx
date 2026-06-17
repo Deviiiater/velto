@@ -352,6 +352,20 @@ export default function Home() {
           created_at: new Date(Date.now() - 7200000).toISOString()
         },
         {
+          id: 'mock-offer-1',
+          title: '⚡ 10-Min Super Saver Hour!',
+          content: 'Flat 50% discount on fresh organic strawberries and blueberries for the next 45 minutes.',
+          type: 'offer',
+          created_at: new Date(Date.now() - 14400000).toISOString()
+        },
+        {
+          id: 'mock-promo-2',
+          title: '🍕 Friday Midnight Feast Deal',
+          content: 'Order from Top Cloud Kitchens and get free garlic bread + dessert on orders above ₹350. Code: FEAST50',
+          type: 'promo',
+          created_at: new Date(Date.now() - 18000000).toISOString()
+        },
+        {
           id: 'mock-ann-1',
           title: '📢 Weekend Late Night Kitchen Deliveries',
           content: 'Satisfy late midnight cravings! Cloud Kitchen is now delivering gourmet meals and snacks until 3:00 AM on Friday & Saturday.',
@@ -1474,17 +1488,23 @@ export default function Home() {
             </div>
             <button 
               onClick={() => router.push('/profile')}
-              className="relative w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-[#ff5e97] text-white hover:scale-105 active:scale-95 transition-all shadow-md font-black text-sm uppercase flex items-center justify-center border-2 border-white/20"
+              className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-white/20 hover:scale-105 active:scale-95 transition-all shadow-md flex items-center justify-center bg-zinc-800 shrink-0"
               title="My Orders Profile"
             >
-              {user?.email ? (
-                <span>{profileName ? profileName[0] : user.email[0]}</span>
+              {user ? (
+                <img 
+                  src={`https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(profileName || user.email || 'Velto')}&radius=50&backgroundColor=ff2d55,ff5e97,af52de`}
+                  alt="Profile" 
+                  className="w-full h-full object-cover"
+                />
               ) : (
-                <UserIcon size={18} />
+                <div className="w-full h-full bg-gradient-to-tr from-primary to-[#ff5e97] flex items-center justify-center text-white">
+                  <UserIcon size={18} />
+                </div>
               )}
               {/* Online status indicator */}
               {user && (
-                <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-[#3a014c] rounded-full shadow-sm animate-pulse"></span>
+                <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-[#3a014c] rounded-full shadow-sm animate-pulse z-10"></span>
               )}
             </button>
           </div>
