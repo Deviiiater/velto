@@ -31,8 +31,13 @@ const MOCK_PRODUCTS: Product[] = [
   { id: 'combo-student', name: 'Student Study Late-Night Combo', description: 'Chai + Instant Noodles + Potato Chips packet to fuel study sessions.', price: 99, image_url: '', category: 'Cloud Kitchen' },
   { id: 'combo-chai', name: 'Chai & Ginger Samosa Evening Combo', description: 'Fresh brewing ginger tea flask with 2 hot crunchy samosas.', price: 60, image_url: '', category: 'Cloud Kitchen' },
   { id: 'combo-family', name: 'Family Sunday Breakfast Combo', description: 'Bread + Butter + 1L Milk pack + 6 Eggs bundle.', price: 240, image_url: '', category: 'Dairy & Bread' },
-  { id: 'combo-workout', name: 'Healthy Morning Workout Combo', description: '1kg Bananas + 120g Greek Yogurt cup.', price: 110, image_url: '', category: 'Fresh Fruits' }
+  { id: 'combo-workout', name: 'Healthy Morning Workout Combo', description: '1kg Bananas + 120g Greek Yogurt cup.', price: 110, image_url: '', category: 'Fresh Fruits' },
+  { id: 'mock-choco-cookies', name: 'Chocolate Chip Cookies', description: 'Crunchy baked cookies with rich cocoa chocolate chips.', price: 80, image_url: '', category: 'Snacks' },
+  { id: 'mock-dark-choco', name: 'Premium Dark Chocolate', description: '70% rich cocoa Belgian dark chocolate bar.', price: 150, image_url: '', category: 'Snacks' },
+  { id: 'mock-choco-shake', name: 'Chocolate Milkshake', description: 'Creamy cold milkshake blended with rich chocolate syrup.', price: 120, image_url: '', category: 'Beverages' },
+  { id: 'mock-choco-cake', name: 'Fudge Chocolate Cake', description: 'Decadent slice of double chocolate fudge cake.', price: 180, image_url: '', category: 'Cloud Kitchen' }
 ];
+
 
 const getLevenshteinDistance = (a: string, b: string): number => {
   const tmp = [];
@@ -1869,6 +1874,25 @@ export default function Home() {
                     });
                   }
 
+                  let isFallback = false;
+                  if (filtered.length === 0) {
+                    isFallback = true;
+                    filtered = products.filter(p => {
+                      const name = p.name.toLowerCase();
+                      const desc = (p.description || '').toLowerCase();
+                      const cat = (p.category || '').toLowerCase();
+                      return (
+                        name.includes('chocolate') || name.includes('choc') ||
+                        name.includes('cookie') || name.includes('cookies') ||
+                        name.includes('cake') || name.includes('brownie') ||
+                        desc.includes('chocolate') || desc.includes('cookie') ||
+                        desc.includes('cookies') || desc.includes('cake') ||
+                        cat.includes('chocolate') || cat.includes('cookie') ||
+                        cat.includes('cake')
+                      );
+                    });
+                  }
+
                   if (filtered.length === 0) {
                     return (
                       <div className="col-span-full py-12 text-center text-xs font-bold text-muted-foreground border border-dashed border-border rounded-3xl bg-accent/10">
@@ -1877,9 +1901,22 @@ export default function Home() {
                     );
                   }
 
-                  return filtered.map(product => (
-                    <ProductCard key={product.id} product={product} />
-                  ));
+                  return (
+                    <>
+                      {isFallback && (
+                        <div className="col-span-full p-4 rounded-2xl bg-primary/5 border border-primary/10 text-xs font-bold text-primary flex items-center gap-3 backdrop-blur-md animate-pulse">
+                          <Sparkles className="w-5 h-5 text-primary flex-shrink-0 animate-pulse" />
+                          <div>
+                            <p className="font-extrabold text-sm mb-0.5">No direct matches for &quot;{searchQuery}&quot;</p>
+                            <p className="opacity-85 font-medium">Here are some yummy chocolates, cookies, and cakes for you! 🍫🍪🍰</p>
+                          </div>
+                        </div>
+                      )}
+                      {filtered.map(product => (
+                        <ProductCard key={product.id} product={product} />
+                      ))}
+                    </>
+                  );
                 })()}
               </div>
             )}
