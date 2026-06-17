@@ -1609,7 +1609,7 @@ export default function Home() {
         </div>
 
         {/* 🚲 Interactive Delivery Rider Animation */}
-        <DeliveryRiderAnimation />
+        {!searchQuery.trim() && <DeliveryRiderAnimation />}
 
         {/* ✨ Featured Highlights Carousel (Infinite Auto-slide) */}
         {!searchQuery.trim() && (
