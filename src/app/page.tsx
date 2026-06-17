@@ -503,6 +503,7 @@ export default function Home() {
       }
       const speech = alternatives[0]; // primary transcript
       setVoiceStatus(`🎙️ "${speech}"`);
+      setSearchQuery(speech);
       setTimeout(() => setVoiceStatus(''), 4000);
 
       // ── CONFIRMATION FLOW ────────────────────────────────────────────────
@@ -1603,7 +1604,7 @@ export default function Home() {
         </div>
 
         {/* 🚲 Interactive Delivery Rider Animation */}
-        {!searchQuery.trim() && <DeliveryRiderAnimation />}
+        <DeliveryRiderAnimation />
 
         {/* ✨ Featured Highlights Carousel (Infinite Auto-slide) */}
         {!searchQuery.trim() && (
