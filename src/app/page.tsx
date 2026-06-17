@@ -1537,7 +1537,7 @@ export default function Home() {
               placeholder={searchPlaceholder}
               value={searchQuery}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="flex-1 bg-transparent border-none focus:outline-none text-zinc-800 text-xs sm:text-sm font-bold placeholder:text-zinc-400 min-w-0 py-1.5 px-1"
+              className="flex-1 bg-transparent border-none focus:outline-none text-zinc-800 text-[16px] sm:text-sm font-bold placeholder:text-zinc-400 min-w-0 py-1.5 px-1"
             />
             
             <button
