@@ -12,14 +12,14 @@ export default function DeliveryRiderAnimation() {
 
   if (lowInternetMode) {
     return (
-      <div className="relative w-full h-[80px] bg-accent/20 rounded-2xl border border-border/40 p-4 flex items-center justify-between shadow-sm select-none">
+      <div className="relative w-full h-[80px] bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 p-4 flex items-center justify-between shadow-sm select-none">
         <div className="flex items-center gap-3">
           <div className="p-2.5 bg-primary/10 text-primary rounded-xl">
             <Bike size={24} />
           </div>
           <div>
             <h4 className="text-xs font-black uppercase text-primary tracking-wider">Superfast Doorstep Delivery</h4>
-            <p className="text-[10px] text-muted-foreground font-semibold">Delivered in 10 minutes from our nearest hub.</p>
+            <p className="text-[10px] text-zinc-200 font-semibold">Delivered in 10 minutes from our nearest hub.</p>
           </div>
         </div>
         <div className="bg-emerald-500/10 text-emerald-500 px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider">
@@ -58,7 +58,7 @@ export default function DeliveryRiderAnimation() {
 
   return (
     <div 
-      className="relative w-full overflow-hidden h-[180px] bg-accent/20 rounded-2xl border border-border/40 p-4 shadow-sm select-none cursor-pointer transition-all duration-300 hover:shadow-md hover:border-primary/20"
+      className="relative w-full overflow-hidden h-[180px] bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 p-4 shadow-sm select-none cursor-pointer transition-all duration-300 hover:shadow-md hover:border-white/20"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >

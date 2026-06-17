@@ -1594,6 +1594,9 @@ export default function Home() {
           )}
         </div>
 
+        {/* 🚲 Interactive Delivery Rider Animation */}
+        <DeliveryRiderAnimation />
+
         {/* ✨ Featured Highlights Carousel (Infinite Auto-slide) */}
         <div className="w-full flex flex-col gap-1.5 z-10">
           <div className="flex justify-between items-center px-1">
@@ -1879,9 +1882,6 @@ export default function Home() {
         ) : (
           /* 🏠 Standard Browse View */
           <>
-            {/* 🚲 Interactive Delivery Rider Animation */}
-            <DeliveryRiderAnimation />
-
             {/* 🚀 Quick Super-Service Selector Grid */}
             <div className="grid grid-cols-2 gap-3.5">
               <button 
