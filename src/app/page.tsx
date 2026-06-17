@@ -123,6 +123,17 @@ export default function Home() {
   const [spellingSuggestions, setSpellingSuggestions] = useState<string[]>([]);
   const [addedProductId, setAddedProductId] = useState<string | null>(null);
   const [profileName, setProfileName] = useState<string>('');
+  const [searchPlaceholder, setSearchPlaceholder] = useState("Search for 'chocolate'...");
+
+  useEffect(() => {
+    const items = ["chocolate", "cookies", "cake"];
+    let idx = 0;
+    const interval = setInterval(() => {
+      idx = (idx + 1) % items.length;
+      setSearchPlaceholder(`Search for '${items[idx]}' or fresh meals...`);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     async function fetchProfile() {
@@ -410,12 +421,8 @@ export default function Home() {
 
   // Text synthesis to voice helper
   const speakResponse = (text: string) => {
-    if (typeof window !== 'undefined' && window.speechSynthesis) {
-      window.speechSynthesis.cancel(); // stop any active speech
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = language === 'hi' || language === 'hinglish' ? 'hi-IN' : 'en-IN';
-      window.speechSynthesis.speak(utterance);
-    }
+    // Muted per user request to avoid annoying sounds on every action
+    console.log("Muted voice feedback:", text);
   };
 
   // ─── VOICE COMMAND INTELLIGENCE ENGINE ───────────────────────────────────
@@ -1521,7 +1528,7 @@ export default function Home() {
             <Search className="text-zinc-400 ml-2.5 shrink-0" size={18} />
             <input
               type="text"
-              placeholder="Search for 'EatRight' or fresh meals..."
+              placeholder={searchPlaceholder}
               value={searchQuery}
               onChange={(e) => handleSearchChange(e.target.value)}
               className="flex-1 bg-transparent border-none focus:outline-none text-zinc-800 text-xs sm:text-sm font-bold placeholder:text-zinc-400 min-w-0 py-1.5 px-1"
@@ -1583,9 +1590,14 @@ export default function Home() {
             </div>
           )}
 
-          {voiceStatus && (
+          {voiceStatus ? (
             <div className="bg-primary/20 border border-primary/30 text-xs font-bold text-white p-2.5 rounded-xl animate-pulse">
               🎤 {voiceStatus}
+            </div>
+          ) : (
+            <div className="flex items-center gap-1.5 justify-center py-1 text-[9px] font-black uppercase tracking-wider text-primary/80">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary animate-ping shrink-0"></span>
+              🎙️ Open to place order verbally
             </div>
           )}
         </div>
