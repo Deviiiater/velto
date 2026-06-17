@@ -1,0 +1,19 @@
+{
+  "name": "Velto Kitchen - Order Preparer",
+  "short_name": "Velto Kitchen",
+  "description": "Cloud Kitchen order status and preparations manager console",
+  "start_url": "/kitchen",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#ea580c",
+  "orientation": "portrait",
+  "scope": "/kitchen",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
