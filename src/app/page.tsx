@@ -122,6 +122,29 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [spellingSuggestions, setSpellingSuggestions] = useState<string[]>([]);
   const [addedProductId, setAddedProductId] = useState<string | null>(null);
+  const [profileName, setProfileName] = useState<string>('');
+
+  useEffect(() => {
+    async function fetchProfile() {
+      if (!user) {
+        setProfileName('');
+        return;
+      }
+      try {
+        const { data, error } = await supabase
+          .from('users')
+          .select('full_name')
+          .eq('id', user.id)
+          .single();
+        if (!error && data) {
+          setProfileName(data.full_name || '');
+        }
+      } catch (err) {
+        console.warn("Could not fetch user profile:", err);
+      }
+    }
+    fetchProfile();
+  }, [user]);
 
   // Premium Voice Ordering states
   const [voiceListening, setVoiceListening] = useState(false);
@@ -1451,10 +1474,18 @@ export default function Home() {
             </div>
             <button 
               onClick={() => router.push('/profile')}
-              className="w-10 h-10 rounded-full bg-primary/20 hover:bg-primary/30 border border-primary/30 flex items-center justify-center text-white hover:scale-105 active:scale-95 transition-all shadow-md font-black text-xs uppercase"
+              className="relative w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-[#ff5e97] text-white hover:scale-105 active:scale-95 transition-all shadow-md font-black text-sm uppercase flex items-center justify-center border-2 border-white/20"
               title="My Orders Profile"
             >
-              {user?.email ? user.email[0] : <UserIcon size={18} />}
+              {user?.email ? (
+                <span>{profileName ? profileName[0] : user.email[0]}</span>
+              ) : (
+                <UserIcon size={18} />
+              )}
+              {/* Online status indicator */}
+              {user && (
+                <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-[#3a014c] rounded-full shadow-sm animate-pulse"></span>
+              )}
             </button>
           </div>
         </div>
@@ -1578,36 +1609,47 @@ export default function Home() {
                 style={{ transform: `translateX(-${activeDealIndex * 100}%)` }}
               >
                 {announcements.map((ann) => {
-                  let cardBg = 'from-[#5a187a] to-[#360447]';
+                  let borderLeftColor = 'border-l-primary';
+                  let cardBg = 'bg-white/5 border border-white/10';
                   let icon = <Megaphone className="text-[#ffd700]" size={16} />;
                   let badgeText = 'DEAL';
                   let badgeColor = 'bg-[#ffd700]/25 text-[#ffd700]';
                   
                   if (ann.type === 'sos') {
-                    cardBg = 'from-[#8b0000] to-[#4c0202]';
-                    icon = <AlertCircle className="text-white animate-pulse" size={16} />;
+                    borderLeftColor = 'border-l-rose-500';
+                    cardBg = 'bg-rose-500/10 border border-rose-500/20';
+                    icon = <AlertCircle className="text-rose-400 animate-pulse" size={16} />;
                     badgeText = 'SOS';
-                    badgeColor = 'bg-white/25 text-white';
+                    badgeColor = 'bg-rose-500/20 text-rose-300 border border-rose-500/30';
                   } else if (ann.type === 'diet') {
-                    cardBg = 'from-[#1a492f] to-[#0f2a1b]';
+                    borderLeftColor = 'border-l-emerald-500';
+                    cardBg = 'bg-emerald-500/10 border border-emerald-500/20';
                     icon = <Dumbbell className="text-emerald-400" size={16} />;
                     badgeText = 'DIET';
-                    badgeColor = 'bg-emerald-400/20 text-emerald-400';
+                    badgeColor = 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
                   } else if (ann.type === 'promo') {
-                    cardBg = 'from-[#916b0b] to-[#473403]';
-                    icon = <Tag className="text-[#ffd700]" size={16} />;
+                    borderLeftColor = 'border-l-amber-500';
+                    cardBg = 'bg-amber-500/10 border border-amber-500/20';
+                    icon = <Tag className="text-amber-400" size={16} />;
                     badgeText = 'CODE';
-                    badgeColor = 'bg-[#ffd700]/20 text-[#ffd700]';
+                    badgeColor = 'bg-amber-500/20 text-amber-300 border border-amber-500/30';
                   } else if (ann.type === 'offer') {
-                    cardBg = 'from-[#0b6375] to-[#04343e]';
+                    borderLeftColor = 'border-l-cyan-500';
+                    cardBg = 'bg-cyan-500/10 border border-cyan-500/20';
                     icon = <ShoppingBag className="text-cyan-400" size={16} />;
                     badgeText = 'OFFER';
-                    badgeColor = 'bg-cyan-400/25 text-cyan-400';
+                    badgeColor = 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30';
+                  } else {
+                    borderLeftColor = 'border-l-primary';
+                    cardBg = 'bg-primary/10 border border-primary/20';
+                    icon = <Megaphone className="text-[#ffd700]" size={16} />;
+                    badgeText = 'ANNC';
+                    badgeColor = 'bg-primary/20 text-primary-300 border border-primary/30';
                   }
 
                   return (
                     <div key={ann.id} className="w-full shrink-0 p-0.5">
-                      <div className={`w-full h-[105px] rounded-2xl p-4 bg-gradient-to-br ${cardBg} border border-white/10 shadow-lg flex flex-col justify-between text-left`}>
+                      <div className={`w-full h-[105px] rounded-2xl p-4 ${cardBg} border-l-4 ${borderLeftColor} shadow-lg flex flex-col justify-between text-left relative overflow-hidden backdrop-blur-md`}>
                         <div className="space-y-1">
                           <div className="flex items-center justify-between">
                             <span className={`text-[8px] font-black tracking-widest px-2 py-0.5 rounded-full uppercase ${badgeColor}`}>
