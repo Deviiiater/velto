@@ -1470,7 +1470,7 @@ export default function Home() {
         </div>
       )}
       {/* 🚀 Deep Purple Top Header Area (Location, Search, Marquee, Promo cards) */}
-      <div className="-mx-4 -mt-4 p-5 sm:-mx-8 sm:-mt-8 sm:p-8 bg-gradient-to-b from-[#3a014c] to-[#20002b] text-white rounded-b-[2.5rem] flex flex-col gap-5 relative overflow-hidden shadow-2xl pb-8">
+      <div className="-mx-4 -mt-4 p-4 sm:-mx-8 sm:-mt-8 sm:p-6 bg-gradient-to-b from-[#3a014c] to-[#20002b] text-white rounded-b-[2.5rem] flex flex-col gap-3 relative overflow-hidden shadow-2xl pb-6">
         {/* Ambient glows */}
         <div className="absolute top-0 right-0 -mt-10 -mr-10 w-48 h-48 rounded-full bg-primary/20 blur-[60px] pointer-events-none"></div>
         <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-48 h-48 rounded-full bg-amber-500/10 blur-[60px] pointer-events-none"></div>
@@ -1497,20 +1497,16 @@ export default function Home() {
             </div>
             <button 
               onClick={() => router.push('/profile')}
-              className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-white/20 hover:scale-105 active:scale-95 transition-all shadow-md flex items-center justify-center bg-zinc-800 shrink-0"
+              className="relative w-10 h-10 rounded-full border-2 border-white/20 hover:scale-105 active:scale-95 transition-all shadow-md flex items-center justify-center bg-gradient-to-tr from-primary to-[#ff5e97] shrink-0 overflow-hidden group"
               title="My Orders Profile"
             >
-              {user ? (
-                <img 
-                  src={`https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(profileName || user.email || 'Velto')}&radius=50&backgroundColor=ff2d55,ff5e97,af52de`}
-                  alt="Profile" 
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full bg-gradient-to-tr from-primary to-[#ff5e97] flex items-center justify-center text-white">
-                  <UserIcon size={18} />
-                </div>
-              )}
+              <svg viewBox="0 0 100 100" className="w-7 h-7 text-white select-none">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" strokeWidth="2" className="opacity-30 group-hover:animate-spin" style={{ transformOrigin: '50px 50px', animationDuration: '4s' }} />
+                <circle cx="50" cy="38" r="16" fill="currentColor" className="transition-transform duration-300 group-hover:-translate-y-0.5" />
+                <path d="M20 76 C 20 54, 80 54, 80 76 Z" fill="currentColor" className="transition-transform duration-300 group-hover:translate-y-0.5" />
+                <circle cx="28" cy="28" r="3" fill="#ffd700" className="animate-pulse" />
+                <circle cx="72" cy="32" r="2" fill="#ffd700" className="animate-pulse" style={{ animationDelay: '0.4s' }} />
+              </svg>
               {/* Online status indicator */}
               {user && (
                 <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-[#3a014c] rounded-full shadow-sm animate-pulse z-10"></span>
@@ -1598,12 +1594,9 @@ export default function Home() {
         <DeliveryRiderAnimation />
 
         {/* ✨ Featured Highlights Carousel (Infinite Auto-slide) */}
-        <div className="w-full flex flex-col gap-1.5 z-10">
+        <div className="w-full flex flex-col gap-1 z-10">
           <div className="flex justify-between items-center px-1">
             <span className="text-[10px] font-black uppercase text-zinc-300 tracking-wider">🔥 Special Highlights</span>
-            <span className="text-[8px] bg-white/20 px-2 py-0.5 rounded text-white font-bold uppercase">
-              {activeHighlightIndex + 1} / 3
-            </span>
           </div>
 
           <div className="relative w-full overflow-hidden rounded-2xl border border-white/10 shadow-lg">
@@ -1683,12 +1676,9 @@ export default function Home() {
 
         {/* 🎪 Auto-Scrolling Active Deals Carousel */}
         {announcements.length > 0 && (
-          <div className="w-full flex flex-col gap-1.5 z-10">
+          <div className="w-full flex flex-col gap-1 z-10">
             <div className="flex justify-between items-center px-1">
               <span className="text-[10px] font-black uppercase text-zinc-300 tracking-wider">📢 Active Deals & Alerts</span>
-              <span className="text-[8px] bg-white/20 px-2 py-0.5 rounded text-white font-bold uppercase">
-                {announcements.length} Active
-              </span>
             </div>
 
             <div className="relative w-full overflow-hidden rounded-3xl">
