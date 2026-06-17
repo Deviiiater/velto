@@ -1,0 +1,19 @@
+{
+  "name": "Velto HQ - Administrator Operations",
+  "short_name": "Velto Admin",
+  "description": "Administrative core controller for Velto Instant Super App",
+  "start_url": "/admin",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#8b5cf6",
+  "orientation": "portrait",
+  "scope": "/admin",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

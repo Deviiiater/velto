@@ -1,0 +1,19 @@
+{
+  "name": "Velto Rider - Delivery Partner",
+  "short_name": "Velto Rider",
+  "description": "Superfast doorstep delivery rider console",
+  "start_url": "/rider-panel",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#3b82f6",
+  "orientation": "portrait",
+  "scope": "/rider-panel",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

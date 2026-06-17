@@ -1,0 +1,19 @@
+{
+  "name": "Velto Warehouse - Packing Console",
+  "short_name": "Velto Warehouse",
+  "description": "Topological packing and dark store supply dispatcher console",
+  "start_url": "/warehouse",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#f59e0b",
+  "orientation": "portrait",
+  "scope": "/warehouse",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
