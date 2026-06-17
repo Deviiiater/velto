@@ -1603,91 +1603,93 @@ export default function Home() {
         </div>
 
         {/* 🚲 Interactive Delivery Rider Animation */}
-        <DeliveryRiderAnimation />
+        {!searchQuery.trim() && <DeliveryRiderAnimation />}
 
         {/* ✨ Featured Highlights Carousel (Infinite Auto-slide) */}
-        <div className="w-full flex flex-col gap-1 z-10">
-          <div className="flex justify-between items-center px-1">
-            <span className="text-[10px] font-black uppercase text-zinc-300 tracking-wider">🔥 Special Highlights</span>
-          </div>
-
-          <div className="relative w-full overflow-hidden rounded-2xl border border-white/10 shadow-lg">
-            <div 
-              className="flex transition-transform duration-500 ease-in-out"
-              style={{ transform: `translateX(-${activeHighlightIndex * 100}%)` }}
-            >
-              {/* Slide 1: Foodie Verse */}
-              <div className="w-full shrink-0 p-0.5">
-                <div className="relative overflow-hidden rounded-2xl group cursor-pointer h-[105px]">
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#ffd700] via-[#ffe57f] to-[#ffb300] bg-[length:200%_auto] animate-gradient-shift" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-shine-effect pointer-events-none" />
-                  <div className="w-full p-4 flex justify-between items-center relative z-10 h-full">
-                    <div className="flex flex-col text-left">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-xl font-black italic tracking-tighter uppercase text-[#3a014c] drop-shadow-sm animate-pulse">FOODIE VERSE</span>
-                        <span className="bg-[#3a014c] text-[#ffd700] text-[8px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider">ORDER NOW</span>
-                      </div>
-                      <span className="text-xs font-black tracking-tight uppercase mt-0.5 text-[#3a014c]">Flat ₹200 OFF & MORE</span>
-                    </div>
-                    <div className="text-3xl animate-[bounce_2s_infinite] shrink-0 drop-shadow-md select-none">🍕</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Slide 2: Velto Gold Pass */}
-              <div className="w-full shrink-0 p-0.5">
-                <div className="relative overflow-hidden rounded-2xl group cursor-pointer h-[105px]">
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#111111] via-[#2a2a2a] to-[#111111] bg-[length:200%_auto] border border-[#ffd700]/20 rounded-2xl" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full animate-shine-effect pointer-events-none" />
-                  <div className="w-full p-4 flex justify-between items-center relative z-10 h-full">
-                    <div className="flex flex-col text-left">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-xl font-black italic tracking-tighter uppercase text-[#ffd700] drop-shadow-sm animate-pulse">VELTO GOLD</span>
-                        <span className="bg-[#ffd700] text-black text-[8px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider">EXCLUSIVE</span>
-                      </div>
-                      <span className="text-xs font-black tracking-tight uppercase mt-0.5 text-zinc-300">1st Year Free Pass • Zero Delivery Fees</span>
-                    </div>
-                    <div className="text-3xl animate-[bounce_2s_infinite] shrink-0 drop-shadow-md select-none">👑</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Slide 3: Dine-out Festival */}
-              <div className="w-full shrink-0 p-0.5">
-                <div className="relative overflow-hidden rounded-2xl group cursor-pointer h-[105px]">
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#ff2d55] via-[#ff6b8b] to-[#ff2d55] bg-[length:200%_auto] animate-gradient-shift" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-shine-effect pointer-events-none" />
-                  <div className="w-full p-4 flex justify-between items-center relative z-10 h-full">
-                    <div className="flex flex-col text-left">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-xl font-black italic tracking-tighter uppercase text-white drop-shadow-sm animate-pulse">DINE-OUT FEST</span>
-                        <span className="bg-white text-[#ff2d55] text-[8px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider">BOOK NOW</span>
-                      </div>
-                      <span className="text-xs font-black tracking-tight uppercase mt-0.5 text-white">Flat 30% Off at Top Fine Dining</span>
-                    </div>
-                    <div className="text-3xl animate-[bounce_2s_infinite] shrink-0 drop-shadow-md select-none">🍷</div>
-                  </div>
-                </div>
-              </div>
+        {!searchQuery.trim() && (
+          <div className="w-full flex flex-col gap-1 z-10">
+            <div className="flex justify-between items-center px-1">
+              <span className="text-[10px] font-black uppercase text-zinc-300 tracking-wider">🔥 Special Highlights</span>
             </div>
 
-            {/* Dots Indicators */}
-            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-20">
-              {[0, 1, 2].map((idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setActiveHighlightIndex(idx)}
-                  className={`h-1 rounded-full transition-all duration-300 cursor-pointer ${
-                    activeHighlightIndex === idx ? 'w-3.5 bg-white' : 'w-1 bg-white/40'
-                  }`}
-                />
-              ))}
+            <div className="relative w-full overflow-hidden rounded-2xl border border-white/10 shadow-lg">
+              <div 
+                className="flex transition-transform duration-500 ease-in-out"
+                style={{ transform: `translateX(-${activeHighlightIndex * 100}%)` }}
+              >
+                {/* Slide 1: Foodie Verse */}
+                <div className="w-full shrink-0 p-0.5">
+                  <div className="relative overflow-hidden rounded-2xl group cursor-pointer h-[105px]">
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#ffd700] via-[#ffe57f] to-[#ffb300] bg-[length:200%_auto] animate-gradient-shift" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-shine-effect pointer-events-none" />
+                    <div className="w-full p-4 flex justify-between items-center relative z-10 h-full">
+                      <div className="flex flex-col text-left">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xl font-black italic tracking-tighter uppercase text-[#3a014c] drop-shadow-sm animate-pulse">FOODIE VERSE</span>
+                          <span className="bg-[#3a014c] text-[#ffd700] text-[8px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider">ORDER NOW</span>
+                        </div>
+                        <span className="text-xs font-black tracking-tight uppercase mt-0.5 text-[#3a014c]">Flat ₹200 OFF & MORE</span>
+                      </div>
+                      <div className="text-3xl animate-[bounce_2s_infinite] shrink-0 drop-shadow-md select-none">🍕</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Slide 2: Velto Gold Pass */}
+                <div className="w-full shrink-0 p-0.5">
+                  <div className="relative overflow-hidden rounded-2xl group cursor-pointer h-[105px]">
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#111111] via-[#2a2a2a] to-[#111111] bg-[length:200%_auto] border border-[#ffd700]/20 rounded-2xl" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full animate-shine-effect pointer-events-none" />
+                    <div className="w-full p-4 flex justify-between items-center relative z-10 h-full">
+                      <div className="flex flex-col text-left">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xl font-black italic tracking-tighter uppercase text-[#ffd700] drop-shadow-sm animate-pulse">VELTO GOLD</span>
+                          <span className="bg-[#ffd700] text-black text-[8px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider">EXCLUSIVE</span>
+                        </div>
+                        <span className="text-xs font-black tracking-tight uppercase mt-0.5 text-zinc-300">1st Year Free Pass • Zero Delivery Fees</span>
+                      </div>
+                      <div className="text-3xl animate-[bounce_2s_infinite] shrink-0 drop-shadow-md select-none">👑</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Slide 3: Dine-out Festival */}
+                <div className="w-full shrink-0 p-0.5">
+                  <div className="relative overflow-hidden rounded-2xl group cursor-pointer h-[105px]">
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#ff2d55] via-[#ff6b8b] to-[#ff2d55] bg-[length:200%_auto] animate-gradient-shift" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-shine-effect pointer-events-none" />
+                    <div className="w-full p-4 flex justify-between items-center relative z-10 h-full">
+                      <div className="flex flex-col text-left">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xl font-black italic tracking-tighter uppercase text-white drop-shadow-sm animate-pulse">DINE-OUT FEST</span>
+                          <span className="bg-white text-[#ff2d55] text-[8px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider">BOOK NOW</span>
+                        </div>
+                        <span className="text-xs font-black tracking-tight uppercase mt-0.5 text-white">Flat 30% Off at Top Fine Dining</span>
+                      </div>
+                      <div className="text-3xl animate-[bounce_2s_infinite] shrink-0 drop-shadow-md select-none">🍷</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Dots Indicators */}
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-20">
+                {[0, 1, 2].map((idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setActiveHighlightIndex(idx)}
+                    className={`h-1 rounded-full transition-all duration-300 cursor-pointer ${
+                      activeHighlightIndex === idx ? 'w-3.5 bg-white' : 'w-1 bg-white/40'
+                    }`}
+                  />
+                ))}
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* 🎪 Auto-Scrolling Active Deals Carousel */}
-        {announcements.length > 0 && (
+        {!searchQuery.trim() && announcements.length > 0 && (
           <div className="w-full flex flex-col gap-1 z-10">
             <div className="flex justify-between items-center px-1">
               <span className="text-[10px] font-black uppercase text-zinc-300 tracking-wider">📢 Active Deals & Alerts</span>
@@ -2466,6 +2468,35 @@ export default function Home() {
                 })}
               </div>
             </section>
+
+            {/* 🍱 Food Role Sub-Navigation Tabs */}
+            {activeSuperService === 'food' && (
+              <div className="flex gap-2.5 justify-center py-2 pt-4 border-t border-border/20">
+                {[
+                  { id: 'all', name: 'All Food 🍲' },
+                  { id: 'cloud kitchen', name: 'Cloud Kitchen 🍳' },
+                  { id: 'tiffin service', name: 'Tiffin Services 🍱' }
+                ].map(tab => {
+                  const isActive = (tab.id === 'all' && !selectedCategory) || (selectedCategory?.toLowerCase() === tab.id);
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => {
+                        setSelectedCategory(tab.id === 'all' ? null : tab.id);
+                        showToast(`Filtered to ${tab.name}`, 'success');
+                      }}
+                      className={`text-[10px] font-black uppercase tracking-wider px-4 py-2 rounded-full border transition-all cursor-pointer ${
+                        isActive
+                          ? 'bg-rose-500 border-rose-500 text-white shadow-md shadow-rose-500/20 scale-[1.02]'
+                          : 'bg-muted/10 border-border text-muted-foreground hover:text-foreground hover:bg-muted/20'
+                      }`}
+                    >
+                      {tab.name}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
 
             {/* 🛒 ALL ITEMS LIST (Collapsible / Toggleable) */}
             <section className="space-y-4 pt-2 border-t border-border/40 pb-12">
