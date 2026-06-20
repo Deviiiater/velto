@@ -1,5 +1,5 @@
 'use client';
-import { Search, MapPin, Clock, ShoppingBag, Apple, Leaf, Egg, Cookie, CupSoda, Flame, Plus, Sparkles, Zap, AlertCircle, Compass, HelpCircle, Mic, Bot, Send, Dumbbell, Coffee, Heart, Utensils, Calendar, ShieldCheck, Tag, Sparkle, Store, Users, DollarSign, Shield, HeartHandshake, Navigation, Pill, Truck, Wallet, Wrench, Megaphone, ChevronDown, User as UserIcon } from 'lucide-react';
+import { Search, MapPin, Clock, ShoppingBag, Apple, Leaf, Egg, Cookie, CupSoda, Flame, Plus, Sparkles, Zap, AlertCircle, Compass, HelpCircle, Mic, Bot, Send, Dumbbell, Coffee, Heart, Utensils, Calendar, ShieldCheck, Tag, Sparkle, Store, Users, DollarSign, Shield, HeartHandshake, Navigation, Pill, Truck, Wallet, Wrench, Megaphone, ChevronDown, User as UserIcon, History } from 'lucide-react';
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
@@ -2628,7 +2628,7 @@ export default function Home() {
         )}
       </div>
       {!hasActiveOrder && cart.length === 0 && (
-        <div className="fixed bottom-0 left-0 right-0 z-[999] md:hidden bg-card/95 backdrop-blur border-t border-border/80 px-4 py-2.5 flex justify-between items-center shadow-[0_-8px_30px_rgb(0,0,0,0.12)]">
+        <div className="fixed bottom-4 left-4 right-4 z-[999] md:hidden glass-panel py-2.5 px-3 flex justify-between items-center rounded-3xl shadow-[0_12px_40px_rgba(0,0,0,0.25)] border border-white/10">
           <button
             onClick={() => {
               setActiveSuperService('food');
@@ -2636,12 +2636,12 @@ export default function Home() {
               setActivePill('food');
               setSelectedCategory(null);
             }}
-            className={`flex flex-col items-center justify-center gap-0.5 flex-1 transition-all ${
+            className={`flex flex-col items-center justify-center gap-1 flex-1 transition-all hover:scale-105 active:scale-95 duration-200 cursor-pointer ${
               activeSuperService === 'food' && activePill === 'food' ? 'text-primary scale-105 font-black' : 'text-muted-foreground font-bold'
             }`}
           >
-            <span className="text-lg">🍲</span>
-            <span className="text-[9px] uppercase tracking-wider">Food</span>
+            <Utensils size={18} />
+            <span className="text-[9px] uppercase tracking-wider mt-0.5">Food</span>
           </button>
 
           <button
@@ -2649,57 +2649,57 @@ export default function Home() {
               setStudentMode(true);
               setSearchQuery("Combo");
             }}
-            className={`flex flex-col items-center justify-center gap-0.5 flex-grow relative transition-all ${
+            className={`flex flex-col items-center justify-center gap-1 flex-grow relative transition-all hover:scale-105 active:scale-95 duration-200 cursor-pointer ${
               studentMode ? 'text-primary scale-105 font-black' : 'text-muted-foreground font-bold'
             }`}
           >
             <div className="relative">
-              <span className="text-lg text-amber-500">⚡</span>
+              <Zap size={18} className="text-amber-500" />
               <span className="absolute -top-1.5 -right-5 bg-red-500 text-white text-[7px] font-black px-1.5 py-0.5 rounded-full scale-90 tracking-tighter">15 MIN</span>
             </div>
-            <span className="text-[9px] uppercase tracking-wider">Bolt</span>
+            <span className="text-[9px] uppercase tracking-wider mt-0.5">Bolt</span>
           </button>
 
           <button
             onClick={() => {
               setSearchQuery("offer");
             }}
-            className={`flex flex-col items-center justify-center gap-0.5 flex-grow transition-all ${
+            className={`flex flex-col items-center justify-center gap-1 flex-grow transition-all hover:scale-105 active:scale-95 duration-200 cursor-pointer ${
               searchQuery.toLowerCase().includes('offer') ? 'text-primary scale-105 font-black' : 'text-muted-foreground font-bold'
             }`}
           >
             <div className="relative">
-              <span className="text-lg">☁️</span>
+              <Tag size={18} className="text-emerald-500" />
               <span className="absolute -top-1.5 -right-3 text-emerald-500 font-extrabold text-[8px] bg-emerald-500/10 px-1 rounded-full">99</span>
             </div>
-            <span className="text-[9px] uppercase tracking-wider">99 Store</span>
+            <span className="text-[9px] uppercase tracking-wider mt-0.5">99 Store</span>
           </button>
 
           <button
             onClick={() => router.push('/cart')}
-            className="flex flex-col items-center justify-center gap-0.5 flex-grow relative text-muted-foreground font-bold hover:text-primary transition-all"
+            className="flex flex-col items-center justify-center gap-1 flex-grow relative text-muted-foreground font-bold hover:text-primary transition-all hover:scale-105 active:scale-95 duration-200 cursor-pointer"
           >
             <div className="relative">
-              <span className="text-lg">🛒</span>
+              <ShoppingBag size={18} />
               {cart.length > 0 && (
                 <span className="absolute -top-1.5 -right-2 bg-primary text-primary-foreground text-[8px] font-black w-4.5 h-4.5 rounded-full flex items-center justify-center shadow-sm">
                   {cart.length}
                 </span>
               )}
             </div>
-            <span className="text-[9px] uppercase tracking-wider">Card</span>
+            <span className="text-[9px] uppercase tracking-wider mt-0.5">Cart</span>
           </button>
 
           <button
             onClick={() => {
               setActivePill('reorder');
             }}
-            className={`flex flex-col items-center justify-center gap-0.5 flex-grow transition-all ${
+            className={`flex flex-col items-center justify-center gap-1 flex-grow transition-all hover:scale-105 active:scale-95 duration-200 cursor-pointer ${
               activePill === 'reorder' ? 'text-primary scale-105 font-black' : 'text-muted-foreground font-bold'
             }`}
           >
-            <span className="text-lg">🔄</span>
-            <span className="text-[9px] uppercase tracking-wider">Reorder</span>
+            <History size={18} />
+            <span className="text-[9px] uppercase tracking-wider mt-0.5">Reorder</span>
           </button>
         </div>
       )}
