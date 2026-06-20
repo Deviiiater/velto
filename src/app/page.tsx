@@ -1949,7 +1949,7 @@ export default function Home() {
           </section>
         ) : (
           /* 🏠 Standard Browse View */
-          <>
+          <div className="flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-5 duration-500">
             {/* 🚀 Quick Super-Service Selector Grid */}
             <div className="grid grid-cols-2 gap-3.5">
               <button 
@@ -2640,7 +2640,7 @@ export default function Home() {
                 </div>
               )}
             </section>
-          </>
+          </div>
         )}
       </div>
       {!hasActiveOrder && cart.length === 0 && (
