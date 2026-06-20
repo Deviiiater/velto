@@ -1528,6 +1528,22 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Animated Delivery Slogan */}
+        <div className="w-full flex items-center justify-between text-left mt-1 border-t border-b border-white/5 py-3 animate-in fade-in slide-in-from-top-3 duration-300">
+          <div className="flex flex-col gap-0.5">
+            <span className="text-[9px] font-black uppercase tracking-[0.25em] text-[#ff2d55] flex items-center gap-1">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#ff2d55] animate-ping"></span> Live Delivery Status
+            </span>
+            <h2 className="text-xl font-black italic uppercase tracking-tight text-white flex items-center gap-1.5">
+              VELTO <span className="bg-gradient-to-r from-primary to-[#ff5e97] bg-clip-text text-transparent animate-pulse font-extrabold">EXPRESS</span>
+              <span className="text-[10px] not-italic font-bold text-zinc-300 bg-white/10 px-2 py-0.5 rounded-full border border-white/10 font-mono">⚡ 10 MINS</span>
+            </h2>
+          </div>
+          <div className="text-[9px] font-black uppercase tracking-wider text-[#ffd700] bg-[#ffd700]/10 border border-[#ffd700]/20 px-2.5 py-1.5 rounded-xl flex items-center gap-1">
+            <span>🚀</span> Active Dispatch
+          </div>
+        </div>
+
         {/* Custom Search bar with Voice search & Veg selector */}
         <div className="w-full flex flex-col gap-2 z-10">
           <div className="w-full bg-white rounded-2xl p-1.5 flex items-center gap-2 shadow-lg">
