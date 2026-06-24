@@ -4,12 +4,14 @@ import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import { LogIn, UserPlus, Phone, Mail, User, MapPin, ShieldAlert, Key, ArrowLeft, CheckCircle, Loader2 } from 'lucide-react';
 import { useSettings } from '@/context/SettingsContext';
+import { useAuth } from '@/context/AuthContext';
 import { t } from '@/lib/translations';
 import Link from 'next/link';
 
 export default function LoginPage() {
   const { language } = useSettings();
   const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
 
   // Mode: 'login' or 'signup'
   const [mode, setMode] = useState<'login' | 'signup'>('login');
@@ -27,6 +29,33 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [otpTimer, setOtpTimer] = useState(30);
+
+  // Auto-redirect if user gets logged in (e.g. via Magic Link click)
+  useEffect(() => {
+    if (user && !authLoading) {
+      const checkUserRoleAndRedirect = async () => {
+        try {
+          const { data: profile } = await supabase
+            .from('users')
+            .select('role')
+            .eq('id', user.id)
+            .maybeSingle();
+          
+          const role = profile?.role || 'customer';
+          
+          if (role === 'admin') router.push('/admin');
+          else if (role === 'rider') router.push('/rider-panel');
+          else if (role === 'kitchen') router.push('/kitchen');
+          else if (role === 'warehouse') router.push('/warehouse');
+          else if (role === 'vendor') router.push('/vendor');
+          else router.push('/');
+        } catch (e) {
+          router.push('/');
+        }
+      };
+      checkUserRoleAndRedirect();
+    }
+  }, [user, authLoading, router]);
 
   // OTP Timer Countdown Effect
   useEffect(() => {
@@ -63,7 +92,7 @@ export default function LoginPage() {
 
       setOtpSent(true);
       setOtpTimer(30);
-      setSuccessMsg(language === 'hi' ? '6-अंकीय ओटीपी आपके ईमेल पर भेजा गया है!' : 'A 6-digit OTP code has been sent to your email!');
+      setSuccessMsg(language === 'hi' ? 'ईमेल भेजा गया! लॉगिन करने के लिए कृपया ईमेल लिंक पर क्लिक करें।' : 'Email sent! Please check your inbox and click the sign-in link to log in.');
     } catch (err: any) {
       setError(err.message || 'Failed to send verification code. Please check your email and try again.');
     } finally {
@@ -323,7 +352,12 @@ export default function LoginPage() {
         /* VERIFY OTP FLOW */
         <form onSubmit={handleVerifyOtp} className="space-y-4">
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1.5">{t('enter6DigitOtp', language)}</label>
+            <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">{t('enter6DigitOtp', language)}</label>
+            <p className="text-[10px] text-amber-500/90 font-medium mb-3 leading-relaxed">
+              {language === 'hi'
+                ? '💡 आप ईमेल में आए "Sign In" बटन/लिंक पर क्लिक करके भी सीधे लॉग इन कर सकते हैं!'
+                : '💡 You can also simply click the "Sign in" button/link inside your email to log in automatically!'}
+            </p>
             <div className="relative">
               <Key className="absolute left-3.5 top-3.5 text-muted-foreground/60" size={16} />
               <input
