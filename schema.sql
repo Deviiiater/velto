@@ -78,43 +78,120 @@ ALTER TABLE public.order_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.complaints ENABLE ROW LEVEL SECURITY;
 
 -- ----------------------------------------------------
--- RLS POLICIES
+-- RLS POLICIES (Idempotent Drop & Recreate)
 -- ----------------------------------------------------
 
 -- Users Policies
-CREATE POLICY "Users can view their own profile" ON public.users FOR SELECT USING (auth.uid() = id);
-CREATE POLICY "Users can update their own profile" ON public.users FOR UPDATE USING (auth.uid() = id);
+DROP POLICY IF EXISTS "Users can view their own profile" ON public.users;
+DROP POLICY IF EXISTS "Users can update their own profile" ON public.users;
+DROP POLICY IF EXISTS "Users can insert their own profile" ON public.users;
+DROP POLICY IF EXISTS "Allow global select on users for MVP testing" ON public.users;
+DROP POLICY IF EXISTS "Allow global update on users for MVP testing" ON public.users;
+
+CREATE POLICY "Users can view their own profile" ON public.users FOR SELECT USING (
+  (auth.uid() = id) OR 
+  (EXISTS (
+    SELECT 1 FROM public.users 
+    WHERE users.id = auth.uid() 
+    AND users.role IN ('admin', 'rider', 'kitchen', 'warehouse', 'vendor')
+  ))
+);
+CREATE POLICY "Users can update their own profile" ON public.users FOR UPDATE USING (
+  (auth.uid() = id) OR 
+  (EXISTS (
+    SELECT 1 FROM public.users 
+    WHERE users.id = auth.uid() 
+    AND users.role IN ('admin', 'rider', 'kitchen', 'warehouse', 'vendor')
+  ))
+);
 CREATE POLICY "Users can insert their own profile" ON public.users FOR INSERT WITH CHECK (auth.uid() = id);
 
 -- Products Policies
+DROP POLICY IF EXISTS "Anyone can view products" ON public.products;
+DROP POLICY IF EXISTS "Allow global insert on products for MVP testing" ON public.products;
+DROP POLICY IF EXISTS "Allow global delete on products for MVP testing" ON public.products;
+DROP POLICY IF EXISTS "Allow global update on products for MVP testing" ON public.products;
+
 CREATE POLICY "Anyone can view products" ON public.products FOR SELECT USING (true);
+CREATE POLICY "Allow global insert on products for MVP testing" ON public.products FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow global delete on products for MVP testing" ON public.products FOR DELETE USING (true);
+CREATE POLICY "Allow global update on products for MVP testing" ON public.products FOR UPDATE USING (true);
 
 -- Orders Policies
-CREATE POLICY "Users can view their own orders" ON public.orders FOR SELECT USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users can view their own orders" ON public.orders;
+DROP POLICY IF EXISTS "Users can insert their own orders" ON public.orders;
+DROP POLICY IF EXISTS "Allow global select for MVP testing" ON public.orders;
+DROP POLICY IF EXISTS "Allow global update for MVP testing" ON public.orders;
+
+CREATE POLICY "Users can view their own orders" ON public.orders FOR SELECT USING (
+  (auth.uid() = user_id) OR 
+  (EXISTS (
+    SELECT 1 FROM public.users 
+    WHERE users.id = auth.uid() 
+    AND users.role IN ('admin', 'rider', 'kitchen', 'warehouse', 'vendor')
+  ))
+);
 CREATE POLICY "Users can insert their own orders" ON public.orders FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update their own orders" ON public.orders FOR UPDATE USING (
+  (auth.uid() = user_id) OR 
+  (EXISTS (
+    SELECT 1 FROM public.users 
+    WHERE users.id = auth.uid() 
+    AND users.role IN ('admin', 'rider', 'kitchen', 'warehouse', 'vendor')
+  ))
+);
 
 -- Order Items Policies
+DROP POLICY IF EXISTS "Users can view their own order items" ON public.order_items;
+DROP POLICY IF EXISTS "Users can insert their own order items" ON public.order_items;
+DROP POLICY IF EXISTS "Allow global select on order items for MVP testing" ON public.order_items;
+
 CREATE POLICY "Users can view their own order items" ON public.order_items FOR SELECT USING (
-  EXISTS (SELECT 1 FROM public.orders WHERE orders.id = order_items.order_id AND orders.user_id = auth.uid())
+  EXISTS (
+    SELECT 1 FROM public.orders 
+    WHERE orders.id = order_items.order_id 
+    AND (
+      orders.user_id = auth.uid() OR 
+      EXISTS (
+        SELECT 1 FROM public.users 
+        WHERE users.id = auth.uid() 
+        AND users.role IN ('admin', 'rider', 'kitchen', 'warehouse', 'vendor')
+      )
+    )
+  )
 );
 CREATE POLICY "Users can insert their own order items" ON public.order_items FOR INSERT WITH CHECK (
-  EXISTS (SELECT 1 FROM public.orders WHERE orders.id = order_items.order_id AND orders.user_id = auth.uid())
+  EXISTS (
+    SELECT 1 FROM public.orders 
+    WHERE orders.id = order_items.order_id 
+    AND orders.user_id = auth.uid()
+  )
 );
 
 -- Complaints Policies
-CREATE POLICY "Users can view their own complaints" ON public.complaints FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Users can insert their own complaints" ON public.complaints FOR INSERT WITH CHECK (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users can view their own complaints" ON public.complaints;
+DROP POLICY IF EXISTS "Users can insert their own complaints" ON public.complaints;
+DROP POLICY IF EXISTS "Allow global select on complaints for MVP testing" ON public.complaints;
+DROP POLICY IF EXISTS "Allow global update on complaints for MVP testing" ON public.complaints;
+DROP POLICY IF EXISTS "Allow global insert on complaints for MVP testing" ON public.complaints;
 
--- MVP Testing Global Policies (Allows Dashboards to query and update order status)
-CREATE POLICY "Allow global select for MVP testing" ON public.orders FOR SELECT USING (true);
-CREATE POLICY "Allow global update for MVP testing" ON public.orders FOR UPDATE USING (true);
-CREATE POLICY "Allow global select on order items for MVP testing" ON public.order_items FOR SELECT USING (true);
-CREATE POLICY "Allow global insert on products for MVP testing" ON public.products FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow global select on users for MVP testing" ON public.users FOR SELECT USING (true);
-CREATE POLICY "Allow global update on users for MVP testing" ON public.users FOR UPDATE USING (true);
-CREATE POLICY "Allow global select on complaints for MVP testing" ON public.complaints FOR SELECT USING (true);
-CREATE POLICY "Allow global update on complaints for MVP testing" ON public.complaints FOR UPDATE USING (true);
-CREATE POLICY "Allow global insert on complaints for MVP testing" ON public.complaints FOR INSERT WITH CHECK (true);
+CREATE POLICY "Users can view their own complaints" ON public.complaints FOR SELECT USING (
+  (auth.uid() = user_id) OR 
+  (EXISTS (
+    SELECT 1 FROM public.users 
+    WHERE users.id = auth.uid() 
+    AND users.role IN ('admin', 'rider', 'kitchen', 'warehouse', 'vendor')
+  ))
+);
+CREATE POLICY "Users can insert their own complaints" ON public.complaints FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update their own complaints" ON public.complaints FOR UPDATE USING (
+  (auth.uid() = user_id) OR 
+  (EXISTS (
+    SELECT 1 FROM public.users 
+    WHERE users.id = auth.uid() 
+    AND users.role IN ('admin', 'rider', 'kitchen', 'warehouse', 'vendor')
+  ))
+);
 
 -- ----------------------------------------------------
 -- AUTOMATIC PROFILE CREATION TRIGGER
@@ -165,6 +242,11 @@ CREATE TABLE IF NOT EXISTS public.announcements (
 ALTER TABLE public.announcements ENABLE ROW LEVEL SECURITY;
 
 -- Policies
+DROP POLICY IF EXISTS "Anyone can view announcements" ON public.announcements;
+DROP POLICY IF EXISTS "Allow global insert on announcements for MVP testing" ON public.announcements;
+DROP POLICY IF EXISTS "Allow global update on announcements for MVP testing" ON public.announcements;
+DROP POLICY IF EXISTS "Allow global delete on announcements for MVP testing" ON public.announcements;
+
 CREATE POLICY "Anyone can view announcements" ON public.announcements FOR SELECT USING (true);
 CREATE POLICY "Allow global insert on announcements for MVP testing" ON public.announcements FOR INSERT WITH CHECK (true);
 CREATE POLICY "Allow global update on announcements for MVP testing" ON public.announcements FOR UPDATE USING (true);
@@ -182,6 +264,9 @@ ALTER TABLE public.products ADD COLUMN IF NOT EXISTS vendor_id UUID REFERENCES p
 ALTER TABLE public.products ADD COLUMN IF NOT EXISTS is_approved BOOLEAN DEFAULT TRUE;
 
 -- Allow insert/update operations for products under RLS bypass policy
+DROP POLICY IF EXISTS "Allow global delete on products for MVP testing" ON public.products;
+DROP POLICY IF EXISTS "Allow global update on products for MVP testing" ON public.products;
+
 CREATE POLICY "Allow global delete on products for MVP testing" ON public.products FOR DELETE USING (true);
 CREATE POLICY "Allow global update on products for MVP testing" ON public.products FOR UPDATE USING (true);
 
