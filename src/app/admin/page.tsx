@@ -125,6 +125,7 @@ export default function AdminDashboard() {
   const [annContent, setAnnContent] = useState('');
   const [annType, setAnnType] = useState<'announcement' | 'diet' | 'promo' | 'sos' | 'offer'>('announcement');
   const [annSubmitting, setAnnSubmitting] = useState(false);
+  const [annIsPopup, setAnnIsPopup] = useState(false);
 
   // Vendor Approval states
   const [pendingProducts, setPendingProducts] = useState<Product[]>([]);
@@ -170,8 +171,9 @@ export default function AdminDashboard() {
       return;
     }
     setAnnSubmitting(true);
+    const finalTitle = annIsPopup ? `[POPUP] ${annTitle.trim()}` : annTitle.trim();
     const newAnn = {
-      title: annTitle.trim(),
+      title: finalTitle,
       content: annContent.trim(),
       type: annType
     };
@@ -198,13 +200,14 @@ export default function AdminDashboard() {
       setAnnTitle('');
       setAnnContent('');
       setAnnType('announcement');
+      setAnnIsPopup(false);
       fetchAnnouncements();
     } catch (err: any) {
       console.warn("Database insert failed, writing to localStorage only:", err.message);
       const list = localStorage.getItem('velto_announcements') ? JSON.parse(localStorage.getItem('velto_announcements')!) : [];
       const mockNew = {
         id: 'local-' + Date.now(),
-        title: annTitle.trim(),
+        title: finalTitle,
         content: annContent.trim(),
         type: annType,
         created_at: new Date().toISOString()
@@ -214,6 +217,7 @@ export default function AdminDashboard() {
       setAnnTitle('');
       setAnnContent('');
       setAnnType('announcement');
+      setAnnIsPopup(false);
       setAnnouncements(list);
       alert("Database offline. Announcement saved locally!");
     } finally {
@@ -1422,6 +1426,19 @@ export default function AdminDashboard() {
                     </div>
                   </div>
 
+                  <div className="flex items-center gap-2.5 p-3.5 bg-background border border-border rounded-xl">
+                    <input 
+                      type="checkbox"
+                      id="annIsPopup"
+                      checked={annIsPopup}
+                      onChange={e => setAnnIsPopup(e.target.checked)}
+                      className="w-4 h-4 rounded text-primary focus:ring-primary cursor-pointer animate-pulse"
+                    />
+                    <label htmlFor="annIsPopup" className="text-xs font-bold text-foreground cursor-pointer select-none">
+                      ✨ Show as Special Landing Popup Modal? (Displays a fullscreen modal banner to customers on load)
+                    </label>
+                  </div>
+
                   <div>
                     <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">Content / Message</label>
                     <textarea 
@@ -1453,35 +1470,44 @@ export default function AdminDashboard() {
                     <p className="text-sm text-muted-foreground text-center py-10">No active broadcasts. Create one above!</p>
                   ) : (
                     <div className="space-y-3">
-                      {announcements.map((ann) => (
-                        <div key={ann.id} className="border border-border bg-background/50 rounded-xl p-4 flex justify-between items-start gap-4">
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <span className="text-sm font-bold text-foreground">{ann.title}</span>
-                              <span className={`text-[9px] font-bold px-2 py-0.5 rounded border uppercase ${
-                                ann.type === 'sos' ? 'bg-red-500/10 text-red-500 border-red-500/20' :
-                                ann.type === 'diet' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' :
-                                ann.type === 'promo' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
-                                ann.type === 'offer' ? 'bg-cyan-500/10 text-cyan-500 border-cyan-500/20' :
-                                'bg-indigo-500/10 text-indigo-500 border-indigo-500/20'
-                              }`}>
-                                {ann.type}
+                      {announcements.map((ann) => {
+                        const isPopup = ann.title.startsWith('[POPUP]');
+                        const cleanTitle = isPopup ? ann.title.replace('[POPUP]', '').trim() : ann.title;
+                        return (
+                          <div key={ann.id} className="border border-border bg-background/50 rounded-xl p-4 flex justify-between items-start gap-4">
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <span className="text-sm font-bold text-foreground">{cleanTitle}</span>
+                                {isPopup && (
+                                  <span className="text-[9px] font-black bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white px-2 py-0.5 rounded-full uppercase tracking-wider animate-pulse shadow-sm">
+                                    ✨ Popup Modal
+                                  </span>
+                                )}
+                                <span className={`text-[9px] font-bold px-2 py-0.5 rounded border uppercase ${
+                                  ann.type === 'sos' ? 'bg-red-500/10 text-red-500 border-red-500/20' :
+                                  ann.type === 'diet' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' :
+                                  ann.type === 'promo' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
+                                  ann.type === 'offer' ? 'bg-cyan-500/10 text-cyan-500 border-cyan-500/20' :
+                                  'bg-indigo-500/10 text-indigo-500 border-indigo-500/20'
+                                }`}>
+                                  {ann.type}
+                                </span>
+                              </div>
+                              <p className="text-xs text-muted-foreground">{ann.content}</p>
+                              <span className="block text-[9px] text-muted-foreground font-mono">
+                                Posted: {new Date(ann.created_at).toLocaleString()}
                               </span>
                             </div>
-                            <p className="text-xs text-muted-foreground">{ann.content}</p>
-                            <span className="block text-[9px] text-muted-foreground font-mono">
-                              Posted: {new Date(ann.created_at).toLocaleString()}
-                            </span>
+                            <button
+                              onClick={() => handleDeleteAnnouncement(ann.id)}
+                              className="text-red-500 hover:text-red-600 p-1 bg-red-500/10 rounded border border-red-500/20 transition-all shrink-0"
+                              title="Delete Announcement"
+                            >
+                              <Trash2 size={14} />
+                            </button>
                           </div>
-                          <button
-                            onClick={() => handleDeleteAnnouncement(ann.id)}
-                            className="text-red-500 hover:text-red-600 p-1 bg-red-500/10 rounded border border-red-500/20 transition-all"
-                            title="Delete Announcement"
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   )}
                 </div>

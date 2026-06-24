@@ -311,6 +311,20 @@ export default function Home() {
   };
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [announcementsLoading, setAnnouncementsLoading] = useState(true);
+  const [popupAnn, setPopupAnn] = useState<Announcement | null>(null);
+
+  useEffect(() => {
+    if (announcements && announcements.length > 0) {
+      const popup = announcements.find(a => a.title.startsWith('[POPUP]'));
+      if (popup) {
+        const isShown = sessionStorage.getItem('velto_popup_shown') === 'true';
+        if (!isShown) {
+          setPopupAnn(popup);
+          sessionStorage.setItem('velto_popup_shown', 'true');
+        }
+      }
+    }
+  }, [announcements]);
 
   useEffect(() => {
     const totalSlides = announcements?.length || 0;
@@ -1853,7 +1867,7 @@ export default function Home() {
       </div>
 
       {/* ─── WHITE/CARD CONTENT BODY CONTAINER ─── */}
-      <div className="flex flex-col gap-8 mt-6">
+      <div id="catalog-start" className="flex flex-col gap-8 mt-6">
         {searchQuery.trim() ? (
           /* 🔍 Global Search Results View (Hides other categories to save space) */
           <section className="space-y-4 pb-12">
@@ -2717,6 +2731,63 @@ export default function Home() {
             <History size={18} />
             <span className="text-[9px] uppercase tracking-wider mt-0.5">Reorder</span>
           </button>
+        </div>
+      )}
+
+      {/* 🔮 Special Landing Page Popup Modal Banner */}
+      {popupAnn && (
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="relative w-full max-w-md overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#2a085c] via-[#0d0614] to-[#04010a] border border-violet-500/30 text-white shadow-2xl p-6 text-center animate-in zoom-in-95 duration-300">
+            {/* Background glowing highlights */}
+            <div className="absolute -top-16 -right-16 w-32 h-32 bg-primary/20 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="absolute -bottom-16 -left-16 w-32 h-32 bg-[#ff5e97]/20 rounded-full blur-3xl pointer-events-none"></div>
+            
+            {/* Close Button Top Right */}
+            <button 
+              onClick={() => setPopupAnn(null)}
+              className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/10 border border-white/10 hover:bg-white/20 active:scale-95 transition-all text-white flex items-center justify-center cursor-pointer font-bold text-xs"
+              title="Close"
+            >
+              ✕
+            </button>
+
+            {/* Glowing Logo Badge */}
+            <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-primary to-[#ff5e97] mx-auto flex items-center justify-center text-white text-3xl shadow-xl shadow-primary/20 mb-4 animate-bounce-short">
+              📢
+            </div>
+
+            {/* Title (Stripped) */}
+            <h2 className="text-xl font-black uppercase tracking-tight text-white mb-2 bg-clip-text text-transparent bg-gradient-to-r from-white via-zinc-200 to-zinc-400">
+              {popupAnn.title.replace('[POPUP]', '').trim()}
+            </h2>
+
+            {/* Content Text */}
+            <p className="text-xs text-zinc-300 leading-relaxed font-semibold mb-6 px-2">
+              {popupAnn.content}
+            </p>
+
+            {/* Quick Actions */}
+            <div className="flex flex-col gap-2 relative z-10">
+              <button
+                onClick={() => {
+                  setPopupAnn(null);
+                  const element = document.getElementById('catalog-start');
+                  if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
+                className="w-full bg-primary text-primary-foreground py-3.5 rounded-2xl font-black uppercase tracking-wider text-xs shadow-md shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <span>⚡</span> Claim Now & View Shop
+              </button>
+              <button
+                onClick={() => setPopupAnn(null)}
+                className="w-full bg-white/5 border border-white/10 hover:bg-white/10 text-zinc-300 py-3 rounded-2xl font-black uppercase tracking-wider text-[10px] transition-all cursor-pointer"
+              >
+                Dismiss Offer
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
