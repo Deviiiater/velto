@@ -2887,7 +2887,7 @@ export default function Home() {
                 }`}
               >
                 <div className="text-xs font-black uppercase">🐮 Cow Ghee</div>
-                <div className="text-[10px] opacity-80 mt-0.5">₹699 / 1 KG</div>
+                <div className="text-[10px] opacity-80 mt-0.5">₹1950 / 1 KG</div>
               </button>
               <button
                 onClick={() => setSelectedGheeType('buffalo')}
@@ -2898,7 +2898,7 @@ export default function Home() {
                 }`}
               >
                 <div className="text-xs font-black uppercase">🦬 Buffalo Ghee</div>
-                <div className="text-[10px] opacity-80 mt-0.5">₹749 / 1 KG</div>
+                <div className="text-[10px] opacity-80 mt-0.5">₹1450 / 1 KG</div>
               </button>
             </div>
 
@@ -2923,7 +2923,7 @@ export default function Home() {
                 </button>
               </div>
               <div className="text-xs text-zinc-300 font-extrabold mt-3">
-                Total Price: ₹{(selectedGheeType === 'cow' ? 699 : 749) * gheeQuantity}
+                Total Price: ₹{(selectedGheeType === 'cow' ? 1950 : 1450) * gheeQuantity}
               </div>
             </div>
 
@@ -2934,7 +2934,7 @@ export default function Home() {
                   id: selectedGheeType === 'cow' ? 'ghee-cow' : 'ghee-buffalo',
                   name: selectedGheeType === 'cow' ? 'A2 Pure Desi Cow Ghee' : 'Premium Vedic Buffalo Ghee',
                   description: `Pure natural ${selectedGheeType === 'cow' ? 'Cow' : 'Buffalo'} Ghee delivering across India with trusted safety.`,
-                  price: selectedGheeType === 'cow' ? 699 : 749,
+                  price: selectedGheeType === 'cow' ? 1950 : 1450,
                   image_url: '/ghee-banner.jpg',
                   category: 'Ghee'
                 };
