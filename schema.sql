@@ -81,6 +81,17 @@ ALTER TABLE public.complaints ENABLE ROW LEVEL SECURITY;
 -- RLS POLICIES (Idempotent Drop & Recreate)
 -- ----------------------------------------------------
 
+-- Helper function to check roles securely without RLS recursion
+CREATE OR REPLACE FUNCTION public.check_user_role(user_id UUID, allowed_roles TEXT[])
+RETURNS BOOLEAN AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM public.users
+    WHERE id = user_id AND role = ANY(allowed_roles)
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -- Users Policies
 DROP POLICY IF EXISTS "Users can view their own profile" ON public.users;
 DROP POLICY IF EXISTS "Users can update their own profile" ON public.users;
@@ -90,19 +101,11 @@ DROP POLICY IF EXISTS "Allow global update on users for MVP testing" ON public.u
 
 CREATE POLICY "Users can view their own profile" ON public.users FOR SELECT USING (
   (auth.uid() = id) OR 
-  (EXISTS (
-    SELECT 1 FROM public.users 
-    WHERE users.id = auth.uid() 
-    AND users.role IN ('admin', 'rider', 'kitchen', 'warehouse', 'vendor')
-  ))
+  public.check_user_role(auth.uid(), ARRAY['admin', 'rider', 'kitchen', 'warehouse', 'vendor'])
 );
 CREATE POLICY "Users can update their own profile" ON public.users FOR UPDATE USING (
   (auth.uid() = id) OR 
-  (EXISTS (
-    SELECT 1 FROM public.users 
-    WHERE users.id = auth.uid() 
-    AND users.role IN ('admin', 'rider', 'kitchen', 'warehouse', 'vendor')
-  ))
+  public.check_user_role(auth.uid(), ARRAY['admin', 'rider', 'kitchen', 'warehouse', 'vendor'])
 );
 CREATE POLICY "Users can insert their own profile" ON public.users FOR INSERT WITH CHECK (auth.uid() = id);
 
