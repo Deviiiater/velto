@@ -1024,11 +1024,7 @@ export default function CartPage() {
               disabled={loading || !user}
               className="w-full bg-primary text-primary-foreground py-3.5 rounded-xl font-semibold hover:bg-primary/90 transition-colors disabled:opacity-70 shadow-md"
             >
-              {loading ? (
-                paymentMethod === 'cod' 
-                  ? (language === 'hi' ? 'ऑर्डर दर्ज हो रहा है...' : 'Placing Order...')
-                  : (language === 'hi' ? 'भुगतान संसाधित हो रहा है...' : 'Processing Payment...')
-              ) : !user ? t('loginToCheckout', language) : `${t('placeOrder', language)} • ₹${grandTotal}`}
+              {loading ? (language === 'hi' ? 'ऑर्डर दर्ज हो रहा है...' : 'Placing Order...') : !user ? t('loginToCheckout', language) : `${t('placeOrder', language)} • ₹${grandTotal}`}
             </button>
             {!user && <p className="text-xs text-center text-muted-foreground">{t('loginMandatoryDesc', language)}</p>}
           </>
