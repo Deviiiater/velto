@@ -447,6 +447,47 @@ export default function Home() {
   const { cart, addToCart, clearCart, updateQuantity } = useCart();
   const { language } = useSettings();
 
+  // Dispatch page state changes to global BottomNavBar
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('page-state-change', {
+      detail: { activeSuperService, studentMode, searchQuery, activePill }
+    }));
+  }, [activeSuperService, studentMode, searchQuery, activePill]);
+
+  // Listen to menu clicks from global BottomNavBar
+  useEffect(() => {
+    const handleNavClick = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (!detail) return;
+      
+      switch (detail.type) {
+        case 'food':
+          setActiveSuperService('food');
+          setActiveModule('kitchen');
+          setActivePill('food');
+          setSelectedCategory(null);
+          setStudentMode(false);
+          setSearchQuery('');
+          break;
+        case 'bolt':
+          setStudentMode(true);
+          setSearchQuery('Combo');
+          break;
+        case 'offer':
+          setSearchQuery('offer');
+          setStudentMode(false);
+          break;
+        case 'reorder':
+          setActivePill('reorder');
+          setStudentMode(false);
+          break;
+      }
+    };
+
+    window.addEventListener('bottom-nav-click', handleNavClick);
+    return () => window.removeEventListener('bottom-nav-click', handleNavClick);
+  }, []);
+
   const getCategoryTranslation = (name: string) => {
     const norm = name.toLowerCase();
     if (norm.includes('fruit')) return t('catFruits', language);
@@ -2723,80 +2764,7 @@ export default function Home() {
           </div>
         )}
       </div>
-      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[95%] max-w-lg z-[999] glass-panel py-2.5 px-3 flex justify-between items-center rounded-3xl shadow-[0_12px_40px_rgba(0,0,0,0.25)] border border-white/10">
-        <button
-          onClick={() => {
-            setActiveSuperService('food');
-            setActiveModule('kitchen');
-            setActivePill('food');
-            setSelectedCategory(null);
-          }}
-          className={`flex flex-col items-center justify-center gap-1 flex-1 transition-all hover:scale-105 active:scale-95 duration-200 cursor-pointer ${
-            activeSuperService === 'food' && activePill === 'food' ? 'text-primary scale-105 font-black' : 'text-muted-foreground font-bold'
-          }`}
-        >
-          <Utensils size={18} />
-          <span className="text-[9px] uppercase tracking-wider mt-0.5">Food</span>
-        </button>
 
-        <button
-          onClick={() => {
-            setStudentMode(true);
-            setSearchQuery("Combo");
-          }}
-          className={`flex flex-col items-center justify-center gap-1 flex-grow relative transition-all hover:scale-105 active:scale-95 duration-200 cursor-pointer ${
-            studentMode ? 'text-primary scale-105 font-black' : 'text-muted-foreground font-bold'
-          }`}
-        >
-          <div className="relative">
-            <Zap size={18} className="text-amber-500" />
-            <span className="absolute -top-1.5 -right-5 bg-red-500 text-white text-[7px] font-black px-1.5 py-0.5 rounded-full scale-90 tracking-tighter">15 MIN</span>
-          </div>
-          <span className="text-[9px] uppercase tracking-wider mt-0.5">Bolt</span>
-        </button>
-
-        <button
-          onClick={() => {
-            setSearchQuery("offer");
-          }}
-          className={`flex flex-col items-center justify-center gap-1 flex-grow transition-all hover:scale-105 active:scale-95 duration-200 cursor-pointer ${
-            searchQuery.toLowerCase().includes('offer') ? 'text-primary scale-105 font-black' : 'text-muted-foreground font-bold'
-          }`}
-        >
-          <div className="relative">
-            <Tag size={18} className="text-emerald-500" />
-            <span className="absolute -top-1.5 -right-3 text-emerald-500 font-extrabold text-[8px] bg-emerald-500/10 px-1 rounded-full">99</span>
-          </div>
-          <span className="text-[9px] uppercase tracking-wider mt-0.5">99 Store</span>
-        </button>
-
-        <button
-          onClick={() => router.push('/cart')}
-          className="flex flex-col items-center justify-center gap-1 flex-grow relative text-muted-foreground font-bold hover:text-primary transition-all hover:scale-105 active:scale-95 duration-200 cursor-pointer"
-        >
-          <div className="relative">
-            <ShoppingBag size={18} />
-            {cart.length > 0 && (
-              <span className="absolute -top-1.5 -right-2 bg-primary text-primary-foreground text-[8px] font-black w-4.5 h-4.5 rounded-full flex items-center justify-center shadow-sm">
-                {cart.length}
-              </span>
-            )}
-          </div>
-          <span className="text-[9px] uppercase tracking-wider mt-0.5">Cart</span>
-        </button>
-
-        <button
-          onClick={() => {
-            setActivePill('reorder');
-          }}
-          className={`flex flex-col items-center justify-center gap-1 flex-grow transition-all hover:scale-105 active:scale-95 duration-200 cursor-pointer ${
-            activePill === 'reorder' ? 'text-primary scale-105 font-black' : 'text-muted-foreground font-bold'
-          }`}
-        >
-          <History size={18} />
-          <span className="text-[9px] uppercase tracking-wider mt-0.5">Reorder</span>
-        </button>
-      </div>
 
       {/* 🔮 Special Landing Page Popup Modal Banner */}
       {popupAnn && (

@@ -7,6 +7,7 @@ import { SplashLoader } from "@/components/SplashLoader";
 import { ActiveOrderFloatingBar } from "@/components/ActiveOrderFloatingBar";
 import { FloatingCartBar } from "@/components/FloatingCartBar";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { BottomNavBar } from "@/components/BottomNavBar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -97,6 +98,7 @@ export default function RootLayout({
           </main>
           <ActiveOrderFloatingBar />
           <FloatingCartBar />
+          <BottomNavBar />
           <footer className="border-t border-border bg-card p-6 text-center text-muted-foreground text-sm">
             &copy; 2026 Velto Platform. All rights reserved.
           </footer>
