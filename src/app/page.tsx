@@ -1782,9 +1782,48 @@ export default function Home() {
                     badgeColor = 'bg-primary/20 text-primary-300 border border-primary/30';
                   }
 
+                  const isGheeAnn = ann.title?.toLowerCase().includes('ghee') || ann.content?.toLowerCase().includes('ghee');
+
+                  if (isGheeAnn) {
+                    return (
+                      <div key={ann.id} className="w-full shrink-0 p-0.5">
+                        <div 
+                          onClick={() => {
+                            setSearchQuery('Ghee');
+                            showToast("🥛 Showing premium Ghee categories!", 'success');
+                          }}
+                          className="w-full h-[140px] rounded-2xl overflow-hidden shadow-lg relative cursor-pointer group border border-amber-600/30 text-left"
+                        >
+                          <img 
+                            src="/ghee-banner.jpg" 
+                            alt="Buffalo & Cow Ghee Promo" 
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                          {/* Dark overlay with text */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex flex-col justify-end p-4">
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-[8px] font-black tracking-widest px-2.5 py-0.5 rounded-full uppercase bg-amber-500 text-black shadow-md font-sans">
+                                PAN INDIA LAUNCH
+                              </span>
+                              <span className="text-[8px] text-zinc-300 font-medium font-sans">
+                                {new Date(ann.created_at).toLocaleDateString(undefined, { dateStyle: 'short' })}
+                              </span>
+                            </div>
+                            <h3 className="text-sm font-black text-white leading-tight mb-0.5">
+                              🥛 {ann.title.replace('[POPUP]', '').trim()}
+                            </h3>
+                            <p className="text-[10px] text-zinc-200 line-clamp-1 leading-snug">
+                              {ann.content}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+
                   return (
                     <div key={ann.id} className="w-full shrink-0 p-0.5">
-                      <div className={`w-full h-[105px] rounded-2xl p-4 ${cardBg} border-l-4 ${borderLeftColor} shadow-lg flex flex-col justify-between text-left relative overflow-hidden backdrop-blur-md`}>
+                      <div className={`w-full h-[140px] rounded-2xl p-4 ${cardBg} border-l-4 ${borderLeftColor} shadow-lg flex flex-col justify-between text-left relative overflow-hidden backdrop-blur-md`}>
                         <div className="space-y-1">
                           <div className="flex items-center justify-between">
                             <span className={`text-[8px] font-black tracking-widest px-2 py-0.5 rounded-full uppercase ${badgeColor}`}>
@@ -1798,7 +1837,7 @@ export default function Home() {
                             {icon}
                             {ann.title}
                           </h3>
-                          <p className="text-[10px] text-zinc-200 line-clamp-1 leading-snug">
+                          <p className="text-[10px] text-zinc-200 line-clamp-2 leading-snug">
                             {ann.content}
                           </p>
                         </div>
