@@ -16,7 +16,7 @@ type UserProfile = {
   id: string;
   full_name: string | null;
   phone: string | null;
-  role: 'customer' | 'rider' | 'admin' | 'kitchen' | 'warehouse';
+  role: 'customer' | 'rider' | 'admin' | 'kitchen' | 'warehouse' | 'vendor';
   address: string | null;
   created_at: string;
 };
@@ -370,6 +370,27 @@ export default function SupportPanel() {
       fetchAllData();
     } catch (err: any) {
       showToast(`Flagging failed: ${err.message}`, 'error');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleUpdateUserRole = async (userId: string, newRole: UserProfile['role']) => {
+    setActionLoading(true);
+    try {
+      const { error } = await supabase
+        .from('users')
+        .update({ role: newRole })
+        .eq('id', userId);
+
+      if (error) throw error;
+      showToast(`User role updated to ${newRole.toUpperCase()}!`, 'success');
+      if (selectedUser && selectedUser.id === userId) {
+        setSelectedUser({ ...selectedUser, role: newRole });
+      }
+      fetchAllData();
+    } catch (err: any) {
+      showToast(`Failed to update role: ${err.message}`, 'error');
     } finally {
       setActionLoading(false);
     }
@@ -1070,9 +1091,21 @@ export default function SupportPanel() {
                           <span className="text-muted-foreground font-semibold">Address</span>
                           <span className="text-foreground text-right w-2/3 truncate">{selectedUser.address || 'N/A'}</span>
                         </div>
-                        <div className="flex justify-between">
+                         <div className="flex justify-between items-center">
                           <span className="text-muted-foreground font-semibold">Role</span>
-                          <span className="font-bold uppercase text-primary">{selectedUser.role}</span>
+                          <select
+                            value={selectedUser.role}
+                            onChange={(e) => handleUpdateUserRole(selectedUser.id, e.target.value as any)}
+                            disabled={actionLoading}
+                            className="bg-accent text-foreground text-xs font-bold uppercase rounded-lg border border-border px-2 py-1 focus:outline-none focus:border-primary cursor-pointer"
+                          >
+                            <option value="customer">Customer</option>
+                            <option value="rider">Rider</option>
+                            <option value="admin">Admin</option>
+                            <option value="warehouse">Warehouse</option>
+                            <option value="kitchen">Kitchen</option>
+                            <option value="vendor">Vendor</option>
+                          </select>
                         </div>
                       </div>
 
