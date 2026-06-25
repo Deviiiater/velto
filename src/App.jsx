@@ -15,7 +15,7 @@ function App() {
     { time: '10:42:05', msg: 'Initializing secure quantum channel...', type: 'info' },
     { time: '10:42:10', msg: 'Real-time telemetry stream synchronized.', type: 'success' }
   ])
-  
+
   const terminalEndRef = useRef(null)
 
   // Fetch Supabase connection state
@@ -84,7 +84,7 @@ function App() {
       const randomEvent = events[Math.floor(Math.random() * events.length)]
       const now = new Date()
       const timeStr = now.toTimeString().split(' ')[0]
-      
+
       setLogs(prev => [
         ...prev,
         { time: timeStr, msg: randomEvent.msg, type: randomEvent.type }
@@ -100,7 +100,7 @@ function App() {
     setSystemStatus('DIAGNOSTIC')
     const now = new Date()
     const timeStr = now.toTimeString().split(' ')[0]
-    
+
     setLogs(prev => [
       ...prev,
       { time: timeStr, msg: '⚠️ Diagnostic sweep initialized. Scanning system components...', type: 'warning' }
@@ -153,7 +153,7 @@ function App() {
             <span className="logo-icon">🪐</span>
             <span className="logo-text">E-ROBO CORE</span>
           </div>
-          
+
           <div className="status-badge">
             <div className={`pulse ${dbStatus.includes('Error') || dbStatus.includes('Disconnected') ? 'error' : ''}`}></div>
             {dbStatus.toUpperCase()}
@@ -163,7 +163,7 @@ function App() {
 
       {/* ─── MAIN CONTENT BODY ─── */}
       <div className="app-container">
-        
+
         {/* Hero title & main controls */}
         <section className="dashboard-hero">
           <h1 className="hero-title">ROBOTICS COMMAND CENTER</h1>
@@ -172,15 +172,15 @@ function App() {
           </p>
 
           <div className="action-row">
-            <button 
-              onClick={runDiagnostic} 
+            <button
+              onClick={runDiagnostic}
               disabled={systemStatus === 'DIAGNOSTIC' || systemStatus === 'HALTED'}
               className="btn-primary"
             >
               <span>⚡</span> {systemStatus === 'DIAGNOSTIC' ? 'Scanning...' : 'Diagnostic Sweep'}
             </button>
-            
-            <button 
+
+            <button
               onClick={() => {
                 setAutopilot(!autopilot)
                 const now = new Date().toTimeString().split(' ')[0]
@@ -195,8 +195,8 @@ function App() {
               Autopilot: {autopilot ? 'ENGAGED' : 'MANUAL'}
             </button>
 
-            <button 
-              onClick={triggerHalt} 
+            <button
+              onClick={triggerHalt}
               className={`btn-danger ${systemStatus === 'HALTED' ? 'bg-[#00ffaa]' : ''}`}
               style={systemStatus === 'HALTED' ? { background: 'linear-gradient(135deg, #00ffaa, #00bb77)', color: '#030308', boxShadow: '0 0 20px rgba(0,255,170,0.3)' } : {}}
             >
@@ -207,16 +207,16 @@ function App() {
 
         {/* Telemetry Grid: Console + Active Drones */}
         <div className="telemetry-dashboard">
-          
+
           {/* Active Fleet Monitoring cards */}
           <div className="features-grid" style={{ marginTop: 0 }}>
             {robots.map((robot) => (
               <div key={robot.id} className="glass-panel">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
                   <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--primary)', letterSpacing: '1px' }}>{robot.id}</span>
-                  <span style={{ 
-                    fontSize: '0.75rem', 
-                    fontWeight: 700, 
+                  <span style={{
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
                     color: robot.status === 'HALTED' ? 'var(--accent)' : robot.status.includes('Charging') ? 'var(--secondary)' : '#00ffaa',
                     padding: '2px 8px',
                     borderRadius: '4px',
@@ -225,7 +225,7 @@ function App() {
                     {robot.status.toUpperCase()}
                   </span>
                 </div>
-                
+
                 <h3 style={{ fontSize: '1.25rem', marginBottom: '1rem', color: '#fff', textAlign: 'left' }}>{robot.name}</h3>
 
                 <div className="metric-row">
@@ -235,9 +235,9 @@ function App() {
                   </span>
                 </div>
                 <div className="progress-track">
-                  <div 
-                    className="progress-fill" 
-                    style={{ 
+                  <div
+                    className="progress-fill"
+                    style={{
                       width: `${robot.battery}%`,
                       background: robot.battery < 30 ? 'var(--accent)' : 'linear-gradient(90deg, var(--primary), var(--secondary))'
                     }}
