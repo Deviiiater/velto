@@ -6,6 +6,7 @@ import { Navbar } from "@/components/Navbar";
 import { SplashLoader } from "@/components/SplashLoader";
 import { ActiveOrderFloatingBar } from "@/components/ActiveOrderFloatingBar";
 import { FloatingCartBar } from "@/components/FloatingCartBar";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -100,6 +101,7 @@ export default function RootLayout({
             &copy; 2026 Velto Platform. All rights reserved.
           </footer>
         </Providers>
+        <SpeedInsights />
       </body>
     </html>
   );
