@@ -2751,10 +2751,21 @@ export default function Home() {
               ✕
             </button>
 
-            {/* Glowing Logo Badge */}
-            <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-primary to-[#ff5e97] mx-auto flex items-center justify-center text-white text-3xl shadow-xl shadow-primary/20 mb-4 animate-bounce-short">
-              📢
-            </div>
+            {/* Display Ghee Banner Image if it's a Ghee launch announcement */}
+            {popupAnn.title.toLowerCase().includes('ghee') || popupAnn.content.toLowerCase().includes('ghee') ? (
+              <div className="relative w-full h-48 rounded-2xl overflow-hidden mb-4 border border-white/10 shadow-lg mt-2">
+                <img 
+                  src="/ghee-banner.jpg" 
+                  alt="Velto Ghee Launch Banner" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ) : (
+              /* Glowing Logo Badge */
+              <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-primary to-[#ff5e97] mx-auto flex items-center justify-center text-white text-3xl shadow-xl shadow-primary/20 mb-4 animate-bounce-short">
+                📢
+              </div>
+            )}
 
             {/* Title (Stripped) */}
             <h2 className="text-xl font-black uppercase tracking-tight text-white mb-2 bg-clip-text text-transparent bg-gradient-to-r from-white via-zinc-200 to-zinc-400">
