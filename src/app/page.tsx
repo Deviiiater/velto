@@ -335,6 +335,22 @@ export default function Home() {
     return () => clearInterval(interval);
   }, [announcements]);
 
+  const updateAnnouncementsState = (anns: Announcement[]) => {
+    const hasGhee = anns.some(a => a.title?.toLowerCase().includes('ghee') || a.content?.toLowerCase().includes('ghee'));
+    if (!hasGhee) {
+      const gheeAnn: Announcement = {
+        id: 'mock-ghee-popup',
+        title: '[POPUP] Pure Buffalo & Cow Ghee - Launching Soon!',
+        content: 'Pure natural goodness is coming soon! Order premium quality Cow Ghee & Buffalo Ghee delivering across India with trusted safety.',
+        type: 'offer',
+        created_at: new Date().toISOString()
+      };
+      setAnnouncements([gheeAnn, ...anns]);
+    } else {
+      setAnnouncements(anns);
+    }
+  };
+
   const fetchAnnouncements = async () => {
     try {
       const { data, error } = await supabase
@@ -345,7 +361,7 @@ export default function Home() {
       if (error) throw error;
       
       if (data && data.length > 0) {
-        setAnnouncements(data);
+        updateAnnouncementsState(data);
         localStorage.setItem('velto_announcements', JSON.stringify(data));
       } else {
         loadLocalStorageAnnouncements();
@@ -362,7 +378,8 @@ export default function Home() {
     const local = localStorage.getItem('velto_announcements');
     if (local) {
       try {
-        setAnnouncements(JSON.parse(local));
+        const parsed = JSON.parse(local);
+        updateAnnouncementsState(parsed);
       } catch (err) {
         console.error("Failed parsing localStorage announcements:", err);
       }
@@ -419,7 +436,7 @@ export default function Home() {
           created_at: new Date(Date.now() - 10800000).toISOString()
         }
       ];
-      setAnnouncements(defaultAnns);
+      updateAnnouncementsState(defaultAnns);
       localStorage.setItem('velto_announcements', JSON.stringify(defaultAnns));
     }
   };
