@@ -93,13 +93,13 @@ export default function RootLayout({
         <Providers>
           <SplashLoader />
           <Navbar />
-          <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-8">
+          <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-8 pb-28">
             {children}
           </main>
           <ActiveOrderFloatingBar />
           <FloatingCartBar />
           <BottomNavBar />
-          <footer className="border-t border-border bg-card p-6 text-center text-muted-foreground text-sm">
+          <footer className="border-t border-border bg-card pt-6 px-6 pb-28 text-center text-muted-foreground text-sm">
             &copy; 2026 Velto Platform. All rights reserved.
           </footer>
         </Providers>

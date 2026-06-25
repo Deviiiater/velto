@@ -67,7 +67,7 @@ export function BottomNavBar() {
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 w-full z-[999] bg-black/20 backdrop-blur-3xl py-3 px-6 pb-6 flex justify-between items-center rounded-t-[2rem] shadow-[0_-10px_35px_rgba(0,0,0,0.4)] border-t border-white/10 border-x-0 border-b-0">
+    <div className="fixed bottom-0 left-0 right-0 w-full z-[999] bg-zinc-950/95 backdrop-blur-md py-3 px-6 pb-[calc(0.75rem+env(safe-area-inset-bottom))] flex justify-between items-center rounded-t-2xl shadow-[0_-8px_30px_rgba(0,0,0,0.6)] border-t border-zinc-800 border-x-0 border-b-0">
       <button
         onClick={() => handleClick('food', '/')}
         className={`flex flex-col items-center justify-center gap-1 flex-1 transition-all hover:scale-105 active:scale-95 duration-200 cursor-pointer ${
