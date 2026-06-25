@@ -2955,7 +2955,7 @@ export default function Home() {
       )}
 
       {/* Floating AI Assistant Chat Button and Panel */}
-      <div className={`fixed ${cart.length > 0 ? 'bottom-40' : 'bottom-24'} sm:bottom-24 right-4 sm:right-6 z-[9999] flex flex-col items-end gap-3 max-w-[calc(100vw-2rem)] sm:max-w-none`}>
+      <div className={`fixed ${cart.length > 0 ? 'bottom-44' : 'bottom-28'} sm:bottom-28 right-4 sm:right-6 z-[9999] flex flex-col items-end gap-3 max-w-[calc(100vw-2rem)] sm:max-w-none`}>
         {showAiChat && (
           <div className="w-[calc(100vw-2rem)] sm:w-96 h-[340px] sm:h-[400px] bg-card/95 backdrop-blur border border-border/80 rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-200">
             {/* Header */}
