@@ -370,6 +370,13 @@ export default function Home() {
       // Seed default mock announcements
       const defaultAnns: Announcement[] = [
         {
+          id: 'mock-ghee-popup',
+          title: '[POPUP] Pure Buffalo & Cow Ghee - Launching Soon!',
+          content: 'Pure natural goodness is coming soon! Order premium quality Cow Ghee & Buffalo Ghee delivering across India with trusted safety.',
+          type: 'offer',
+          created_at: new Date().toISOString()
+        },
+        {
           id: 'mock-sos-1',
           title: '🚨 Extreme Heatwave Advisory',
           content: 'Stay hydrated! Free chilled ORS rehydration sachets added automatically with all grocery orders today.',
