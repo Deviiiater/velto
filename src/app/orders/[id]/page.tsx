@@ -276,6 +276,12 @@ export default function OrderTrackerPage({ params }: { params: Promise<{ id: str
     return cat === 'home services' || cat === 'services';
   });
 
+  const isPanIndiaOrder = order.order_items?.some(item => {
+    const cat = item.products?.category?.toLowerCase() || '';
+    const name = item.products?.name?.toLowerCase() || '';
+    return cat === 'pan india' || cat === 'ghee' || name.includes('ghee');
+  });
+
   return (
     <div className="max-w-3xl mx-auto space-y-8 mt-6">
       
@@ -289,7 +295,8 @@ export default function OrderTrackerPage({ params }: { params: Promise<{ id: str
             <h1 className="text-2xl font-black tracking-tight">
               {isTiffinSubscription ? t('tiffinSubscriptionConsole', language) : 
                isBillsRecharge ? t('digitalRechargeReceipt', language) :
-               isHomeServices ? t('serviceBookingConsole', language) : t('liveOrderTracker', language)}
+               isHomeServices ? t('serviceBookingConsole', language) : 
+               isPanIndiaOrder ? (language === 'hi' ? 'कूरियर शिपमेंट ट्रैकर' : 'Courier Shipment Tracker') : t('liveOrderTracker', language)}
             </h1>
             <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">{t('orderSingular', language)} ID: <span className="font-mono">{order.id}</span></p>
           </div>
@@ -297,6 +304,10 @@ export default function OrderTrackerPage({ params }: { params: Promise<{ id: str
             <span className="text-xs text-emerald-500 font-extrabold bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1.5 rounded-full w-fit">
               {isTiffinSubscription ? t('subscriptionActive', language) : 
                isBillsRecharge ? t('rechargeSuccessful', language) : t('bookingConfirmed', language)}
+            </span>
+          ) : isPanIndiaOrder ? (
+            <span className="text-xs text-amber-500 font-extrabold bg-amber-500/10 border border-amber-500/20 px-3.5 py-1.5 rounded-full w-fit flex items-center gap-1.5">
+              🚚 {language === 'hi' ? 'कूरियर डिलीवरी (3-5 दिन)' : 'Courier Delivery (3-5 Days)'}
             </span>
           ) : (
             <span className="text-xs text-muted-foreground font-semibold bg-accent border border-border px-3 py-1.5 rounded-lg w-fit flex items-center gap-1.5">
@@ -468,6 +479,118 @@ export default function OrderTrackerPage({ params }: { params: Promise<{ id: str
             <p className="text-xs text-muted-foreground leading-relaxed">
               {t('homeServiceGuideDesc', language)}
             </p>
+          </div>
+        </div>
+      ) : isPanIndiaOrder ? (
+        <div className="bg-gradient-to-br from-amber-600/15 via-yellow-600/5 to-transparent border border-amber-600/20 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6 relative overflow-hidden">
+          <div className="absolute right-0 top-0 -mr-10 -mt-10 w-36 h-36 bg-amber-500/10 rounded-full blur-3xl"></div>
+          
+          <div className="flex items-center gap-3 border-b border-border/60 pb-4">
+            <div className="w-12 h-12 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-2xl flex items-center justify-center shadow-inner">
+              <span className="text-xl">📦</span>
+            </div>
+            <div>
+              <h2 className="text-lg font-black tracking-tight text-foreground">
+                {language === 'hi' ? 'अखिल भारतीय कूरियर ट्रैकिंग' : 'Pan India Courier Tracking'}
+              </h2>
+              <p className="text-xs text-muted-foreground font-semibold mt-0.5">
+                {language === 'hi' 
+                  ? 'राष्ट्रीय कूरियर पार्टनर के माध्यम से आपका ऑर्डर शिप किया गया है।' 
+                  : 'Your order is shipped via national courier partner.'}
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
+            <div className="space-y-1.5">
+              <span className="block text-[9px] font-black uppercase text-amber-600 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-md w-fit tracking-wider">
+                {language === 'hi' ? 'शिपिंग का तरीका' : 'Shipping Mode'}
+              </span>
+              <p className="text-lg font-black text-foreground">
+                🚚 Standard Courier (3-5 Days)
+              </p>
+              <p className="text-[10px] text-muted-foreground font-semibold">
+                {language === 'hi' ? 'कोई स्थानीय डिलीवरी बॉय असाइन नहीं' : 'No hyperlocal rider tracking'}
+              </p>
+            </div>
+
+            <div className="space-y-1.5">
+              <span className="block text-[9px] font-black uppercase text-emerald-600 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-md w-fit tracking-wider">
+                {language === 'hi' ? 'कूरियर पार्टनर' : 'Courier Partner'}
+              </span>
+              <p className="text-lg font-black text-foreground">
+                BlueDart / Delhivery Express
+              </p>
+              <p className="text-[10px] text-muted-foreground font-semibold">
+                {language === 'hi' ? 'ट्रैकिंग आईडी जल्द ही अपडेट की जाएगी' : 'Tracking ID will update shortly'}
+              </p>
+            </div>
+          </div>
+
+          {/* Courier Stepper */}
+          <div className="border-t border-border/40 pt-6 space-y-4">
+            <h3 className="text-xs font-bold text-foreground">
+              {language === 'hi' ? 'शिपमेंट की प्रगति' : 'Shipment Progress'}
+            </h3>
+            
+            <div className="grid grid-cols-4 text-center text-[10px] font-bold text-muted-foreground relative">
+              <div className="absolute top-2 left-[12%] right-[12%] h-0.5 bg-border -z-10">
+                <div 
+                  className="h-full bg-primary transition-all duration-500" 
+                  style={{ 
+                    width: order.status === 'delivered' ? '100%' :
+                           order.status === 'out_for_delivery' ? '75%' :
+                           order.status === 'packing' ? '50%' : '25%' 
+                  }}
+                ></div>
+              </div>
+              
+              <div className="flex flex-col items-center gap-1.5">
+                <div className={`w-4 h-4 rounded-full flex items-center justify-center border-2 ${
+                  ['pending', 'packing', 'out_for_delivery', 'delivered'].includes(order.status)
+                    ? 'bg-primary border-primary' : 'bg-card border-border'
+                }`}></div>
+                <span className={['pending', 'packing', 'out_for_delivery', 'delivered'].includes(order.status) ? 'text-primary' : ''}>
+                  {language === 'hi' ? 'स्वीकृत' : 'Confirmed'}
+                </span>
+              </div>
+
+              <div className="flex flex-col items-center gap-1.5">
+                <div className={`w-4 h-4 rounded-full flex items-center justify-center border-2 ${
+                  ['packing', 'out_for_delivery', 'delivered'].includes(order.status)
+                    ? 'bg-primary border-primary' : 'bg-card border-border'
+                }`}></div>
+                <span className={['packing', 'out_for_delivery', 'delivered'].includes(order.status) ? 'text-primary' : ''}>
+                  {language === 'hi' ? 'पैक हुआ' : 'Packed'}
+                </span>
+              </div>
+
+              <div className="flex flex-col items-center gap-1.5">
+                <div className={`w-4 h-4 rounded-full flex items-center justify-center border-2 ${
+                  ['out_for_delivery', 'delivered'].includes(order.status)
+                    ? 'bg-primary border-primary' : 'bg-card border-border'
+                }`}></div>
+                <span className={['out_for_delivery', 'delivered'].includes(order.status) ? 'text-primary' : ''}>
+                  {language === 'hi' ? 'प्रेषित' : 'Dispatched'}
+                </span>
+              </div>
+
+              <div className="flex flex-col items-center gap-1.5">
+                <div className={`w-4 h-4 rounded-full flex items-center justify-center border-2 ${
+                  order.status === 'delivered'
+                    ? 'bg-primary border-primary' : 'bg-card border-border'
+                }`}></div>
+                <span className={order.status === 'delivered' ? 'text-primary' : ''}>
+                  {language === 'hi' ? 'वितरित' : 'Delivered'}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-background/40 border border-border/40 p-4 rounded-2xl text-xs text-muted-foreground leading-relaxed">
+            {language === 'hi'
+              ? '💡 यह उत्पाद अखिल भारतीय वितरण के लिए उपलब्ध है। इसे आपके स्थान पर कूरियर के माध्यम से 3 से 5 दिनों में सुरक्षित पहुँचाया जाएगा।'
+              : '💡 This product is processed for Pan India shipping. It will be delivered to your address safely via national courier in 3 to 5 business days.'}
           </div>
         </div>
       ) : (

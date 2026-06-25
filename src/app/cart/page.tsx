@@ -318,15 +318,23 @@ export default function CartPage() {
       currentCity = displayName;
     }
 
-    if (!currentCity) {
-      // If city is still not determined, prompt location verification modal
-      setShowLocationModal(true);
-      return;
-    }
+    const isPanIndia = cart.some(item => 
+      item.category?.toLowerCase() === 'pan india' || 
+      item.category?.toLowerCase() === 'ghee' || 
+      item.name?.toLowerCase().includes('ghee')
+    );
 
-    if (!isLocationVerified) {
-      setShowLocationModal(true);
-      return;
+    if (!isPanIndia) {
+      if (!currentCity) {
+        // If city is still not determined, prompt location verification modal
+        setShowLocationModal(true);
+        return;
+      }
+
+      if (!isLocationVerified) {
+        setShowLocationModal(true);
+        return;
+      }
     }
 
     executeCheckout();
