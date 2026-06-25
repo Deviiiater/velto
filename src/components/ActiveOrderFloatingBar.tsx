@@ -86,7 +86,7 @@ export function ActiveOrderFloatingBar() {
   };
 
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-lg z-[9999] animate-in slide-in-from-bottom-4 duration-300">
+    <div className="fixed bottom-[84px] left-1/2 -translate-x-1/2 w-[90%] max-w-lg z-[9999] animate-in slide-in-from-bottom-4 duration-300">
       <div className="bg-card/90 backdrop-blur-md border border-primary/45 rounded-2xl p-4 shadow-[0_8px_30px_rgb(147,51,234,0.15)] flex justify-between items-center gap-4">
         <div className="flex items-center gap-3">
           {/* Pulsing indicator */}

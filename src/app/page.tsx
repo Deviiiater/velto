@@ -312,6 +312,9 @@ export default function Home() {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [announcementsLoading, setAnnouncementsLoading] = useState(true);
   const [popupAnn, setPopupAnn] = useState<Announcement | null>(null);
+  const [showGheePreorder, setShowGheePreorder] = useState(false);
+  const [selectedGheeType, setSelectedGheeType] = useState<'cow' | 'buffalo'>('cow');
+  const [gheeQuantity, setGheeQuantity] = useState(1);
 
   useEffect(() => {
     if (announcements && announcements.length > 0) {
@@ -441,7 +444,7 @@ export default function Home() {
     }
   };
 
-  const { cart, addToCart } = useCart();
+  const { cart, addToCart, clearCart, updateQuantity } = useCart();
   const { language } = useSettings();
 
   const getCategoryTranslation = (name: string) => {
@@ -1806,8 +1809,8 @@ export default function Home() {
                       <div key={ann.id} className="w-full shrink-0 p-0.5">
                         <div 
                           onClick={() => {
-                            setSearchQuery('Ghee');
-                            showToast("🥛 Showing premium Ghee categories!", 'success');
+                            setShowGheePreorder(true);
+                            setGheeQuantity(1);
                           }}
                           className="w-full h-[140px] rounded-2xl overflow-hidden shadow-lg relative cursor-pointer group border border-amber-600/30 text-left"
                         >
@@ -2720,82 +2723,80 @@ export default function Home() {
           </div>
         )}
       </div>
-      {!hasActiveOrder && cart.length === 0 && (
-        <div className="fixed bottom-4 left-4 right-4 z-[999] md:hidden glass-panel py-2.5 px-3 flex justify-between items-center rounded-3xl shadow-[0_12px_40px_rgba(0,0,0,0.25)] border border-white/10">
-          <button
-            onClick={() => {
-              setActiveSuperService('food');
-              setActiveModule('kitchen');
-              setActivePill('food');
-              setSelectedCategory(null);
-            }}
-            className={`flex flex-col items-center justify-center gap-1 flex-1 transition-all hover:scale-105 active:scale-95 duration-200 cursor-pointer ${
-              activeSuperService === 'food' && activePill === 'food' ? 'text-primary scale-105 font-black' : 'text-muted-foreground font-bold'
-            }`}
-          >
-            <Utensils size={18} />
-            <span className="text-[9px] uppercase tracking-wider mt-0.5">Food</span>
-          </button>
+      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[95%] max-w-lg z-[999] glass-panel py-2.5 px-3 flex justify-between items-center rounded-3xl shadow-[0_12px_40px_rgba(0,0,0,0.25)] border border-white/10">
+        <button
+          onClick={() => {
+            setActiveSuperService('food');
+            setActiveModule('kitchen');
+            setActivePill('food');
+            setSelectedCategory(null);
+          }}
+          className={`flex flex-col items-center justify-center gap-1 flex-1 transition-all hover:scale-105 active:scale-95 duration-200 cursor-pointer ${
+            activeSuperService === 'food' && activePill === 'food' ? 'text-primary scale-105 font-black' : 'text-muted-foreground font-bold'
+          }`}
+        >
+          <Utensils size={18} />
+          <span className="text-[9px] uppercase tracking-wider mt-0.5">Food</span>
+        </button>
 
-          <button
-            onClick={() => {
-              setStudentMode(true);
-              setSearchQuery("Combo");
-            }}
-            className={`flex flex-col items-center justify-center gap-1 flex-grow relative transition-all hover:scale-105 active:scale-95 duration-200 cursor-pointer ${
-              studentMode ? 'text-primary scale-105 font-black' : 'text-muted-foreground font-bold'
-            }`}
-          >
-            <div className="relative">
-              <Zap size={18} className="text-amber-500" />
-              <span className="absolute -top-1.5 -right-5 bg-red-500 text-white text-[7px] font-black px-1.5 py-0.5 rounded-full scale-90 tracking-tighter">15 MIN</span>
-            </div>
-            <span className="text-[9px] uppercase tracking-wider mt-0.5">Bolt</span>
-          </button>
+        <button
+          onClick={() => {
+            setStudentMode(true);
+            setSearchQuery("Combo");
+          }}
+          className={`flex flex-col items-center justify-center gap-1 flex-grow relative transition-all hover:scale-105 active:scale-95 duration-200 cursor-pointer ${
+            studentMode ? 'text-primary scale-105 font-black' : 'text-muted-foreground font-bold'
+          }`}
+        >
+          <div className="relative">
+            <Zap size={18} className="text-amber-500" />
+            <span className="absolute -top-1.5 -right-5 bg-red-500 text-white text-[7px] font-black px-1.5 py-0.5 rounded-full scale-90 tracking-tighter">15 MIN</span>
+          </div>
+          <span className="text-[9px] uppercase tracking-wider mt-0.5">Bolt</span>
+        </button>
 
-          <button
-            onClick={() => {
-              setSearchQuery("offer");
-            }}
-            className={`flex flex-col items-center justify-center gap-1 flex-grow transition-all hover:scale-105 active:scale-95 duration-200 cursor-pointer ${
-              searchQuery.toLowerCase().includes('offer') ? 'text-primary scale-105 font-black' : 'text-muted-foreground font-bold'
-            }`}
-          >
-            <div className="relative">
-              <Tag size={18} className="text-emerald-500" />
-              <span className="absolute -top-1.5 -right-3 text-emerald-500 font-extrabold text-[8px] bg-emerald-500/10 px-1 rounded-full">99</span>
-            </div>
-            <span className="text-[9px] uppercase tracking-wider mt-0.5">99 Store</span>
-          </button>
+        <button
+          onClick={() => {
+            setSearchQuery("offer");
+          }}
+          className={`flex flex-col items-center justify-center gap-1 flex-grow transition-all hover:scale-105 active:scale-95 duration-200 cursor-pointer ${
+            searchQuery.toLowerCase().includes('offer') ? 'text-primary scale-105 font-black' : 'text-muted-foreground font-bold'
+          }`}
+        >
+          <div className="relative">
+            <Tag size={18} className="text-emerald-500" />
+            <span className="absolute -top-1.5 -right-3 text-emerald-500 font-extrabold text-[8px] bg-emerald-500/10 px-1 rounded-full">99</span>
+          </div>
+          <span className="text-[9px] uppercase tracking-wider mt-0.5">99 Store</span>
+        </button>
 
-          <button
-            onClick={() => router.push('/cart')}
-            className="flex flex-col items-center justify-center gap-1 flex-grow relative text-muted-foreground font-bold hover:text-primary transition-all hover:scale-105 active:scale-95 duration-200 cursor-pointer"
-          >
-            <div className="relative">
-              <ShoppingBag size={18} />
-              {cart.length > 0 && (
-                <span className="absolute -top-1.5 -right-2 bg-primary text-primary-foreground text-[8px] font-black w-4.5 h-4.5 rounded-full flex items-center justify-center shadow-sm">
-                  {cart.length}
-                </span>
-              )}
-            </div>
-            <span className="text-[9px] uppercase tracking-wider mt-0.5">Cart</span>
-          </button>
+        <button
+          onClick={() => router.push('/cart')}
+          className="flex flex-col items-center justify-center gap-1 flex-grow relative text-muted-foreground font-bold hover:text-primary transition-all hover:scale-105 active:scale-95 duration-200 cursor-pointer"
+        >
+          <div className="relative">
+            <ShoppingBag size={18} />
+            {cart.length > 0 && (
+              <span className="absolute -top-1.5 -right-2 bg-primary text-primary-foreground text-[8px] font-black w-4.5 h-4.5 rounded-full flex items-center justify-center shadow-sm">
+                {cart.length}
+              </span>
+            )}
+          </div>
+          <span className="text-[9px] uppercase tracking-wider mt-0.5">Cart</span>
+        </button>
 
-          <button
-            onClick={() => {
-              setActivePill('reorder');
-            }}
-            className={`flex flex-col items-center justify-center gap-1 flex-grow transition-all hover:scale-105 active:scale-95 duration-200 cursor-pointer ${
-              activePill === 'reorder' ? 'text-primary scale-105 font-black' : 'text-muted-foreground font-bold'
-            }`}
-          >
-            <History size={18} />
-            <span className="text-[9px] uppercase tracking-wider mt-0.5">Reorder</span>
-          </button>
-        </div>
-      )}
+        <button
+          onClick={() => {
+            setActivePill('reorder');
+          }}
+          className={`flex flex-col items-center justify-center gap-1 flex-grow transition-all hover:scale-105 active:scale-95 duration-200 cursor-pointer ${
+            activePill === 'reorder' ? 'text-primary scale-105 font-black' : 'text-muted-foreground font-bold'
+          }`}
+        >
+          <History size={18} />
+          <span className="text-[9px] uppercase tracking-wider mt-0.5">Reorder</span>
+        </button>
+      </div>
 
       {/* 🔮 Special Landing Page Popup Modal Banner */}
       {popupAnn && (
@@ -2845,9 +2846,15 @@ export default function Home() {
               <button
                 onClick={() => {
                   setPopupAnn(null);
-                  const element = document.getElementById('catalog-start');
-                  if (element) {
-                    element.scrollIntoView({ behavior: 'smooth' });
+                  const isGhee = popupAnn.title.toLowerCase().includes('ghee') || popupAnn.content.toLowerCase().includes('ghee');
+                  if (isGhee) {
+                    setShowGheePreorder(true);
+                    setGheeQuantity(1);
+                  } else {
+                    const element = document.getElementById('catalog-start');
+                    if (element) {
+                      element.scrollIntoView({ behavior: 'smooth' });
+                    }
                   }
                 }}
                 className="w-full bg-primary text-primary-foreground py-3.5 rounded-2xl font-black uppercase tracking-wider text-xs shadow-md shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-1.5"
@@ -2861,6 +2868,120 @@ export default function Home() {
                 Dismiss Offer
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* 🍯 Special Ghee Pre-order Selection Modal */}
+      {showGheePreorder && (
+        <div className="fixed inset-0 z-[10001] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="relative w-full max-w-md overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#2f1b0c] via-[#0f0a07] to-[#050302] border border-amber-500/30 text-white shadow-2xl p-6 text-center animate-in zoom-in-95 duration-300">
+            {/* Background glowing highlights */}
+            <div className="absolute -top-16 -right-16 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="absolute -bottom-16 -left-16 w-32 h-32 bg-yellow-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            
+            {/* Close Button Top Right */}
+            <button 
+              onClick={() => setShowGheePreorder(false)}
+              className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/10 border border-white/10 hover:bg-white/20 active:scale-95 transition-all text-white flex items-center justify-center cursor-pointer font-bold text-xs"
+              title="Close"
+            >
+              ✕
+            </button>
+
+            {/* Ghee Image */}
+            <div className="relative w-full h-44 rounded-2xl overflow-hidden mb-4 border border-amber-500/20 shadow-lg mt-2">
+              <img 
+                src="/ghee-banner.jpg" 
+                alt="Velto Ghee Preorder" 
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute top-2 left-2 bg-amber-500 text-black text-[9px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow">
+                Pan India Delivery
+              </div>
+            </div>
+
+            <h2 className="text-xl font-black uppercase tracking-tight text-amber-400 mb-1">
+              🥛 Pure Desi Ghee Pre-Order
+            </h2>
+            <p className="text-[10px] text-zinc-300 leading-normal mb-4 font-medium px-4">
+              Order premium quality Cow Ghee & Buffalo Ghee delivering across India with trusted safety.
+            </p>
+
+            {/* Selection of Ghee type */}
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <button
+                onClick={() => setSelectedGheeType('cow')}
+                className={`p-3 rounded-2xl border text-left transition-all ${
+                  selectedGheeType === 'cow' 
+                    ? 'bg-amber-500/25 border-amber-500 text-amber-200' 
+                    : 'bg-white/5 border-white/10 text-zinc-400 hover:bg-white/10'
+                }`}
+              >
+                <div className="text-xs font-black uppercase">🐮 Cow Ghee</div>
+                <div className="text-[10px] opacity-80 mt-0.5">₹699 / 1 KG</div>
+              </button>
+              <button
+                onClick={() => setSelectedGheeType('buffalo')}
+                className={`p-3 rounded-2xl border text-left transition-all ${
+                  selectedGheeType === 'buffalo' 
+                    ? 'bg-amber-500/25 border-amber-500 text-amber-200' 
+                    : 'bg-white/5 border-white/10 text-zinc-400 hover:bg-white/10'
+                }`}
+              >
+                <div className="text-xs font-black uppercase">🦬 Buffalo Ghee</div>
+                <div className="text-[10px] opacity-80 mt-0.5">₹749 / 1 KG</div>
+              </button>
+            </div>
+
+            {/* Quantity Selector in KG */}
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-3.5 mb-6">
+              <div className="text-[10px] font-black uppercase tracking-wider text-zinc-400 mb-2">Select Quantity (KG)</div>
+              <div className="flex items-center justify-center gap-4">
+                <button
+                  onClick={() => setGheeQuantity(prev => Math.max(1, prev - 1))}
+                  className="w-10 h-10 rounded-xl bg-white/10 border border-white/10 hover:bg-white/20 active:scale-95 transition-all text-white font-bold flex items-center justify-center cursor-pointer text-lg"
+                >
+                  -
+                </button>
+                <span className="text-xl font-black text-amber-400 min-w-16">
+                  {gheeQuantity} KG
+                </span>
+                <button
+                  onClick={() => setGheeQuantity(prev => prev + 1)}
+                  className="w-10 h-10 rounded-xl bg-white/10 border border-white/10 hover:bg-white/20 active:scale-95 transition-all text-white font-bold flex items-center justify-center cursor-pointer text-lg"
+                >
+                  +
+                </button>
+              </div>
+              <div className="text-xs text-zinc-300 font-extrabold mt-3">
+                Total Price: ₹{(selectedGheeType === 'cow' ? 699 : 749) * gheeQuantity}
+              </div>
+            </div>
+
+            {/* Place Order / Add to Cart Action */}
+            <button
+              onClick={() => {
+                const gheeProduct = {
+                  id: selectedGheeType === 'cow' ? 'ghee-cow' : 'ghee-buffalo',
+                  name: selectedGheeType === 'cow' ? 'A2 Pure Desi Cow Ghee' : 'Premium Vedic Buffalo Ghee',
+                  description: `Pure natural ${selectedGheeType === 'cow' ? 'Cow' : 'Buffalo'} Ghee delivering across India with trusted safety.`,
+                  price: selectedGheeType === 'cow' ? 699 : 749,
+                  image_url: '/ghee-banner.jpg',
+                  category: 'Ghee'
+                };
+                clearCart();
+                addToCart(gheeProduct);
+                setTimeout(() => {
+                  updateQuantity(gheeProduct.id, gheeQuantity);
+                  setShowGheePreorder(false);
+                  router.push('/cart');
+                }, 100);
+              }}
+              className="w-full bg-amber-500 hover:bg-amber-600 text-black py-4 rounded-2xl font-black uppercase tracking-wider text-xs shadow-lg shadow-amber-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-1.5"
+            >
+              <span>🛒</span> Place Order Now
+            </button>
           </div>
         </div>
       )}
