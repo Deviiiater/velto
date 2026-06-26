@@ -68,8 +68,8 @@ export function BottomNavBar() {
 
   return (
     <div 
-      className="fixed bottom-0 left-0 right-0 w-full z-[999] glass-panel py-3 px-6 pb-[calc(0.75rem+env(safe-area-inset-bottom))] flex justify-between items-center rounded-t-2xl shadow-[0_-10px_35px_rgba(0,0,0,0.5)] border-t border-white/10 border-x-0 border-b-0 transform-gpu will-change-transform"
-      style={{ position: 'fixed', bottom: '0px', left: '0px', right: '0px' }}
+      className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-lg z-[999] glass-panel py-3 px-6 flex justify-between items-center rounded-3xl shadow-[0_15px_40px_rgba(0,0,0,0.75)] border border-white/10 transform-gpu will-change-transform"
+      style={{ position: 'fixed', left: '50%' }}
     >
       <button
         onClick={() => handleClick('food', '/')}
