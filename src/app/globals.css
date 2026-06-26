@@ -53,14 +53,14 @@
     /* Vibrant Pink & White Light Mode - approaching a premium iOS aesthetic */
     --background: #fdf8fa;
     --foreground: #221217;
-    --card: rgba(255, 255, 255, 0.35); /* Translucent card background */
+    --card: rgba(255, 255, 255, 0.45); /* Enhanced Translucent card background */
     --primary: #ff2d55; /* Premium iOS System Pink */
     --primary-foreground: #ffffff;
     --muted: #fef0f3; /* Soft Pink tint */
     --muted-foreground: #6b5c60; /* Balanced rose-slate gray */
     --accent: #ffe4e9; /* Soft rose accent */
     --destructive: #ef4444;
-    --border: rgba(255, 255, 255, 0.55); /* Frost white border */
+    --border: rgba(255, 255, 255, 0.65); /* Rich frost white border */
     --radius: 1.25rem;
 
     /* iOS Glassmorphism - Vibrant Liquid Glass */
@@ -73,14 +73,14 @@
     /* Obsidian Rose & Plum Dark Mode - Premium and sleek */
     --background: #0d060a;
     --foreground: #fdfafc;
-    --card: rgba(26, 12, 20, 0.35); /* Deep translucent rose card */
+    --card: rgba(18, 9, 14, 0.45); /* Darker translucent plum card */
     --primary: #ff375f; /* High-Visibility System Pink */
     --primary-foreground: #ffffff;
     --muted: #22121b; /* Deep Rose Slate */
     --muted-foreground: #fbcfe8; /* Soft pink text */
     --accent: #331526; /* Deep Rose Slate Accent */
     --destructive: #f43f5e;
-    --border: rgba(255, 255, 255, 0.08);
+    --border: rgba(255, 255, 255, 0.07);
     --radius: 1.25rem;
 
     /* iOS Glassmorphism - Vibrant Liquid Glass */
@@ -113,6 +113,11 @@
 }
 
 @layer utilities {
+  .bg-card, [class*="bg-card/"] {
+    backdrop-filter: blur(16px) saturate(130%) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(130%) !important;
+  }
+
   .glass-panel {
     background: var(--glass-background);
     backdrop-filter: blur(16px) saturate(140%);
