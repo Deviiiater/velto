@@ -20,9 +20,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     async function checkAuth() {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data, error } = await supabase.auth.getSession();
+        if (error) {
+          console.warn("Auth getSession error:", error);
+        }
         if (active) {
-          setUser(session?.user ?? null);
+          setUser(data?.session?.user ?? null);
           setLoading(false);
         }
       } catch (err) {
