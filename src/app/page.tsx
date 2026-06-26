@@ -2083,14 +2083,14 @@ export default function Home() {
                 }}
                 className={`relative overflow-hidden p-4 rounded-3xl border text-left transition-all duration-300 cursor-pointer ${
                   activeSuperService === 'grocery' 
-                    ? 'border-emerald-500 bg-gradient-to-br from-emerald-500/15 via-background to-emerald-500/5 ring-1 ring-emerald-500 shadow-md scale-[1.02]' 
-                    : 'border-border bg-card hover:border-emerald-500/30'
+                    ? 'border-primary bg-gradient-to-br from-primary/15 via-background to-primary/5 ring-1 ring-primary shadow-md scale-[1.02]' 
+                    : 'border-border bg-card hover:border-primary/30'
                 }`}
               >
-                <span className="absolute top-2.5 right-3.5 text-[7px] bg-emerald-500/10 text-emerald-500 font-extrabold px-1.5 py-0.5 rounded-full uppercase tracking-wider">10 Min</span>
-                <div className="absolute top-0 right-0 -mt-4 -mr-4 w-16 h-16 rounded-full bg-emerald-500/10 blur-md"></div>
+                <span className="absolute top-2.5 right-3.5 text-[7px] bg-primary/10 text-primary font-extrabold px-1.5 py-0.5 rounded-full uppercase tracking-wider">10 Min</span>
+                <div className="absolute top-0 right-0 -mt-4 -mr-4 w-16 h-16 rounded-full bg-primary/10 blur-md"></div>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-xl shrink-0">
+                  <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-xl shrink-0">
                     🥦
                   </div>
                   <div>
@@ -2099,7 +2099,7 @@ export default function Home() {
                   </div>
                 </div>
                 {activeSuperService === 'grocery' && (
-                  <span className="absolute bottom-2.5 right-3 text-[8px] bg-emerald-500 text-white font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse">Active</span>
+                  <span className="absolute bottom-2.5 right-3 text-[8px] bg-primary text-white font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse">Active</span>
                 )}
               </button>
 
@@ -2113,14 +2113,14 @@ export default function Home() {
                 }}
                 className={`relative overflow-hidden p-4 rounded-3xl border text-left transition-all duration-300 cursor-pointer ${
                   activeSuperService === 'food' 
-                    ? 'border-rose-500 bg-gradient-to-br from-rose-500/15 via-background to-rose-500/5 ring-1 ring-rose-500 shadow-md scale-[1.02]' 
-                    : 'border-border bg-card hover:border-rose-500/30'
+                    ? 'border-primary bg-gradient-to-br from-primary/15 via-background to-primary/5 ring-1 ring-primary shadow-md scale-[1.02]' 
+                    : 'border-border bg-card hover:border-primary/30'
                 }`}
               >
-                <span className="absolute top-2.5 right-3.5 text-[7px] bg-rose-500/10 text-rose-500 font-extrabold px-1.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse">Live</span>
-                <div className="absolute top-0 right-0 -mt-4 -mr-4 w-16 h-16 rounded-full bg-rose-500/10 blur-md"></div>
+                <span className="absolute top-2.5 right-3.5 text-[7px] bg-primary/10 text-primary font-extrabold px-1.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse">Live</span>
+                <div className="absolute top-0 right-0 -mt-4 -mr-4 w-16 h-16 rounded-full bg-primary/10 blur-md"></div>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl bg-rose-500/10 text-rose-500 flex items-center justify-center text-xl shrink-0">
+                  <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-xl shrink-0">
                     🍲
                   </div>
                   <div>
@@ -2129,7 +2129,7 @@ export default function Home() {
                   </div>
                 </div>
                 {activeSuperService === 'food' && (
-                  <span className="absolute bottom-2.5 right-3 text-[8px] bg-rose-500 text-white font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse">Active</span>
+                  <span className="absolute bottom-2.5 right-3 text-[8px] bg-primary text-white font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse">Active</span>
                 )}
               </button>
 
@@ -2141,14 +2141,14 @@ export default function Home() {
                 }}
                 className={`relative overflow-hidden p-4 rounded-3xl border text-left transition-all duration-300 cursor-pointer ${
                   activeSuperService === 'pharmacy' 
-                    ? 'border-cyan-500 bg-gradient-to-br from-cyan-500/15 via-background to-cyan-500/5 ring-1 ring-cyan-500 shadow-md scale-[1.02]' 
-                    : 'border-border bg-card hover:border-cyan-500/30'
+                    ? 'border-primary bg-gradient-to-br from-primary/15 via-background to-primary/5 ring-1 ring-primary shadow-md scale-[1.02]' 
+                    : 'border-border bg-card hover:border-primary/30'
                 }`}
               >
-                <span className="absolute top-2.5 right-3.5 text-[7px] bg-cyan-500/10 text-cyan-500 font-extrabold px-1.5 py-0.5 rounded-full uppercase tracking-wider">24/7 SOS</span>
-                <div className="absolute top-0 right-0 -mt-4 -mr-4 w-16 h-16 rounded-full bg-cyan-500/10 blur-md"></div>
+                <span className="absolute top-2.5 right-3.5 text-[7px] bg-primary/10 text-primary font-extrabold px-1.5 py-0.5 rounded-full uppercase tracking-wider">24/7 SOS</span>
+                <div className="absolute top-0 right-0 -mt-4 -mr-4 w-16 h-16 rounded-full bg-primary/10 blur-md"></div>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl bg-cyan-500/10 text-cyan-500 flex items-center justify-center text-xl shrink-0">
+                  <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-xl shrink-0">
                     💊
                   </div>
                   <div>
@@ -2157,7 +2157,7 @@ export default function Home() {
                   </div>
                 </div>
                 {activeSuperService === 'pharmacy' && (
-                  <span className="absolute bottom-2.5 right-3 text-[8px] bg-cyan-500 text-white font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse">Active</span>
+                  <span className="absolute bottom-2.5 right-3 text-[8px] bg-primary text-white font-black px-1.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse">Active</span>
                 )}
               </button>
 
@@ -2169,14 +2169,14 @@ export default function Home() {
                 }}
                 className={`relative overflow-hidden p-4 rounded-3xl border text-left transition-all duration-300 cursor-pointer ${
                   activeSuperService === 'courier' 
-                    ? 'border-amber-500 bg-gradient-to-br from-amber-500/15 via-background to-amber-500/5 ring-1 ring-amber-500 shadow-md scale-[1.02]' 
-                    : 'border-border bg-card hover:border-amber-500/30'
+                    ? 'border-primary bg-gradient-to-br from-primary/15 via-background to-primary/5 ring-1 ring-primary shadow-md scale-[1.02]' 
+                    : 'border-border bg-card hover:border-primary/30'
                 }`}
               >
-                <span className="absolute top-2.5 right-3.5 text-[7px] bg-amber-500/10 text-amber-500 font-extrabold px-1.5 py-0.5 rounded-full uppercase tracking-wider">Same Day</span>
-                <div className="absolute top-0 right-0 -mt-4 -mr-4 w-16 h-16 rounded-full bg-amber-500/10 blur-md"></div>
+                <span className="absolute top-2.5 right-3.5 text-[7px] bg-primary/10 text-primary font-extrabold px-1.5 py-0.5 rounded-full uppercase tracking-wider">Same Day</span>
+                <div className="absolute top-0 right-0 -mt-4 -mr-4 w-16 h-16 rounded-full bg-primary/10 blur-md"></div>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center text-xl shrink-0">
+                  <div className="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-xl shrink-0">
                     📦
                   </div>
                   <div>

@@ -88,8 +88,8 @@ export function BottomNavBar() {
         }`}
       >
         <div className="relative">
-          <Zap size={18} className="text-amber-500" />
-          <span className="absolute -top-1.5 -right-5 bg-red-500 text-white text-[7px] font-black px-1.5 py-0.5 rounded-full scale-90 tracking-tighter">15 MIN</span>
+          <Zap size={18} className="text-primary" />
+          <span className="absolute -top-1.5 -right-5 bg-primary text-white text-[7px] font-black px-1.5 py-0.5 rounded-full scale-90 tracking-tighter">15 MIN</span>
         </div>
         <span className="text-[9px] uppercase tracking-wider mt-0.5">Bolt</span>
       </button>
@@ -101,8 +101,8 @@ export function BottomNavBar() {
         }`}
       >
         <div className="relative">
-          <Tag size={18} className="text-emerald-500" />
-          <span className="absolute -top-1.5 -right-3 text-emerald-500 font-extrabold text-[8px] bg-emerald-500/10 px-1 rounded-full">99</span>
+          <Tag size={18} className="text-amber-500" />
+          <span className="absolute -top-1.5 -right-3 text-amber-500 font-extrabold text-[8px] bg-amber-500/10 px-1 rounded-full">99</span>
         </div>
         <span className="text-[9px] uppercase tracking-wider mt-0.5">99 Store</span>
       </button>
