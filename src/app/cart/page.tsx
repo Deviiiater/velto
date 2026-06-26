@@ -566,10 +566,21 @@ export default function CartPage() {
                   <p className="text-muted-foreground text-xs sm:text-sm font-medium mt-0.5 sm:mt-1">₹{item.price}</p>
                 </div>
                 <div className="flex flex-col items-end gap-1.5 sm:gap-2">
-                  <div className="flex items-center gap-2 sm:gap-3 bg-accent rounded-lg px-1.5 py-0.5 sm:px-2 sm:py-1">
-                    <button onClick={() => updateQuantity(item.id, item.quantity - 1)} disabled={item.quantity <= 1} className="p-1 disabled:opacity-50"><Minus size={12} /></button>
-                    <span className="font-semibold w-3 sm:w-4 text-center text-xs sm:text-sm">{item.quantity}</span>
-                    <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="p-1"><Plus size={12} /></button>
+                  <div className="flex items-center gap-2.5 bg-zinc-900 dark:bg-zinc-950 text-white rounded-full p-1 shadow-inner">
+                    <button 
+                      onClick={() => updateQuantity(item.id, item.quantity - 1)} 
+                      disabled={item.quantity <= 1} 
+                      className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-primary hover:bg-primary/90 text-white flex items-center justify-center disabled:opacity-30 disabled:hover:bg-primary transition-all cursor-pointer"
+                    >
+                      <Minus size={10} className="stroke-[3]" />
+                    </button>
+                    <span className="font-black text-xs min-w-[12px] sm:min-w-[16px] text-center text-white">{item.quantity}</span>
+                    <button 
+                      onClick={() => updateQuantity(item.id, item.quantity + 1)} 
+                      className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-primary hover:bg-primary/90 text-white flex items-center justify-center transition-all cursor-pointer"
+                    >
+                      <Plus size={10} className="stroke-[3]" />
+                    </button>
                   </div>
                   <button onClick={() => removeFromCart(item.id)} className="text-muted-foreground hover:text-destructive text-[10px] sm:text-xs transition-colors">{t('remove', language)}</button>
                 </div>
@@ -878,6 +889,25 @@ export default function CartPage() {
               </span>
             )}
           </h2>
+
+          {/* Coupon Code / Discount Slot (Figma aesthetic) */}
+          <div className="border border-dashed border-primary/30 bg-primary/5 rounded-2xl p-4 flex items-center justify-between gap-3 mb-4">
+            <div className="flex items-center gap-3">
+              <span className="text-xl">🎟️</span>
+              <div className="text-left">
+                <p className="text-xs font-black text-foreground">{language === 'hi' ? 'कूपन कोड दर्ज करें' : 'Discount Coupon Code'}</p>
+                <p className="text-[10px] text-muted-foreground">{language === 'hi' ? 'ऑफ़र लागू करने के लिए टैप करें' : 'Tap to apply promo code'}</p>
+              </div>
+            </div>
+            <button 
+              onClick={() => {
+                alert(language === 'hi' ? "कूपन कोड VELTO50 सफलतापूर्वक लागू: ₹50 की अतिरिक्त छूट!" : "Promo coupon VELTO50 successfully applied: Additional ₹50 discount!");
+              }}
+              className="text-xs font-black text-primary hover:underline cursor-pointer"
+            >
+              {language === 'hi' ? 'लागू करें' : 'Apply'}
+            </button>
+          </div>
           
           <div className="space-y-3.5 text-xs border-b border-border pb-4 mb-4">
             <div className="flex justify-between font-semibold">

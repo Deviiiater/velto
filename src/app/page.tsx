@@ -130,6 +130,17 @@ export default function Home() {
   const [profileName, setProfileName] = useState<string>('');
   const [searchPlaceholder, setSearchPlaceholder] = useState("Search for 'chocolate'...");
 
+  // Onboarding Wizard states
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [onboardingStep, setOnboardingStep] = useState(0);
+
+  useEffect(() => {
+    const dismissed = localStorage.getItem('velto_onboarding_dismissed') === 'true';
+    if (!dismissed) {
+      setShowOnboarding(true);
+    }
+  }, []);
+
   useEffect(() => {
     const items = ["chocolate", "cookies", "cake"];
     let idx = 0;
@@ -1387,6 +1398,151 @@ export default function Home() {
     );
   }
 
+  if (showOnboarding) {
+    const onboardingSlides = [
+      {
+        title: "From kitchen to doorstep, hot and on time.",
+        description: "Track your order in real time and get delicious meals delivered right to your doorstep.",
+        bg: "from-amber-50 to-orange-500/10 dark:from-zinc-950 dark:to-orange-950/20",
+        illustration: (
+          <div className="relative w-64 h-64 flex items-center justify-center animate-bounce-short">
+            {/* Scooter rider illustration using SVG */}
+            <svg viewBox="0 0 200 200" className="w-full h-full text-primary" fill="currentColor">
+              <circle cx="100" cy="100" r="80" className="fill-orange-500/10 stroke-primary/20 stroke-2" />
+              {/* scooter wheel 1 */}
+              <circle cx="65" cy="145" r="18" className="fill-zinc-800" />
+              <circle cx="65" cy="145" r="8" className="fill-white" />
+              {/* scooter wheel 2 */}
+              <circle cx="135" cy="145" r="18" className="fill-zinc-800" />
+              <circle cx="135" cy="145" r="8" className="fill-white" />
+              {/* scooter body */}
+              <path d="M 60 120 L 140 120 L 130 90 L 80 90 Z" className="fill-primary" />
+              <rect x="75" y="80" width="40" height="25" rx="4" className="fill-amber-500" />
+              <circle cx="95" cy="60" r="16" className="fill-amber-100 stroke-amber-500 stroke-2" />
+              {/* delivery cap */}
+              <path d="M 80 50 Q 95 38 110 50 Z" className="fill-primary" />
+              {/* windshield */}
+              <path d="M 135 120 L 145 75" className="stroke-zinc-800 stroke-[4]" />
+            </svg>
+            <div className="absolute top-10 right-10 bg-primary text-white text-[10px] font-black p-2 rounded-2xl shadow-lg rotate-12">
+              ⚡ 15 MIN
+            </div>
+          </div>
+        )
+      },
+      {
+        title: "Delicious food, just a tap away.",
+        description: "Discover top local restaurants and kitchens serving your favorite foods with zero-friction ordering.",
+        bg: "from-rose-50 to-orange-500/10 dark:from-zinc-950 dark:to-orange-950/20",
+        illustration: (
+          <div className="relative w-64 h-64 flex items-center justify-center">
+            <svg viewBox="0 0 200 200" className="w-full h-full text-primary" fill="currentColor">
+              <circle cx="100" cy="100" r="80" className="fill-orange-500/10 stroke-primary/20 stroke-2" />
+              {/* Bowl */}
+              <path d="M 40 100 Q 100 200 160 100 Z" className="fill-primary" />
+              {/* Noodles */}
+              <path d="M 50 100 Q 70 80 90 100 T 130 100 T 150 100" className="fill-none stroke-amber-500 stroke-[5] stroke-linecap-round" />
+              {/* Chopsticks */}
+              <line x1="120" y1="50" x2="170" y2="120" className="stroke-zinc-800 stroke-[6] stroke-linecap-round" />
+              <line x1="135" y1="45" x2="185" y2="115" className="stroke-zinc-800 stroke-[6] stroke-linecap-round" />
+              {/* Herbs */}
+              <circle cx="70" cy="120" r="8" className="fill-emerald-500" />
+              <circle cx="130" cy="120" r="8" className="fill-rose-500" />
+              <circle cx="100" cy="140" r="10" className="fill-yellow-400" />
+            </svg>
+          </div>
+        )
+      },
+      {
+        title: "Lightning-fast safe dispatch.",
+        description: "Zero-contact deliveries, sanitized packaging, and precise live tracking at your fingertips.",
+        bg: "from-emerald-50 to-orange-500/10 dark:from-zinc-950 dark:to-orange-950/20",
+        illustration: (
+          <div className="relative w-64 h-64 flex items-center justify-center">
+            <svg viewBox="0 0 200 200" className="w-full h-full text-primary" fill="currentColor">
+              <circle cx="100" cy="100" r="80" className="fill-orange-500/10 stroke-primary/20 stroke-2" />
+              {/* Shield */}
+              <path d="M 60 60 L 100 40 L 140 60 Q 140 120 100 160 Q 60 120 60 60 Z" className="fill-primary" />
+              {/* Checkmark inside shield */}
+              <path d="M 80 100 L 95 115 L 120 85" className="fill-none stroke-white stroke-[8] stroke-linecap-round stroke-linejoin-round" />
+            </svg>
+          </div>
+        )
+      }
+    ];
+
+    const currentSlide = onboardingSlides[onboardingStep];
+
+    return (
+      <div className={`min-h-screen bg-gradient-to-b ${currentSlide.bg} flex flex-col items-center justify-between p-6 text-center transition-all duration-500 ease-in-out`}>
+        {/* Top Status Indicators (matching Figma design) */}
+        <div className="w-full max-w-md flex justify-between items-center text-xs font-black text-foreground/80 pt-2 px-2">
+          <span>9:41</span>
+          <div className="flex items-center gap-1.5">
+            <span>📶</span>
+            <span>🛜</span>
+            <span>🔋</span>
+          </div>
+        </div>
+
+        {/* Content Container */}
+        <div className="w-full max-w-md flex-1 flex flex-col items-center justify-center gap-8 py-8">
+          {currentSlide.illustration}
+
+          <div className="space-y-4 px-4">
+            <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight leading-tight">
+              {currentSlide.title}
+            </h1>
+            <p className="text-xs sm:text-sm text-muted-foreground font-semibold leading-relaxed">
+              {currentSlide.description}
+            </p>
+          </div>
+        </div>
+
+        {/* Action Bottom Drawer */}
+        <div className="w-full max-w-md space-y-6 pb-8 px-4">
+          {/* Pagination Indicators */}
+          <div className="flex justify-center gap-2">
+            {onboardingSlides.map((_, idx) => (
+              <span
+                key={idx}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  onboardingStep === idx ? 'w-6 bg-primary' : 'w-2 bg-zinc-300 dark:bg-zinc-700'
+                }`}
+              ></span>
+            ))}
+          </div>
+
+          {/* Action Buttons */}
+          <div className="space-y-3">
+            <button
+              onClick={() => {
+                if (onboardingStep < onboardingSlides.length - 1) {
+                  setOnboardingStep(prev => prev + 1);
+                } else {
+                  localStorage.setItem('velto_onboarding_dismissed', 'true');
+                  setShowOnboarding(false);
+                }
+              }}
+              className="w-full bg-primary text-primary-foreground py-4 rounded-3xl font-black text-sm uppercase tracking-wider hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-primary/20 cursor-pointer"
+            >
+              {onboardingStep === onboardingSlides.length - 1 ? 'Get Started' : 'Next'}
+            </button>
+            <button
+              onClick={() => {
+                localStorage.setItem('velto_onboarding_dismissed', 'true');
+                setShowOnboarding(false);
+              }}
+              className="text-xs font-black text-muted-foreground hover:text-foreground tracking-widest uppercase py-2 cursor-pointer transition-colors"
+            >
+              Skip
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-10 sm:gap-12">
       {/* 🥞 Toast Notification Overlay */}
@@ -2574,16 +2730,12 @@ export default function Home() {
                           }
                         }
                       }}
-                      className={`flex flex-col items-center justify-center gap-1.5 cursor-pointer shrink-0 snap-center transition-all duration-300 hover:scale-105 active:scale-95 ${
-                        isSelected 
-                          ? 'scale-105' 
-                          : ''
-                      }`}
+                      className={`flex flex-col items-center justify-center gap-2 cursor-pointer shrink-0 snap-center transition-all duration-300 hover:scale-105 active:scale-95`}
                     >
-                      <div className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border-2 shadow-md bg-white flex items-center justify-center transition-all duration-300 ${
+                      <div className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border-2 shadow-md flex items-center justify-center transition-all duration-300 ${
                         isSelected 
-                          ? 'border-primary ring-4 ring-primary/20 scale-105 rotate-3' 
-                          : 'border-border hover:border-primary/40'
+                          ? 'border-primary bg-primary/15 ring-4 ring-primary/20 scale-105 shadow-md shadow-primary/15' 
+                          : 'border-border bg-white dark:bg-zinc-900 hover:border-primary/40'
                       }`}>
                         <img 
                           src={cat.img} 

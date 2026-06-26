@@ -65,7 +65,7 @@ export function ProductCard({ product }: { product: Product }) {
   const freshnessSeed = product.id ? product.id.charCodeAt(0) % 5 + 95 : 98;
 
   return (
-    <div className="bg-card border border-border rounded-xl p-3 flex flex-col gap-2 transition-all duration-300 ease-out hover:border-primary hover:-translate-y-1 hover:shadow-md group relative">
+    <div className="bg-card border border-border rounded-3xl p-3.5 flex flex-col gap-2.5 transition-all duration-300 ease-out hover:border-primary hover:-translate-y-1 hover:shadow-lg group relative">
       
       {/* 🟢 Freshness Score Badge (For Groceries) */}
       {product.category && !['cloud kitchen', 'tiffin service'].includes(product.category.toLowerCase()) && (
@@ -92,7 +92,7 @@ export function ProductCard({ product }: { product: Product }) {
         </button>
 
         {showTrustScore && (
-          <div className="absolute left-0 mt-1.5 w-48 bg-card border border-border/80 rounded-xl shadow-2xl p-2.5 z-30 space-y-1.5 text-[9px] animate-in fade-in zoom-in-95 duration-150">
+          <div className="absolute left-0 mt-1.5 w-48 bg-card border border-border/80 rounded-2xl shadow-2xl p-2.5 z-30 space-y-1.5 text-[9px] animate-in fade-in zoom-in-95 duration-150">
             <div className="flex justify-between items-center border-b border-border/50 pb-1">
               <span className="font-extrabold text-emerald-500 flex items-center gap-1">
                 <Award size={10} /> Hygiene Breakdown
@@ -122,7 +122,7 @@ export function ProductCard({ product }: { product: Product }) {
       </div>
 
       {/* Product Image Panel (Bypasses image fetching if Lite/Low Internet Mode is active) */}
-      <div className={`relative w-full aspect-square rounded-lg overflow-hidden flex items-center justify-center transition-transform duration-300 ${aesthetics.bg}`}>
+      <div className={`relative w-full aspect-square rounded-2xl overflow-hidden flex items-center justify-center transition-transform duration-300 ${aesthetics.bg}`}>
         {product.image_url && !lowInternetMode ? (
           <img 
             src={product.image_url} 
@@ -147,14 +147,14 @@ export function ProductCard({ product }: { product: Product }) {
         <p className="text-[11px] sm:text-xs text-muted-foreground line-clamp-2 leading-relaxed">{product.description}</p>
       </div>
 
-      <div className="flex items-center justify-between mt-1 pt-1 border-t border-border/40">
+      <div className="flex items-center justify-between mt-1 pt-1.5 border-t border-border/40">
         <span className="font-black text-sm sm:text-base text-foreground">₹{product.price}</span>
         <button 
           onClick={() => addToCart(product)}
-          className="bg-primary text-primary-foreground p-1.5 rounded-lg hover:scale-105 active:scale-95 transition-all shadow-sm hover:bg-primary/95 flex items-center justify-center"
+          className="bg-primary text-primary-foreground w-8 h-8 rounded-full hover:scale-105 active:scale-95 transition-all shadow-md hover:bg-primary/95 flex items-center justify-center shrink-0 cursor-pointer"
           aria-label="Add to cart"
         >
-          <Plus size={15} className="stroke-[3]" />
+          <Plus size={16} className="stroke-[3]" />
         </button>
       </div>
     </div>
