@@ -1733,19 +1733,27 @@ export default function Home() {
               <MapPin size={18} className="text-[#ffd700]" />
             </div>
             <div className="flex flex-col text-left">
+              <span className="text-[10px] text-zinc-300 font-bold uppercase tracking-wider">Deliver to</span>
               <div className="flex items-center gap-1">
-                <span className="text-sm font-black tracking-tight text-white flex items-center gap-1">Work <ChevronDown size={14} className="text-[#ffd700] group-hover:translate-y-0.5 transition-transform" /></span>
+                <span className="text-xs sm:text-sm font-black tracking-tight text-white flex items-center gap-1">
+                  {locationInput || currentLocation || 'Home - 27, Green Street, US'} 
+                  <ChevronDown size={14} className="text-[#ffd700] group-hover:translate-y-0.5 transition-transform" />
+                </span>
               </div>
-              <span className="text-[10px] text-zinc-300 font-semibold max-w-[200px] sm:max-w-xs truncate">
-                {locationInput || currentLocation || 'Detecting delivery location...'}
-              </span>
             </div>
           </div>
-
-          <div className="flex items-center gap-2">
-            <div className="hidden sm:flex items-center gap-1 bg-[#ffd700]/20 border border-[#ffd700]/30 text-[#ffd700] px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm animate-pulse">
-              👑 1st Year Free Pass
-            </div>
+ 
+          <div className="flex items-center gap-3">
+            {/* Bell notification button */}
+            <button className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:scale-105 active:scale-95 transition-transform cursor-pointer relative">
+              <span className="absolute top-2 right-2.5 w-2 h-2 bg-primary rounded-full animate-ping"></span>
+              <span className="absolute top-2 right-2.5 w-2 h-2 bg-primary rounded-full"></span>
+              <svg viewBox="0 0 24 24" className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+              </svg>
+            </button>
+ 
             <button 
               onClick={() => router.push('/profile')}
               className="relative w-10 h-10 rounded-full border-2 border-white/20 hover:scale-105 active:scale-95 transition-all shadow-md flex items-center justify-center bg-gradient-to-tr from-primary to-[#ff5e97] shrink-0 overflow-hidden group"
@@ -1766,21 +1774,46 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Animated Delivery Slogan */}
-        <div className="w-full flex items-center justify-between text-left mt-1 border-t border-b border-white/5 py-3 animate-in fade-in slide-in-from-top-3 duration-300">
-          <div className="flex flex-col gap-0.5">
-            <span className="text-[9px] font-black uppercase tracking-[0.25em] text-[#ff2d55] flex items-center gap-1">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#ff2d55] animate-ping"></span> Live Delivery Status
-            </span>
-            <h2 className="text-xl font-black italic uppercase tracking-tight text-white flex items-center gap-1.5">
-              VELTO <span className="bg-gradient-to-r from-primary to-[#ff5e97] bg-clip-text text-transparent animate-pulse font-extrabold">EXPRESS</span>
-              <span className="text-[10px] not-italic font-bold text-zinc-300 bg-white/10 px-2 py-0.5 rounded-full border border-white/10 font-mono">⚡ 10 MINS</span>
-            </h2>
+        {/* 50% OFF Pizza Banner (Figma UI Kit Style) */}
+        {!searchQuery.trim() && (
+          <div className="relative w-full rounded-[2.2rem] bg-gradient-to-br from-[#ff5a00] to-[#e62200] overflow-hidden shadow-lg p-5 flex items-center justify-between text-left select-none my-1">
+            <div className="flex flex-col gap-1 z-10">
+              <span className="text-white font-extrabold text-[26px] sm:text-[30px] leading-tight tracking-tight uppercase">50% OFF</span>
+              <span className="text-white/95 font-black text-xs uppercase tracking-wide">On Your First Order</span>
+              <button 
+                onClick={() => {
+                  setSelectedCategory('Cloud Kitchen');
+                  setActiveSuperService('food');
+                  setActiveModule('kitchen');
+                  showToast('Switched to Cloud Kitchen', 'info');
+                }}
+                className="mt-3 bg-white text-primary text-[10px] font-black uppercase tracking-wider px-5 py-2.5 rounded-full hover:scale-105 active:scale-95 transition-all shadow-md w-fit cursor-pointer"
+              >
+                ORDER NOW
+              </button>
+            </div>
+            
+            {/* Pizza graphic on the right */}
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 translate-x-2 w-32 h-32 opacity-95">
+              <svg viewBox="0 0 100 100" className="w-full h-full text-white" fill="currentColor">
+                <circle cx="50" cy="50" r="42" className="fill-orange-850/15 stroke-white/20 stroke-2" />
+                <circle cx="50" cy="50" r="38" className="fill-amber-600/90" />
+                <circle cx="50" cy="50" r="33" className="fill-yellow-400" />
+                {/* Pepperoni slices */}
+                <circle cx="36" cy="40" r="4.5" className="fill-red-600" />
+                <circle cx="64" cy="40" r="4.5" className="fill-red-600" />
+                <circle cx="50" cy="66" r="4.5" className="fill-red-600" />
+                <circle cx="34" cy="60" r="4.5" className="fill-red-600" />
+                <circle cx="66" cy="60" r="4.5" className="fill-red-600" />
+                <circle cx="50" cy="34" r="4.5" className="fill-red-600" />
+                {/* Basil/herbs */}
+                <path d="M 44 48 Q 40 45 42 42 T 48 44 Z" className="fill-emerald-600" />
+                <path d="M 58 48 Q 62 45 60 42 T 54 44 Z" className="fill-emerald-600" />
+                <path d="M 50 56 Q 48 60 52 62 T 54 56 Z" className="fill-emerald-600" />
+              </svg>
+            </div>
           </div>
-          <div className="text-[9px] font-black uppercase tracking-wider text-[#ffd700] bg-[#ffd700]/10 border border-[#ffd700]/20 px-2.5 py-1.5 rounded-xl flex items-center gap-1">
-            <span>🚀</span> Active Dispatch
-          </div>
-        </div>
+        )}
 
         {/* Custom Search bar with Voice search & Veg selector */}
         <div className="w-full flex flex-col gap-2 z-10">
