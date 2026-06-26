@@ -5,7 +5,9 @@ export const metadata: Metadata = {
   description: "Cloud Kitchen order status and preparations manager console",
   manifest: "/manifest-kitchen.json",
   icons: {
-    icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍳</text></svg>",
+    icon: "/logo-kitchen.png",
+    shortcut: "/logo-kitchen.png",
+    apple: "/logo-kitchen.png",
   }
 };
 
