@@ -5,9 +5,9 @@ export const metadata: Metadata = {
   description: "Topological packing and dark store supply dispatcher console",
   manifest: "/manifest-warehouse.json",
   icons: {
-    icon: "/logo.png",
-    shortcut: "/logo.png",
-    apple: "/logo.png",
+    icon: "/logo-warehouse.png",
+    shortcut: "/logo-warehouse.png",
+    apple: "/logo-warehouse.png",
   }
 };
 

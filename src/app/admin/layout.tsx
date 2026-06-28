@@ -5,9 +5,9 @@ export const metadata: Metadata = {
   description: "Administrative core controller for Velto Instant Super App",
   manifest: "/manifest-admin.json",
   icons: {
-    icon: "/logo.png",
-    shortcut: "/logo.png",
-    apple: "/logo.png",
+    icon: "/logo-admin.png",
+    shortcut: "/logo-admin.png",
+    apple: "/logo-admin.png",
   }
 };
 

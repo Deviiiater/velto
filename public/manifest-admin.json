@@ -10,7 +10,7 @@
   "scope": "/admin",
   "icons": [
     {
-      "src": "/logo.png",
+      "src": "/logo-admin.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
