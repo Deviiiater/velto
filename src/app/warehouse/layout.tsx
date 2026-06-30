@@ -8,6 +8,11 @@ export const metadata: Metadata = {
     icon: "/logo-warehouse.png",
     shortcut: "/logo-warehouse.png",
     apple: "/logo-warehouse.png",
+  },
+  appleWebApp: {
+    capable: true,
+    title: "Velto Warehouse",
+    statusBarStyle: "black-translucent",
   }
 };
 

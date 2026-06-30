@@ -8,6 +8,11 @@ export const metadata: Metadata = {
     icon: "/logo-rider.png",
     shortcut: "/logo-rider.png",
     apple: "/logo-rider.png",
+  },
+  appleWebApp: {
+    capable: true,
+    title: "Velto Rider",
+    statusBarStyle: "black-translucent",
   }
 };
 

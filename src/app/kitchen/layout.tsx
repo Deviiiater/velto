@@ -8,6 +8,11 @@ export const metadata: Metadata = {
     icon: "/logo-kitchen.png",
     shortcut: "/logo-kitchen.png",
     apple: "/logo-kitchen.png",
+  },
+  appleWebApp: {
+    capable: true,
+    title: "Velto Kitchen",
+    statusBarStyle: "black-translucent",
   }
 };
 
