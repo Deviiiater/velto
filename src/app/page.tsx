@@ -1272,34 +1272,23 @@ export default function Home() {
             const city = addressObj.city || addressObj.town || addressObj.village || addressObj.state_district || addressObj.county || '';
             const cityLower = city.toLowerCase();
 
-            // Supported cities: Lucknow, Delhi, Bangalore, Mumbai, Moradabad, Sambhal, Chandausi, Bhind
-            const SUPPORTED_CITIES = ['lucknow', 'delhi', 'bangalore', 'banlore', 'mumbai', 'moradabad', 'sambhal', 'chandausi', 'bhind', 'bhiind'];
+            // Supported cities: Chandausi
+            const SUPPORTED_CITIES = ['chandausi'];
             const matchedCity = SUPPORTED_CITIES.find(c => cityLower.includes(c) || formattedAddress.toLowerCase().includes(c));
 
             if (matchedCity) {
-              if (matchedCity === 'chandausi') {
-                setServiceMessage({
-                  text: `📍 Location Detected! Velto is opening coming soon to Chandausi! 🚀 We will be launching doorstep delivery here shortly!`,
-                  type: 'warning'
-                });
-                showToast(`⏳ Chandausi: Launching Soon!`, 'warning');
-              } else {
-                let displayName = matchedCity.charAt(0).toUpperCase() + matchedCity.slice(1);
-                if (displayName === 'Banlore') displayName = 'Bangalore';
-                if (displayName === 'Bhiind') displayName = 'Bhind';
-
-                localStorage.setItem('selectedCity', displayName);
-                localStorage.setItem('deliveryAddress', formattedAddress);
-                setCurrentLocation(displayName);
-                setServiceMessage({
-                  text: `📍 Location Detected! Welcome to Velto! 🚀 We are actively delivering to your doorstep in ${displayName}.`,
-                  type: 'success'
-                });
-                showToast(`📍 Location set to ${displayName}!`, 'success');
-                setTimeout(() => {
-                  setShowLocationSelector(false);
-                }, 1500);
-              }
+              let displayName = 'Chandausi';
+              localStorage.setItem('selectedCity', displayName);
+              localStorage.setItem('deliveryAddress', formattedAddress);
+              setCurrentLocation(displayName);
+              setServiceMessage({
+                text: `📍 Location Detected! Welcome to Velto! 🚀 We are actively delivering to your doorstep in ${displayName}.`,
+                type: 'success'
+              });
+              showToast(`📍 Location set to ${displayName}!`, 'success');
+              setTimeout(() => {
+                setShowLocationSelector(false);
+              }, 1500);
             } else {
               setServiceMessage({
                 text: `📍 Detected doorstep address: "${formattedAddress}". Velto is coming to your area soon! 📦 Stand by for updates.`,
@@ -1339,36 +1328,24 @@ export default function Home() {
     setSavingLocation(true);
     setTimeout(() => {
       const inputLower = locationInput.toLowerCase().trim();
-      // Supported cities: Lucknow, Delhi, Bangalore, Mumbai, Moradabad, Sambhal, Chandausi, Bhind
-      const SUPPORTED_CITIES = ['lucknow', 'delhi', 'bangalore', 'banlore', 'mumbai', 'moradabad', 'sambhal', 'chandausi', 'bhind', 'bhiind'];
+      // Supported cities: Chandausi
+      const SUPPORTED_CITIES = ['chandausi'];
 
       const matchedCity = SUPPORTED_CITIES.find(city => inputLower.includes(city));
 
       if (matchedCity) {
-        if (matchedCity === 'chandausi') {
-          setServiceMessage({ 
-            text: `Velto is opening coming soon to Chandausi! 🚀 We will be launching doorstep delivery here shortly!`, 
-            type: 'warning' 
-          });
-          showToast(`⏳ Chandausi: Launching Soon!`, 'warning');
-        } else {
-          // Standardize display name
-          let displayName = matchedCity.charAt(0).toUpperCase() + matchedCity.slice(1);
-          if (displayName === 'Banlore') displayName = 'Bangalore';
-          if (displayName === 'Bhiind') displayName = 'Bhind';
-          
-          localStorage.setItem('selectedCity', displayName);
-          localStorage.setItem('deliveryAddress', locationInput.trim());
-          setCurrentLocation(displayName);
-          setServiceMessage({ 
-            text: `Welcome to Velto! 🚀 We are actively delivering fresh essentials in ${displayName}!`, 
-            type: 'success' 
-          });
-          showToast(`📍 Location set to ${displayName}!`, 'success');
-          setTimeout(() => {
-            setShowLocationSelector(false);
-          }, 1000);
-        }
+        let displayName = 'Chandausi';
+        localStorage.setItem('selectedCity', displayName);
+        localStorage.setItem('deliveryAddress', locationInput.trim());
+        setCurrentLocation(displayName);
+        setServiceMessage({ 
+          text: `Welcome to Velto! 🚀 We are actively delivering fresh essentials in ${displayName}!`, 
+          type: 'success' 
+        });
+        showToast(`📍 Location set to ${displayName}!`, 'success');
+        setTimeout(() => {
+          setShowLocationSelector(false);
+        }, 1000);
       } else {
         setServiceMessage({ 
           text: `We are expanding fast! Velto is coming to "${locationInput.trim()}" very soon. 📦 Stand by for updates!`, 
@@ -3372,13 +3349,6 @@ export default function Home() {
                         setSavingLocation(true);
                         setTimeout(() => {
                           if (city.toLowerCase() === 'chandausi') {
-                            setServiceMessage({ 
-                              text: `Velto is opening coming soon to Chandausi! 🚀 We will be launching doorstep delivery here shortly!`, 
-                              type: 'warning' 
-                            });
-                            setSavingLocation(false);
-                            showToast(`⏳ Chandausi: Launching Soon!`, 'warning');
-                          } else {
                             localStorage.setItem('selectedCity', city);
                             localStorage.setItem('deliveryAddress', `${city} Central Plaza Hub`);
                             setCurrentLocation(city);
@@ -3391,6 +3361,13 @@ export default function Home() {
                             setTimeout(() => {
                               setShowLocationSelector(false);
                             }, 1000);
+                          } else {
+                            setServiceMessage({ 
+                              text: `We are expanding fast! Velto is coming to "${city}" very soon. 📦 Stand by for updates!`, 
+                              type: 'warning' 
+                            });
+                            setSavingLocation(false);
+                            showToast(`⏳ ${city}: Coming Soon!`, 'warning');
                           }
                         }, 1200);
                       }}
