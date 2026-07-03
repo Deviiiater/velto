@@ -111,6 +111,23 @@ export default function RootLayout({
                   navigator.serviceWorker.register('/sw.js').then(
                     function(registration) {
                       console.log('Service Worker registered with scope: ', registration.scope);
+                      
+                      // Auto-request notifications permission on PWA load
+                      if ('Notification' in window) {
+                        if (Notification.permission === 'default') {
+                          setTimeout(function() {
+                            Notification.requestPermission().then(function(permission) {
+                              if (permission === 'granted') {
+                                registration.showNotification('🎉 Notifications Enabled!', {
+                                  body: 'Welcome to Velto! You will receive live updates here for all orders.',
+                                  icon: '/logo.png',
+                                  badge: '/logo.png'
+                                });
+                              }
+                            });
+                          }, 3000);
+                        }
+                      }
                     },
                     function(err) {
                       console.log('Service Worker registration failed: ', err);

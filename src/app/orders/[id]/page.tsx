@@ -1,5 +1,6 @@
 'use client';
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect, use, useRef } from 'react';
+import { showLocalNotification } from '@/lib/notifications';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { Check, ClipboardList, MapPin, Truck, ShoppingBag, ArrowLeft, ShieldAlert, Send, Clock, CheckCircle, Bike, AlertCircle, AlertTriangle } from 'lucide-react';
@@ -80,6 +81,7 @@ export default function OrderTrackerPage({ params }: { params: Promise<{ id: str
   const { user } = useAuth();
   const { language } = useSettings();
   const [order, setOrder] = useState<Order | null>(null);
+  const prevStatusRef = useRef<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   // Complaints State
@@ -128,6 +130,33 @@ export default function OrderTrackerPage({ params }: { params: Promise<{ id: str
         }
       }
       setOrder(processedOrder);
+      if (processedOrder) {
+        if (prevStatusRef.current && prevStatusRef.current !== processedOrder.status) {
+          let title = "📦 Order Update";
+          let body = `Your order status has changed to: ${processedOrder.status}`;
+          
+          if (processedOrder.status === 'accepted') {
+            title = "🍳 Order Accepted!";
+            body = "The store/kitchen has accepted your order and is processing it.";
+          } else if (processedOrder.status === 'packing') {
+            title = "📦 Order Packing!";
+            body = "Your essentials are being packed carefully for delivery.";
+          } else if (processedOrder.status === 'out_for_delivery') {
+            title = "🚲 Order Dispatched!";
+            body = "Our delivery partner is on the way to your doorstep.";
+          } else if (processedOrder.status === 'delivered') {
+            title = "✅ Order Delivered!";
+            body = "Enjoy your fresh essentials. Thank you for choosing Velto!";
+          } else if (processedOrder.status === 'cancelled') {
+            title = "🛑 Order Cancelled";
+            body = processedOrder.timeoutCancelled
+              ? "This order was cancelled because rider assignment exceeded the 1-hour limit."
+              : "Your order has been cancelled by the store/admin.";
+          }
+          showLocalNotification(title, body);
+        }
+        prevStatusRef.current = processedOrder.status;
+      }
     } catch (e) {
       console.error('Error fetching order:', e);
     } finally {

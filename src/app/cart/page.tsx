@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { AddressPicker } from '@/components/AddressPicker';
 import { useRouter } from 'next/navigation';
+import { showLocalNotification } from '@/lib/notifications';
 import { t } from '@/lib/translations';
 
 const CITY_CENTERS: Record<string, { lat: number; lng: number }> = {
@@ -347,6 +348,7 @@ export default function CartPage() {
       if (paymentMethod === 'cod') {
         const orderId = await saveOrderToDB('pending');
         if (orderId) {
+          showLocalNotification('🛒 Order Placed successfully!', 'We are preparing your items and assigning a delivery rider.');
           clearCart();
           setSuccessOrderId(orderId);
           setShowSuccessAnim(true);
@@ -384,6 +386,7 @@ export default function CartPage() {
         handler: async function (response: any) {
           const orderId = await saveOrderToDB('paid', response.razorpay_payment_id);
           if (orderId) {
+            showLocalNotification('🛒 Order Placed successfully!', 'We are preparing your items and assigning a delivery rider.');
             clearCart();
             setSuccessOrderId(orderId);
             setShowSuccessAnim(true);
