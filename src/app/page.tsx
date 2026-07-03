@@ -9,6 +9,7 @@ import { useCart } from '@/context/CartContext';
 import { useSettings } from '@/context/SettingsContext';
 import { useAuth } from '@/context/AuthContext';
 import { t, matchesSearchQuery } from '@/lib/translations';
+import WelcomeSplash from '@/components/WelcomeSplash';
 
 const MOCK_PRODUCTS: Product[] = [
   { id: 'e86b4f73-2e06-4993-96b5-0c30a8a65c91', name: 'Farm Fresh Tomatoes', description: 'Locally sourced red tomatoes.', price: 40, image_url: '', category: 'Vegetables' },
@@ -112,6 +113,7 @@ export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [storeConfig, setStoreConfig] = useState({ startTime: "08:00", endTime: "22:00", isOpen: true });
   const [loading, setLoading] = useState(true);
+  const [showSplash, setShowSplash] = useState(true);
   const [activePill, setActivePill] = useState<'reorder' | 'food'>('food');
   const [vegOnly, setVegOnly] = useState(false);
   const [hasActiveOrder, setHasActiveOrder] = useState(false);
@@ -1235,6 +1237,19 @@ export default function Home() {
   };
 
   useEffect(() => {
+    const isShown = sessionStorage.getItem('velto_splash_shown') === 'true';
+    if (isShown) {
+      setShowSplash(false);
+    } else {
+      const timer = setTimeout(() => {
+        setShowSplash(false);
+        sessionStorage.setItem('velto_splash_shown', 'true');
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  useEffect(() => {
     async function fetchProducts() {
       try {
         const { data, error } = await supabase.from('products').select('*');
@@ -1412,6 +1427,10 @@ export default function Home() {
   ];
 
   const activeCategories = activeModule === 'instamart' ? instamartCategories : kitchenCategories;
+
+  if (showSplash) {
+    return <WelcomeSplash />;
+  }
 
   if (authLoading || !user) {
     return (
