@@ -11,6 +11,7 @@ export type Product = {
   price: number;
   image_url: string;
   category: string;
+  stock?: number;
 };
 
 const getCategoryAesthetics = (category: string) => {
@@ -57,6 +58,40 @@ export function ProductCard({ product }: { product: Product }) {
   const [showTrustScore, setShowTrustScore] = useState(false);
   
   const aesthetics = getCategoryAesthetics(product.category);
+
+  // Check if item is out of stock
+  const isOutOfStock = product.stock !== undefined && product.stock <= 0;
+
+  // Check if store is open
+  const checkStoreOpen = () => {
+    if (typeof window === 'undefined') return true;
+    const local = localStorage.getItem('velto_announcements');
+    if (local) {
+      try {
+        const parsed = JSON.parse(local);
+        const configAnn = parsed.find((ann: any) => ann.title?.includes('[STORE_CONFIG]'));
+        if (configAnn) {
+          const config = JSON.parse(configAnn.content);
+          if (!config.isOpen) return false;
+          const now = new Date();
+          const currentHour = now.getHours();
+          const currentMinute = now.getMinutes();
+          
+          const [startHour, startMin] = config.startTime.split(':').map(Number);
+          const [endHour, endMin] = config.endTime.split(':').map(Number);
+          
+          const currentVal = currentHour * 60 + currentMinute;
+          const startVal = startHour * 60 + startMin;
+          const endVal = endHour * 60 + endMin;
+          
+          return currentVal >= startVal && currentVal <= endVal;
+        }
+      } catch(e) {}
+    }
+    return true;
+  };
+  
+  const storeOpen = checkStoreOpen();
 
   // Determistic Hygiene trust scores based on product ID charCode
   const trustSeed = product.id ? product.id.charCodeAt(0) % 7 + 92 : 95;
@@ -123,6 +158,13 @@ export function ProductCard({ product }: { product: Product }) {
 
       {/* Product Image Panel (Bypasses image fetching if Lite/Low Internet Mode is active) */}
       <div className={`relative w-full aspect-square rounded-2xl overflow-hidden flex items-center justify-center transition-transform duration-300 ${aesthetics.bg}`}>
+        {isOutOfStock && (
+          <div className="absolute inset-0 bg-black/60 z-10 flex items-center justify-center">
+            <span className="text-[10px] font-black tracking-widest text-white bg-rose-600 px-3 py-1 rounded-full shadow-lg">
+              OUT OF STOCK
+            </span>
+          </div>
+        )}
         {product.image_url && !lowInternetMode ? (
           <img 
             src={product.image_url} 
@@ -149,13 +191,27 @@ export function ProductCard({ product }: { product: Product }) {
 
       <div className="flex items-center justify-between mt-1 pt-1.5 border-t border-border/40">
         <span className="font-black text-sm sm:text-base text-foreground">₹{product.price}</span>
-        <button 
-          onClick={() => addToCart(product)}
-          className="bg-primary text-primary-foreground w-8 h-8 rounded-full hover:scale-105 active:scale-95 transition-all shadow-md hover:bg-primary/95 flex items-center justify-center shrink-0 cursor-pointer"
-          aria-label="Add to cart"
-        >
-          <Plus size={16} className="stroke-[3]" />
-        </button>
+        {isOutOfStock ? (
+          <span className="text-[10px] font-black text-rose-500 bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-xl">
+            OUT
+          </span>
+        ) : !storeOpen ? (
+          <button 
+            onClick={() => alert("⏳ Store is currently CLOSED. Ordering is disabled.")}
+            className="bg-zinc-300 dark:bg-zinc-700 text-zinc-500 dark:text-zinc-400 w-8 h-8 rounded-full cursor-not-allowed flex items-center justify-center shrink-0"
+            title="Store Closed"
+          >
+            <Plus size={16} className="stroke-[3]" />
+          </button>
+        ) : (
+          <button 
+            onClick={() => addToCart(product)}
+            className="bg-primary text-primary-foreground w-8 h-8 rounded-full hover:scale-105 active:scale-95 transition-all shadow-md hover:bg-primary/95 flex items-center justify-center shrink-0 cursor-pointer"
+            aria-label="Add to cart"
+          >
+            <Plus size={16} className="stroke-[3]" />
+          </button>
+        )}
       </div>
     </div>
   );

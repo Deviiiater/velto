@@ -110,6 +110,7 @@ export default function Home() {
   }, [user, authLoading, router]);
 
   const [products, setProducts] = useState<Product[]>([]);
+  const [storeConfig, setStoreConfig] = useState({ startTime: "08:00", endTime: "22:00", isOpen: true });
   const [loading, setLoading] = useState(true);
   const [activePill, setActivePill] = useState<'reorder' | 'food'>('food');
   const [vegOnly, setVegOnly] = useState(false);
@@ -337,8 +338,38 @@ export default function Home() {
           sessionStorage.setItem('velto_popup_shown', 'true');
         }
       }
+      
+      // Extract store timings config
+      const configAnn = announcements.find(ann => ann.title?.includes('[STORE_CONFIG]'));
+      if (configAnn) {
+        try {
+          const parsed = JSON.parse(configAnn.content);
+          setStoreConfig({
+            startTime: parsed.startTime || '08:00',
+            endTime: parsed.endTime || '22:00',
+            isOpen: parsed.isOpen !== false
+          });
+        } catch(e) {}
+      }
     }
   }, [announcements]);
+
+  const isStoreOpen = () => {
+    if (!storeConfig.isOpen) return false;
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    
+    const [startHour, startMin] = storeConfig.startTime.split(':').map(Number);
+    const [endHour, endMin] = storeConfig.endTime.split(':').map(Number);
+    
+    const currentVal = currentHour * 60 + currentMinute;
+    const startVal = startHour * 60 + startMin;
+    const endVal = endHour * 60 + endMin;
+    
+    return currentVal >= startVal && currentVal <= endVal;
+  };
+  const storeOpen = isStoreOpen();
 
   useEffect(() => {
     const totalSlides = announcements?.length || 0;
@@ -1888,6 +1919,17 @@ export default function Home() {
           )}
         </div>
 
+        {/* ⏰ Closed Store Notice Banner */}
+        {!storeOpen && (
+          <div className="w-full bg-rose-500/10 border border-rose-500/20 text-rose-600 rounded-2xl p-4 flex items-center gap-3 select-none text-left">
+            <Clock className="w-5 h-5 text-rose-500 animate-pulse shrink-0" />
+            <div className="flex-1">
+              <span className="text-xs font-black uppercase tracking-wider block">Store Operations Closed</span>
+              <p className="text-[10px] font-bold leading-normal mt-0.5">We are currently closed. Delivery start time is {storeConfig.startTime} and closing time is {storeConfig.endTime}. You can still browse products, but ordering is disabled.</p>
+            </div>
+          </div>
+        )}
+
         {/* 🚲 Interactive Delivery Rider Animation */}
         {!searchQuery.trim() && <DeliveryRiderAnimation />}
 
@@ -2580,7 +2622,15 @@ export default function Home() {
 
                         <button
                           onClick={() => {
+                            if (!storeOpen) {
+                              showToast(`⏳ Store Closed! Operational hours: ${storeConfig.startTime} - ${storeConfig.endTime}`, 'error');
+                              return;
+                            }
                             if (matchedProd) {
+                              if (matchedProd.stock !== undefined && matchedProd.stock <= 0) {
+                                showToast(`❌ ${matchedProd.name} is currently out of stock!`, 'error');
+                                return;
+                              }
                               addToCart(matchedProd);
                               showToast(`🛒 Added ${matchedProd.name} to basket!`, 'success');
                             } else {
@@ -2701,15 +2751,25 @@ export default function Home() {
                                 <span className={`w-2 h-2 rounded-full inline-block ${isVeg ? 'bg-green-500' : 'bg-red-500'}`} />
                                 {cuisine}
                               </span>
-                              <button 
-                                onClick={() => {
-                                  addToCart(product);
-                                  showToast(`🛒 Added ${product.name} to basket!`, 'success');
-                                }}
-                                className="bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-xl hover:scale-105 active:scale-95 transition-all cursor-pointer"
-                              >
-                                ADD
-                              </button>
+                              {product.stock !== undefined && product.stock <= 0 ? (
+                                <span className="text-[10px] font-black text-rose-500 bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-xl">
+                                  OUT
+                                </span>
+                              ) : (
+                                <button 
+                                  onClick={() => {
+                                    if (!storeOpen) {
+                                      showToast(`⏳ Store Closed! Operational hours: ${storeConfig.startTime} - ${storeConfig.endTime}`, 'error');
+                                      return;
+                                    }
+                                    addToCart(product);
+                                    showToast(`🛒 Added ${product.name} to basket!`, 'success');
+                                  }}
+                                  className="bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-xl hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                                >
+                                  ADD
+                                </button>
+                              )}
                             </div>
                           </div>
                         </div>

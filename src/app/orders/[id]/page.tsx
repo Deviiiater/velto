@@ -113,7 +113,21 @@ export default function OrderTrackerPage({ params }: { params: Promise<{ id: str
         .single();
 
       if (error) throw error;
-      setOrder(data);
+      let processedOrder = data;
+      if (data && data.status !== 'delivered' && data.status !== 'cancelled') {
+        const createdAt = new Date(data.created_at);
+        const now = new Date();
+        const diffMs = now.getTime() - createdAt.getTime();
+        const diffMins = diffMs / (1000 * 60);
+        if (diffMins >= 60) {
+          processedOrder = {
+            ...data,
+            status: 'cancelled',
+            timeoutCancelled: true
+          };
+        }
+      }
+      setOrder(processedOrder);
     } catch (e) {
       console.error('Error fetching order:', e);
     } finally {
@@ -600,7 +614,11 @@ export default function OrderTrackerPage({ params }: { params: Promise<{ id: str
               <span className="text-xl">🛑</span>
               <div>
                 <div className="font-bold text-sm">{t('orderCancelled', language)}</div>
-                <div className="text-xs opacity-90">{t('orderCancelledDesc', language)}</div>
+                <div className="text-xs opacity-90">
+                  {(order as any).timeoutCancelled 
+                    ? "This order could not be delivered due to delay in rider dispatch/processing (exceeded 1 hour limit). The amount (if paid online) will be refunded shortly."
+                    : t('orderCancelledDesc', language)}
+                </div>
               </div>
             </div>
           ) : (

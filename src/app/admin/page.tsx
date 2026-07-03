@@ -4,7 +4,7 @@ import { getPortalSupabase, supabaseUrl, supabaseAnonKey } from '@/lib/supabase'
 import { 
   PlusCircle, Users, ShoppingBag, ShieldCheck, CheckCircle, 
   UserPlus, Key, ClipboardList, DollarSign, Calendar, 
-  Headphones, Trash2, Edit3, Save, X, Search, Image, Megaphone, CheckSquare
+  Headphones, Trash2, Edit3, Save, X, Search, Image, Megaphone, CheckSquare, Clock
 } from 'lucide-react';
 import { createClient } from '@supabase/supabase-js';
 import StaffAuthGuard from '@/components/StaffAuthGuard';
@@ -67,7 +67,13 @@ type OrderAdmin = {
 
 export default function AdminDashboard() {
   // Tabs for administrative functions
-  const [activeTab, setActiveTab] = useState<'catalog' | 'staff' | 'tickets' | 'announcements' | 'approvals'>('catalog');
+  const [activeTab, setActiveTab] = useState<'catalog' | 'staff' | 'tickets' | 'announcements' | 'approvals' | 'timings'>('catalog');
+  
+  // Store timing states
+  const [startTime, setStartTime] = useState('08:00');
+  const [endTime, setEndTime] = useState('22:00');
+  const [isOpenState, setIsOpenState] = useState(true);
+  const [savingTimings, setSavingTimings] = useState(false);
 
   // Product form state
   const [productForm, setProductForm] = useState<ProductInput>({
@@ -142,6 +148,16 @@ export default function AdminDashboard() {
       if (data) {
         setAnnouncements(data);
         localStorage.setItem('velto_announcements', JSON.stringify(data));
+        // Extract store config
+        const configAnn = data.find((ann: any) => ann.title?.includes('[STORE_CONFIG]'));
+        if (configAnn) {
+          try {
+            const parsed = JSON.parse(configAnn.content);
+            setStartTime(parsed.startTime || '08:00');
+            setEndTime(parsed.endTime || '22:00');
+            setIsOpenState(parsed.isOpen !== false);
+          } catch(e) {}
+        }
       } else {
         loadLocalAnnouncements();
       }
@@ -157,7 +173,17 @@ export default function AdminDashboard() {
     const local = localStorage.getItem('velto_announcements');
     if (local) {
       try {
-        setAnnouncements(JSON.parse(local));
+        const parsed = JSON.parse(local);
+        setAnnouncements(parsed);
+        const configAnn = parsed.find((ann: any) => ann.title?.includes('[STORE_CONFIG]'));
+        if (configAnn) {
+          try {
+            const p = JSON.parse(configAnn.content);
+            setStartTime(p.startTime || '08:00');
+            setEndTime(p.endTime || '22:00');
+            setIsOpenState(p.isOpen !== false);
+          } catch(e) {}
+        }
       } catch (err) {
         console.error("Failed parsing admin local announcements:", err);
       }
@@ -985,7 +1011,8 @@ export default function AdminDashboard() {
                 { id: 'staff', name: 'Staff', icon: <Users size={14} /> },
                 { id: 'tickets', name: 'Tickets', icon: <Headphones size={14} /> },
                 { id: 'announcements', name: 'Broadcasts', icon: <Megaphone size={14} /> },
-                { id: 'approvals', name: 'Approvals', icon: <CheckSquare size={14} /> }
+                { id: 'approvals', name: 'Approvals', icon: <CheckSquare size={14} /> },
+                { id: 'timings', name: 'Timings', icon: <Clock size={14} /> }
               ].map(tab => (
                 <button
                   key={tab.id}
@@ -1515,6 +1542,110 @@ export default function AdminDashboard() {
             )}
 
             {/* TAB 5: VENDOR APPROVALS */}
+            {/* TAB 6: TIMINGS CONFIG MANAGER */}
+            {activeTab === 'timings' && (
+              <div className="bg-card border border-border rounded-2xl p-6 shadow-sm space-y-6 text-left">
+                <div className="border-b border-border pb-3">
+                  <h2 className="text-xl font-bold flex items-center gap-2">
+                    ⏰ Store Operations & Timings
+                  </h2>
+                  <p className="text-xs text-muted-foreground font-semibold mt-0.5">Control store opening hours, closure flags, and ordering windows.</p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Left Column Settings */}
+                  <div className="space-y-4">
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-black uppercase text-foreground">Opening Hour</label>
+                      <input 
+                        type="time" 
+                        value={startTime}
+                        onChange={e => setStartTime(e.target.value)}
+                        className="p-3 rounded-xl border border-border bg-background text-sm font-bold focus:outline-none focus:ring-2 focus:ring-primary w-full"
+                      />
+                    </div>
+
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-black uppercase text-foreground">Closing Hour</label>
+                      <input 
+                        type="time" 
+                        value={endTime}
+                        onChange={e => setEndTime(e.target.value)}
+                        className="p-3 rounded-xl border border-border bg-background text-sm font-bold focus:outline-none focus:ring-2 focus:ring-primary w-full"
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-3 p-4 bg-muted/30 border border-border rounded-2xl">
+                      <input 
+                        type="checkbox" 
+                        id="isOpenCheck"
+                        checked={isOpenState}
+                        onChange={e => setIsOpenState(e.target.checked)}
+                        className="w-4 h-4 rounded text-primary focus:ring-primary border-border cursor-pointer"
+                      />
+                      <label htmlFor="isOpenCheck" className="text-xs font-bold text-foreground cursor-pointer select-none">
+                        Store Open (Allows shopping / placing orders)
+                      </label>
+                    </div>
+
+                    <button
+                      onClick={async () => {
+                        setSavingTimings(true);
+                        const configData = { startTime, endTime, isOpen: isOpenState };
+                        const title = '[STORE_CONFIG]';
+                        const content = JSON.stringify(configData);
+                        try {
+                          await supabase.from('announcements').delete().eq('title', title);
+                          const { error } = await supabase.from('announcements').insert({
+                            title,
+                            content,
+                            type: 'announcement'
+                          });
+                          if (error) throw error;
+                          alert("Store operational timings saved & synced successfully!");
+                        } catch (e: any) {
+                          console.warn("Offline/DB Save failed, writing to local storage");
+                          const list = localStorage.getItem('velto_announcements') ? JSON.parse(localStorage.getItem('velto_announcements')!) : [];
+                          const clean = list.filter((ann: any) => ann.title !== title);
+                          clean.unshift({
+                            id: 'local-store-config-' + Date.now(),
+                            title,
+                            content,
+                            type: 'announcement',
+                            created_at: new Date().toISOString()
+                          });
+                          localStorage.setItem('velto_announcements', JSON.stringify(clean));
+                          alert("Timings saved locally (Offline mode active)!");
+                        } finally {
+                          setSavingTimings(false);
+                          fetchAnnouncements();
+                        }
+                      }}
+                      disabled={savingTimings}
+                      className="w-full bg-primary text-primary-foreground font-black text-xs uppercase tracking-wider py-3.5 rounded-2xl hover:scale-[1.01] active:scale-95 transition-all shadow-md cursor-pointer flex items-center justify-center gap-2"
+                    >
+                      {savingTimings ? 'Saving Settings...' : 'Save Settings'}
+                    </button>
+                  </div>
+
+                  {/* Right Column Stats & Info */}
+                  <div className="bg-muted/10 border border-border/80 rounded-2xl p-5 space-y-3.5 h-fit text-xs font-semibold text-muted-foreground leading-relaxed">
+                    <span className="font-extrabold text-[#ffd700] uppercase tracking-wider block">⚠️ Operational Rules</span>
+                    <p>
+                      - If the current time is outside the opening and closing hours, the store will automatically display as **CLOSED** to users on the homepage.
+                    </p>
+                    <p>
+                      - All cart additions, checkout buttons, and order placement options will be dynamically disabled to prevent out-of-hours orders.
+                    </p>
+                    <p>
+                      - Unchecking **Store Open** forces immediate store closure across all platforms regardless of the hour.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+
             {activeTab === 'approvals' && (
               <div className="bg-card border border-border rounded-2xl p-6 shadow-sm space-y-6">
                 <div className="border-b border-border pb-3">
