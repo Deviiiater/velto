@@ -4,6 +4,7 @@ import { getPortalSupabase } from '@/lib/supabase';
 import { Bike, Navigation, CheckSquare, Phone, MapPin, DollarSign, Package, Terminal, Users } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import StaffAuthGuard from '@/components/StaffAuthGuard';
+import DashboardInstallBanner from '@/components/DashboardInstallBanner';
 
 const supabase = getPortalSupabase('rider');
 
@@ -336,6 +337,7 @@ export default function RiderPanel() {
 
   return (
     <div className="space-y-8">
+      <DashboardInstallBanner portalName="Rider" logoUrl="/logo-rider.png" />
       {/* Title */}
       <div className="border-b border-border pb-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { getPortalSupabase, supabase } from '@/lib/supabase';
 import { ChefHat, ShoppingBag, Calendar, CheckCircle, Clock, MapPin, Phone, User, AlertCircle, RefreshCw } from 'lucide-react';
 import StaffAuthGuard from '@/components/StaffAuthGuard';
+import DashboardInstallBanner from '@/components/DashboardInstallBanner';
 
 // Isolated portal-specific Supabase client
 const portalClient = getPortalSupabase('kitchen');
@@ -359,6 +360,7 @@ export default function KitchenDashboard() {
       portalIcon={<ChefHat className="w-6 h-6" />}
     >
       <div className="min-h-screen bg-background/95 py-10 px-4">
+        <DashboardInstallBanner portalName="Kitchen" logoUrl="/logo-kitchen.png" />
         <KitchenDashboardContent />
       </div>
     </StaffAuthGuard>

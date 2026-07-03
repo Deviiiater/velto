@@ -9,6 +9,7 @@ import {
 import { createClient } from '@supabase/supabase-js';
 import StaffAuthGuard from '@/components/StaffAuthGuard';
 import Link from 'next/link';
+import DashboardInstallBanner from '@/components/DashboardInstallBanner';
 
 const supabase = getPortalSupabase('admin');
 
@@ -721,6 +722,7 @@ export default function AdminDashboard() {
       portalId="admin"
     >
       <div className="space-y-10 mt-6">
+        <DashboardInstallBanner portalName="Admin" logoUrl="/logo-admin.png" />
         {/* Title Header */}
         <div className="border-b border-border pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>

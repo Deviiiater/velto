@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { getPortalSupabase } from '@/lib/supabase';
 import { Store, PlusCircle, CheckCircle, Clock, Trash2, Tag, ShoppingBag, Edit3, Save, X, Image, RefreshCw } from 'lucide-react';
 import StaffAuthGuard from '@/components/StaffAuthGuard';
+import DashboardInstallBanner from '@/components/DashboardInstallBanner';
 import Link from 'next/link';
 
 const client = getPortalSupabase('vendor');
@@ -495,6 +496,7 @@ export default function VendorDashboard() {
       portalIcon={<Store className="w-6 h-6" />}
     >
       <div className="min-h-screen bg-background/95 py-10 px-4">
+        <DashboardInstallBanner portalName="Vendor" logoUrl="/logo-vendor.png" />
         <VendorDashboardContent />
       </div>
     </StaffAuthGuard>

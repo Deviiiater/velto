@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { getPortalSupabase } from '@/lib/supabase';
 import { Package, CheckCircle, Play, AlertCircle } from 'lucide-react';
 import StaffAuthGuard from '@/components/StaffAuthGuard';
+import DashboardInstallBanner from '@/components/DashboardInstallBanner';
 
 const supabase = getPortalSupabase('warehouse');
 
@@ -161,6 +162,7 @@ export default function StorePanel() {
       portalId="warehouse"
     >
       <div className="space-y-8">
+        <DashboardInstallBanner portalName="Warehouse" logoUrl="/logo-warehouse.png" />
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 border-b border-border pb-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-black tracking-tight">Dark Store Warehouse</h1>
