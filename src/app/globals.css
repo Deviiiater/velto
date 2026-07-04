@@ -70,23 +70,23 @@
   }
 
   .dark {
-    /* Obsidian Rose & Plum Dark Mode - Premium and sleek */
-    --background: #0b050c; /* Deep obsidian plum */
-    --foreground: #fdfafc; /* Crisp off-white */
-    --card: rgba(26, 12, 22, 0.45); /* Translucent dark plum card */
-    --primary: #ff6b00; /* High-Visibility Vibrant Orange */
+    /* Futuristic Deep Black & Charcoal theme */
+    --background: #09090B;
+    --foreground: #f4f4f5;
+    --card: rgba(17, 24, 39, 0.6);
+    --primary: #ff5f1f;
     --primary-foreground: #ffffff;
-    --muted: #21111a; /* Deep Rose Slate */
-    --muted-foreground: #fbcfe8; /* Soft pink text */
-    --accent: #331526; /* Deep Rose Accent */
-    --destructive: #f43f5e;
-    --border: rgba(255, 255, 255, 0.06);
-    --radius: 1.25rem;
+    --muted: #111827;
+    --muted-foreground: #a1a1aa;
+    --accent: #27272a;
+    --destructive: #ef4444;
+    --border: rgba(255, 255, 255, 0.08);
+    --radius: 1.5rem;
 
     /* iOS Glassmorphism - Vibrant Liquid Glass */
-    --glass-background: rgba(26, 12, 22, 0.55);
-    --glass-border: rgba(255, 255, 255, 0.07);
-    --glass-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.1), 0 12px 40px 0 rgba(0, 0, 0, 0.45);
+    --glass-background: rgba(17, 24, 39, 0.65);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05), 0 12px 40px 0 rgba(0, 0, 0, 0.65);
   }
 }
 

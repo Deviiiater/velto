@@ -1,5 +1,5 @@
 'use client';
-import { Search, MapPin, Clock, ShoppingBag, Apple, Leaf, Egg, Cookie, CupSoda, Flame, Plus, Sparkles, Zap, AlertCircle, Compass, HelpCircle, Mic, Bot, Send, Dumbbell, Coffee, Heart, Utensils, Calendar, ShieldCheck, Tag, Sparkle, Store, Users, DollarSign, Shield, HeartHandshake, Navigation, Pill, Truck, Wallet, Wrench, Megaphone, ChevronDown, User as UserIcon, History } from 'lucide-react';
+import { Search, MapPin, Clock, ShoppingBag, Apple, Leaf, Egg, Cookie, CupSoda, Flame, Plus, Sparkles, Zap, AlertCircle, Compass, HelpCircle, Mic, Bot, Send, Dumbbell, Coffee, Heart, Utensils, Calendar, ShieldCheck, Tag, Sparkle, Store, Users, DollarSign, Shield, HeartHandshake, Navigation, Pill, Truck, Wallet, Wrench, Megaphone, ChevronDown, User as UserIcon, History, Headphones, Bike } from 'lucide-react';
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
@@ -2031,20 +2031,28 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Slide 3: Dine-out Festival */}
+                {/* Slide 3: Dine-out Festival (Mockup Style Image Background) */}
                 <div className="w-full shrink-0 p-0.5">
-                  <div className="relative overflow-hidden rounded-2xl group cursor-pointer h-[105px]">
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#ff2d55] via-[#ff6b8b] to-[#ff2d55] bg-[length:200%_auto] animate-gradient-shift" />
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-shine-effect pointer-events-none" />
+                  <div 
+                    onClick={() => {
+                      showToast('Dine-Out Festival is booking now!', 'success');
+                    }}
+                    className="relative overflow-hidden rounded-2xl group cursor-pointer h-[105px] border border-purple-500/20 text-left"
+                  >
+                    <img 
+                      src="https://images.unsplash.com/photo-1544025162-d76694265947?w=500" 
+                      alt="Dine Out Fest" 
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#7C3AED]/90 via-[#7C3AED]/40 to-transparent" />
                     <div className="w-full p-4 flex justify-between items-center relative z-10 h-full">
-                      <div className="flex flex-col text-left">
+                      <div className="flex flex-col">
                         <div className="flex items-center gap-1.5">
-                          <span className="text-xl font-black italic tracking-tighter uppercase text-white drop-shadow-sm animate-pulse">DINE-OUT FEST</span>
-                          <span className="bg-white text-[#ff2d55] text-[8px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider">BOOK NOW</span>
+                          <span className="text-lg font-black tracking-tight uppercase text-white">DINE-OUT FEST</span>
+                          <span className="bg-[#EC4899] text-white text-[8px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider">BOOK NOW</span>
                         </div>
-                        <span className="text-xs font-black tracking-tight uppercase mt-0.5 text-white">Flat 30% Off at Top Fine Dining</span>
+                        <span className="text-xs font-black tracking-tight uppercase mt-1 text-zinc-100">Flat 30% OFF at top fine dining</span>
                       </div>
-                      <div className="text-3xl animate-[bounce_2s_infinite] shrink-0 drop-shadow-md select-none">🍷</div>
                     </div>
                   </div>
                 </div>

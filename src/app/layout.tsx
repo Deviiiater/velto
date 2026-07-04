@@ -98,7 +98,7 @@ export default function RootLayout({
           <ActiveOrderFloatingBar />
           <FloatingCartBar />
           <BottomNavBar />
-          <footer className="border-t border-border bg-card pt-6 px-6 pb-28 text-center text-muted-foreground text-sm">
+          <footer className="border-t border-white/5 bg-[#09090B] pt-6 px-6 pb-28 text-center text-zinc-500 text-xs font-semibold uppercase tracking-wider">
             &copy; 2026 Velto Platform. All rights reserved.
           </footer>
         </Providers>

@@ -68,70 +68,99 @@ export function BottomNavBar() {
 
   return (
     <div 
-      className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-lg z-[999] glass-panel py-3 px-6 flex justify-between items-center rounded-3xl shadow-[0_15px_40px_rgba(0,0,0,0.75)] border border-white/10 transform-gpu will-change-transform"
+      className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-lg z-[999] bg-[#09090B]/90 backdrop-blur-xl py-2 px-3 flex justify-between items-center rounded-[2rem] border border-white/5 shadow-[0_15px_40px_rgba(0,0,0,0.85)] transform-gpu will-change-transform"
       style={{ position: 'fixed', left: '50%' }}
     >
+      {/* 1. FOOD TAB */}
       <button
         onClick={() => handleClick('food', '/')}
-        className={`flex flex-col items-center justify-center gap-1 flex-1 transition-all hover:scale-105 active:scale-95 duration-200 cursor-pointer ${
-          activeTab === 'food' && pathname === '/' ? 'text-primary scale-105 font-black' : 'text-muted-foreground font-bold'
+        className={`flex items-center gap-1.5 px-4 py-2.5 rounded-full transition-all duration-300 cursor-pointer ${
+          (activeTab === 'food' || activeTab === '') && pathname === '/'
+            ? 'bg-gradient-to-r from-[#EC4899] to-[#FF5F1F] text-white shadow-lg font-black scale-105'
+            : 'text-zinc-400 hover:text-zinc-200'
         }`}
       >
-        <Utensils size={18} />
-        <span className="text-[9px] uppercase tracking-wider mt-0.5">Food</span>
+        <Utensils size={15} />
+        {((activeTab === 'food' || activeTab === '') && pathname === '/') && (
+          <span className="text-[10px] uppercase tracking-wider animate-in fade-in duration-300">Food</span>
+        )}
       </button>
 
+      {/* 2. BOLT TAB */}
       <button
         onClick={() => handleClick('bolt', '/')}
-        className={`flex flex-col items-center justify-center gap-1 flex-grow relative transition-all hover:scale-105 active:scale-95 duration-200 cursor-pointer ${
-          activeTab === 'bolt' && pathname === '/' ? 'text-primary scale-105 font-black' : 'text-muted-foreground font-bold'
+        className={`flex items-center gap-1.5 px-4 py-2.5 rounded-full transition-all duration-300 cursor-pointer relative ${
+          activeTab === 'bolt' && pathname === '/'
+            ? 'bg-gradient-to-r from-[#EC4899] to-[#FF5F1F] text-white shadow-lg font-black scale-105'
+            : 'text-zinc-400 hover:text-zinc-200'
         }`}
       >
-        <div className="relative">
-          <Zap size={18} className="text-primary" />
-          <span className="absolute -top-1.5 -right-5 bg-primary text-white text-[7px] font-black px-1.5 py-0.5 rounded-full scale-90 tracking-tighter">15 MIN</span>
+        <div className="relative flex items-center">
+          <Zap size={15} />
+          {!(activeTab === 'bolt' && pathname === '/') && (
+            <span className="absolute -top-3.5 -right-6 bg-[#ff5f1f] text-white text-[7px] font-black px-1.5 py-0.5 rounded-full scale-90 tracking-tighter">15 MIN</span>
+          )}
         </div>
-        <span className="text-[9px] uppercase tracking-wider mt-0.5">Bolt</span>
+        {(activeTab === 'bolt' && pathname === '/') && (
+          <span className="text-[10px] uppercase tracking-wider animate-in fade-in duration-300">Bolt</span>
+        )}
       </button>
 
+      {/* 3. 99 STORE TAB */}
       <button
         onClick={() => handleClick('offer', '/')}
-        className={`flex flex-col items-center justify-center gap-1 flex-grow transition-all hover:scale-105 active:scale-95 duration-200 cursor-pointer ${
-          activeTab === 'offer' && pathname === '/' ? 'text-primary scale-105 font-black' : 'text-muted-foreground font-bold'
+        className={`flex items-center gap-1.5 px-4 py-2.5 rounded-full transition-all duration-300 cursor-pointer relative ${
+          activeTab === 'offer' && pathname === '/'
+            ? 'bg-gradient-to-r from-[#EC4899] to-[#FF5F1F] text-white shadow-lg font-black scale-105'
+            : 'text-zinc-400 hover:text-zinc-200'
         }`}
       >
-        <div className="relative">
-          <Tag size={18} className="text-amber-500" />
-          <span className="absolute -top-1.5 -right-3 text-amber-500 font-extrabold text-[8px] bg-amber-500/10 px-1 rounded-full">99</span>
+        <div className="relative flex items-center">
+          <Tag size={15} />
+          {!(activeTab === 'offer' && pathname === '/') && (
+            <span className="absolute -top-3.5 -right-4 bg-amber-500 text-black font-extrabold text-[8px] px-1 rounded-full">99</span>
+          )}
         </div>
-        <span className="text-[9px] uppercase tracking-wider mt-0.5">99 Store</span>
+        {(activeTab === 'offer' && pathname === '/') && (
+          <span className="text-[10px] uppercase tracking-wider animate-in fade-in duration-300">99 Store</span>
+        )}
       </button>
 
+      {/* 4. CART TAB */}
       <button
         onClick={() => router.push('/cart')}
-        className={`flex flex-col items-center justify-center gap-1 flex-grow relative transition-all hover:scale-105 active:scale-95 duration-200 cursor-pointer ${
-          pathname === '/cart' ? 'text-primary scale-105 font-black' : 'text-muted-foreground font-bold'
+        className={`flex items-center gap-1.5 px-4 py-2.5 rounded-full transition-all duration-300 cursor-pointer relative ${
+          pathname === '/cart'
+            ? 'bg-gradient-to-r from-[#EC4899] to-[#FF5F1F] text-white shadow-lg font-black scale-105'
+            : 'text-zinc-400 hover:text-zinc-200'
         }`}
       >
-        <div className="relative">
-          <ShoppingBag size={18} />
-          {cart.length > 0 && (
-            <span className="absolute -top-1.5 -right-2 bg-primary text-primary-foreground text-[8px] font-black w-4.5 h-4.5 rounded-full flex items-center justify-center shadow-sm">
+        <div className="relative flex items-center">
+          <ShoppingBag size={15} />
+          {cart.length > 0 && !(pathname === '/cart') && (
+            <span className="absolute -top-3.5 -right-3.5 bg-[#ff5f1f] text-white text-[7px] font-black w-4.5 h-4.5 rounded-full flex items-center justify-center shadow-sm">
               {cart.length}
             </span>
           )}
         </div>
-        <span className="text-[9px] uppercase tracking-wider mt-0.5">Cart</span>
+        {(pathname === '/cart') && (
+          <span className="text-[10px] uppercase tracking-wider animate-in fade-in duration-300">Cart</span>
+        )}
       </button>
 
+      {/* 5. REORDER TAB */}
       <button
         onClick={() => handleClick('reorder', '/')}
-        className={`flex flex-col items-center justify-center gap-1 flex-grow transition-all hover:scale-105 active:scale-95 duration-200 cursor-pointer ${
-          activeTab === 'reorder' && pathname === '/' ? 'text-primary scale-105 font-black' : 'text-muted-foreground font-bold'
+        className={`flex items-center gap-1.5 px-4 py-2.5 rounded-full transition-all duration-300 cursor-pointer ${
+          activeTab === 'reorder' && pathname === '/'
+            ? 'bg-gradient-to-r from-[#EC4899] to-[#FF5F1F] text-white shadow-lg font-black scale-105'
+            : 'text-zinc-400 hover:text-zinc-200'
         }`}
       >
-        <History size={18} />
-        <span className="text-[9px] uppercase tracking-wider mt-0.5">Reorder</span>
+        <History size={15} />
+        {(activeTab === 'reorder' && pathname === '/') && (
+          <span className="text-[10px] uppercase tracking-wider animate-in fade-in duration-300">Reorder</span>
+        )}
       </button>
     </div>
   );
