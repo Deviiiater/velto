@@ -1,5 +1,5 @@
 'use client';
-import { Search, MapPin, Clock, ShoppingBag, Apple, Leaf, Egg, Cookie, CupSoda, Flame, Plus, Sparkles, Zap, AlertCircle, Compass, HelpCircle, Mic, Bot, Send, Dumbbell, Coffee, Heart, Utensils, Calendar, ShieldCheck, Tag, Sparkle, Store, Users, DollarSign, Shield, HeartHandshake, Navigation, Pill, Truck, Wallet, Wrench, Megaphone, ChevronDown, User as UserIcon, History, Headphones, Bike } from 'lucide-react';
+import { Search, MapPin, Clock, ShoppingBag, Apple, Leaf, Egg, Cookie, CupSoda, Flame, Plus, Sparkles, Zap, AlertCircle, Compass, HelpCircle, Mic, Bot, Send, Dumbbell, Coffee, Heart, Utensils, Calendar, ShieldCheck, Tag, Sparkle, Store, Users, DollarSign, Shield, HeartHandshake, Navigation, Pill, Truck, Wallet, Wrench, Megaphone, ChevronDown, User as UserIcon, History, Headphones, Bike, Scan } from 'lucide-react';
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
@@ -1791,69 +1791,87 @@ export default function Home() {
           </div>
         </div>
       )}
-      {/* 🚀 Deep Purple Top Header Area (Location, Search, Marquee, Promo cards) */}
-      <div className="-mx-4 -mt-4 p-4 sm:-mx-8 sm:-mt-8 sm:p-6 bg-gradient-to-b from-[#3a014c] to-[#20002b] text-white rounded-b-[2.5rem] flex flex-col gap-3 relative overflow-hidden shadow-2xl pb-6">
-        {/* Ambient glows */}
-        <div className="absolute top-0 right-0 -mt-10 -mr-10 w-48 h-48 rounded-full bg-primary/20 blur-[60px] pointer-events-none"></div>
-        <div className="absolute bottom-0 left-0 -mb-10 -ml-10 w-48 h-48 rounded-full bg-amber-500/10 blur-[60px] pointer-events-none"></div>
+      {/* 🏆 Apple Design Award / Dribbble Quality Header Area */}
+      <div className="-mx-4 -mt-4 p-4 sm:-mx-8 sm:-mt-8 sm:p-6 bg-[#070B14] text-white flex flex-col gap-5 relative overflow-hidden pb-6 font-sans">
+        
+        {/* Glow ambient background graphics */}
+        <div className="absolute top-[-50px] right-[-50px] w-64 h-64 bg-primary/10 rounded-full blur-[80px] pointer-events-none"></div>
+        <div className="absolute bottom-[20px] left-[-20px] w-64 h-64 bg-[#7C3AED]/10 rounded-full blur-[80px] pointer-events-none"></div>
 
-        {/* Location Selector Bar */}
-        <div className="flex justify-between items-center z-10">
+        {/* 1. Header Bar: Location, Bell, Wallet, Profile */}
+        <div className="flex justify-between items-center z-10 select-none">
           <div className="flex items-center gap-2.5 cursor-pointer group" onClick={() => setShowLocationSelector(true)}>
-            <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white shrink-0 group-hover:scale-105 transition-transform">
-              <MapPin size={18} className="text-[#ffd700]" />
+            <div className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white shrink-0 group-hover:scale-105 transition-all">
+              <MapPin size={16} className="text-[#FF5F1F] animate-bounce-short" />
             </div>
             <div className="flex flex-col text-left">
-              <span className="text-[10px] text-zinc-300 font-bold uppercase tracking-wider">Deliver to</span>
-              <div className="flex items-center gap-1">
+              <span className="text-[9px] text-zinc-400 font-semibold uppercase tracking-widest leading-none">Delivering to</span>
+              <div className="flex items-center gap-1 mt-0.5">
                 <span className="text-xs sm:text-sm font-black tracking-tight text-white flex items-center gap-1">
-                  {locationInput || currentLocation || 'Home - 27, Green Street, US'} 
-                  <ChevronDown size={14} className="text-[#ffd700] group-hover:translate-y-0.5 transition-transform" />
+                  Bhopal, Madhya Pradesh
+                  <ChevronDown size={14} className="text-[#FF5F1F] group-hover:translate-y-0.5 transition-transform" />
                 </span>
               </div>
             </div>
           </div>
  
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             {/* Bell notification button */}
             <button 
               onClick={() => setShowNotificationsDrawer(true)}
-              className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:scale-105 active:scale-95 transition-transform cursor-pointer relative"
+              className="w-9 h-9 rounded-xl bg-[#101828]/95 border border-white/8 flex items-center justify-center text-white hover:scale-105 active:scale-95 transition-all cursor-pointer relative"
             >
-              <span className="absolute top-2 right-2.5 w-2 h-2 bg-primary rounded-full animate-ping"></span>
-              <span className="absolute top-2 right-2.5 w-2 h-2 bg-primary rounded-full"></span>
-              <svg viewBox="0 0 24 24" className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-[#FF5F1F] rounded-full animate-ping"></span>
+              <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-[#FF5F1F] rounded-full"></span>
+              <svg viewBox="0 0 24 24" className="w-4.5 h-4.5 text-zinc-300" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
                 <path d="M13.73 21a2 2 0 0 1-3.46 0" />
               </svg>
             </button>
- 
+
+            {/* Wallet button */}
             <button 
               onClick={() => router.push('/profile')}
-              className="relative w-10 h-10 rounded-full border-2 border-white/20 hover:scale-105 active:scale-95 transition-all shadow-md flex items-center justify-center bg-gradient-to-tr from-primary to-[#ff5e97] shrink-0 overflow-hidden group"
-              title="My Orders Profile"
+              className="w-9 h-9 rounded-xl bg-[#101828]/95 border border-white/8 flex items-center justify-center text-white hover:scale-105 active:scale-95 transition-all cursor-pointer"
             >
-              <svg viewBox="0 0 100 100" className="w-7 h-7 text-white select-none">
-                <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" strokeWidth="2" className="opacity-30 group-hover:animate-spin" style={{ transformOrigin: '50px 50px', animationDuration: '4s' }} />
-                <circle cx="50" cy="38" r="16" fill="currentColor" className="transition-transform duration-300 group-hover:-translate-y-0.5" />
-                <path d="M20 76 C 20 54, 80 54, 80 76 Z" fill="currentColor" className="transition-transform duration-300 group-hover:translate-y-0.5" />
-                <circle cx="28" cy="28" r="3" fill="#ffd700" className="animate-pulse" />
-                <circle cx="72" cy="32" r="2" fill="#ffd700" className="animate-pulse" style={{ animationDelay: '0.4s' }} />
-              </svg>
-              {/* Online status indicator */}
+              <Wallet size={16} className="text-zinc-300" />
+            </button>
+ 
+            {/* Profile Avatar */}
+            <button 
+              onClick={() => router.push('/profile')}
+              className="relative w-9 h-9 rounded-xl border border-[#7C3AED]/35 hover:scale-105 active:scale-95 transition-all shadow-lg flex items-center justify-center bg-gradient-to-tr from-[#7C3AED] to-[#EC4899] shrink-0 overflow-hidden"
+            >
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" alt="Mohit Profile" className="w-full h-full object-cover" />
               {user && (
-                <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-[#3a014c] rounded-full shadow-sm animate-pulse z-10"></span>
+                <span className="absolute bottom-0 right-0 w-2 h-2 bg-emerald-500 border border-[#070B14] rounded-full"></span>
               )}
             </button>
           </div>
         </div>
 
-        {/* 50% OFF Pizza Banner (Figma UI Kit Style) */}
+        {/* 2. Greetings Section */}
+        <div className="text-left mt-1 select-none z-10">
+          <span className="text-xs font-semibold text-[#FF5F1F] tracking-wide block">Good Evening 👋</span>
+          <h1 className="text-3xl font-black text-white tracking-tight uppercase leading-none mt-1">Mohit</h1>
+        </div>
+
+        {/* 3. Hero Pizza Banner with floating ingredients */}
         {!searchQuery.trim() && (
-          <div className="relative w-full rounded-[2.2rem] bg-gradient-to-br from-[#ff5a00] to-[#e62200] overflow-hidden shadow-lg p-5 flex items-center justify-between text-left select-none my-1">
-            <div className="flex flex-col gap-1 z-10">
-              <span className="text-white font-extrabold text-[26px] sm:text-[30px] leading-tight tracking-tight uppercase">50% OFF</span>
-              <span className="text-white/95 font-black text-xs uppercase tracking-wide">On Your First Order</span>
+          <div className="relative w-full rounded-[2rem] bg-gradient-to-r from-[#FF5F1F] via-[#FF8A00] to-[#FF3D71] overflow-hidden shadow-2xl p-6 flex items-center justify-between text-left select-none my-1 border border-white/10 group">
+            
+            {/* Ambient animated particle glow */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.15)_0%,transparent_50%)] pointer-events-none" />
+
+            {/* Left text block */}
+            <div className="flex flex-col gap-0.5 z-10 max-w-[55%]">
+              <span className="text-white font-black text-4xl leading-none tracking-tight uppercase drop-shadow-md">50% OFF</span>
+              <span className="text-white/95 font-black text-[10px] uppercase tracking-widest mt-1 drop-shadow-sm">On Your First Order</span>
+              
+              <div className="border border-dashed border-white/30 rounded-xl px-3 py-1.5 bg-black/10 text-[9px] font-black uppercase text-white tracking-widest mt-3 w-fit select-text cursor-copy">
+                Use Code: VELTO50
+              </div>
+
               <button 
                 onClick={() => {
                   setSelectedCategory('Cloud Kitchen');
@@ -1861,44 +1879,49 @@ export default function Home() {
                   setActiveModule('kitchen');
                   showToast('Switched to Cloud Kitchen', 'info');
                 }}
-                className="mt-3 bg-white text-primary text-[10px] font-black uppercase tracking-wider px-5 py-2.5 rounded-full hover:scale-105 active:scale-95 transition-all shadow-md w-fit cursor-pointer"
+                className="mt-4 bg-black hover:bg-zinc-900 text-white text-[9px] font-black uppercase tracking-wider px-5 py-3 rounded-full hover:scale-105 active:scale-95 transition-all shadow-2xl w-fit cursor-pointer flex items-center gap-1.5 border border-white/5"
               >
-                ORDER NOW
+                ORDER NOW &rarr;
               </button>
             </div>
             
-            {/* Pizza graphic on the right */}
-            <div className="absolute right-2 top-1/2 -translate-y-1/2 translate-x-2 w-32 h-32 opacity-95">
-              <svg viewBox="0 0 100 100" className="w-full h-full text-white" fill="currentColor">
-                <circle cx="50" cy="50" r="42" className="fill-orange-850/15 stroke-white/20 stroke-2" />
-                <circle cx="50" cy="50" r="38" className="fill-amber-600/90" />
-                <circle cx="50" cy="50" r="33" className="fill-yellow-400" />
-                {/* Pepperoni slices */}
-                <circle cx="36" cy="40" r="4.5" className="fill-red-600" />
-                <circle cx="64" cy="40" r="4.5" className="fill-red-600" />
-                <circle cx="50" cy="66" r="4.5" className="fill-red-600" />
-                <circle cx="34" cy="60" r="4.5" className="fill-red-600" />
-                <circle cx="66" cy="60" r="4.5" className="fill-red-600" />
-                <circle cx="50" cy="34" r="4.5" className="fill-red-600" />
-                {/* Basil/herbs */}
-                <path d="M 44 48 Q 40 45 42 42 T 48 44 Z" className="fill-emerald-600" />
-                <path d="M 58 48 Q 62 45 60 42 T 54 44 Z" className="fill-emerald-600" />
-                <path d="M 50 56 Q 48 60 52 62 T 54 56 Z" className="fill-emerald-600" />
-              </svg>
+            {/* Realistic Overlapping Pizza with Floating Ingredients */}
+            <div className="absolute right-0 top-0 bottom-0 w-[45%] overflow-visible flex items-center justify-end z-0">
+              <div className="relative w-48 h-48 translate-x-3 translate-y-1.5 shrink-0">
+                <img 
+                  src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=450" 
+                  alt="Delicious Pizza" 
+                  className="w-full h-full object-cover rounded-full border-4 border-white/20 shadow-2xl group-hover:rotate-6 transition-transform duration-700" 
+                />
+                
+                {/* Floating ingredients */}
+                {/* Tomatoes */}
+                <span className="absolute top-4 left-0 text-lg animate-bounce select-none pointer-events-none drop-shadow-lg" style={{ animationDelay: '0.2s' }}>🍅</span>
+                {/* Cheese */}
+                <span className="absolute bottom-2 left-4 text-sm animate-bounce select-none pointer-events-none drop-shadow-lg" style={{ animationDelay: '0.6s' }}>🧀</span>
+                {/* Basil */}
+                <span className="absolute top-2 right-12 text-sm animate-bounce select-none pointer-events-none drop-shadow-lg" style={{ animationDelay: '1s' }}>🌿</span>
+
+                {/* HOT DEALS badge */}
+                <div className="absolute -left-3 top-8 bg-white border border-rose-100 rounded-full w-12 h-12 flex flex-col items-center justify-center shadow-2xl select-none rotate-12 animate-pulse">
+                  <span className="text-[9px] font-black tracking-tight leading-none text-rose-500">HOT</span>
+                  <span className="text-[7px] font-bold text-zinc-500 tracking-wide mt-0.5 leading-none">DEALS</span>
+                </div>
+              </div>
             </div>
           </div>
         )}
 
-        {/* Custom Search bar with Voice search & Veg selector */}
+        {/* 4. Large Glass Search Bar */}
         <div className="w-full flex flex-col gap-2 z-10">
-          <div className="w-full bg-white rounded-2xl p-1.5 flex items-center gap-2 shadow-lg">
-            <Search className="text-zinc-400 ml-2.5 shrink-0" size={18} />
+          <div className="w-full bg-[#101828]/95 border border-white/8 rounded-2xl p-1.5 flex items-center gap-2.5 shadow-xl backdrop-blur-xl">
+            <Search className="text-zinc-500 ml-2.5 shrink-0" size={18} />
             <input
               type="text"
-              placeholder={searchPlaceholder}
+              placeholder="Search restaurants, groceries, medicines..."
               value={searchQuery}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="flex-1 bg-transparent border-none focus:outline-none text-zinc-800 text-[16px] sm:text-sm font-bold placeholder:text-zinc-400 min-w-0 py-1.5 px-1"
+              className="flex-1 bg-transparent border-none focus:outline-none text-zinc-100 text-[15px] sm:text-sm font-semibold placeholder:text-zinc-500 min-w-0 py-1.5 px-1"
             />
             
             <button
@@ -1906,14 +1929,22 @@ export default function Home() {
               className={`p-2 rounded-xl transition-all flex items-center justify-center shrink-0 ${
                 voiceListening 
                   ? 'bg-red-500 text-white animate-pulse shadow-md shadow-red-500/30' 
-                  : 'hover:bg-zinc-100 text-orange-500'
+                  : 'hover:bg-white/5 text-[#FF5F1F]'
               }`}
               title="Voice Ordering"
             >
               <Mic size={16} />
             </button>
 
-            <div className="w-px h-6 bg-zinc-200 shrink-0"></div>
+            <button
+              onClick={() => showToast("📷 Barcode Scanner initializing...", "info")}
+              className="p-2 rounded-xl hover:bg-white/5 text-zinc-500 shrink-0"
+              title="Barcode Scanner"
+            >
+              <Scan size={16} />
+            </button>
+
+            <div className="w-px h-6 bg-white/10 shrink-0"></div>
 
             <div 
               onClick={(e) => {
@@ -1923,16 +1954,16 @@ export default function Home() {
               className="flex items-center gap-1.5 px-2 shrink-0 cursor-pointer select-none"
               title="Toggle Vegetarian Only"
             >
-              <span className="text-[10px] font-black text-emerald-600 uppercase tracking-wider">Veg</span>
+              <span className="text-[10px] font-black text-emerald-500 uppercase tracking-wider">Veg</span>
               <button
                 type="button"
-                className={`relative w-8 h-4 rounded-full transition-colors duration-300 flex items-center ${
-                  vegOnly ? 'bg-emerald-600' : 'bg-zinc-300'
+                className={`relative w-8 h-4.5 rounded-full transition-colors duration-300 flex items-center ${
+                  vegOnly ? 'bg-emerald-500' : 'bg-zinc-800'
                 }`}
                 aria-label="Toggle vegetarian filter"
               >
-                <span className={`absolute top-0.5 left-0.5 w-3 h-3 rounded-full bg-white shadow-sm transition-transform duration-300 ${
-                  vegOnly ? 'translate-x-4' : 'translate-x-0'
+                <span className={`absolute top-0.5 left-0.5 w-3.5 h-3.5 rounded-full bg-white shadow-sm transition-transform duration-300 ${
+                  vegOnly ? 'translate-x-3.5' : 'translate-x-0'
                 }`}></span>
               </button>
             </div>
@@ -1940,8 +1971,8 @@ export default function Home() {
 
           {/* Spell suggestions */}
           {spellingSuggestions.length > 0 && (
-            <div className="bg-white/10 border border-white/20 rounded-xl p-2 flex items-center flex-wrap gap-1.5 text-xs text-white">
-              <span className="font-bold text-zinc-300">Suggestions:</span>
+            <div className="bg-white/5 border border-white/10 rounded-xl p-2 flex items-center flex-wrap gap-1.5 text-xs text-white">
+              <span className="font-bold text-zinc-400">Suggestions:</span>
               {spellingSuggestions.map((sug, idx) => (
                 <button 
                   key={idx}
@@ -1949,313 +1980,255 @@ export default function Home() {
                     setSearchQuery(sug);
                     setSpellingSuggestions([]);
                   }}
-                  className="bg-white/20 hover:bg-white/30 text-white px-2.5 py-1 rounded-lg font-black tracking-tight transition-all text-[10px] uppercase"
+                  className="bg-white/10 hover:bg-white/20 text-white px-2.5 py-1 rounded-lg font-black tracking-tight transition-all text-[10px] uppercase"
                 >
                   {sug}
                 </button>
               ))}
             </div>
           )}
-
-          {voiceStatus ? (
-            <div className="bg-primary/20 border border-primary/30 text-xs font-bold text-white p-2.5 rounded-xl animate-pulse">
-              🎤 {voiceStatus}
-            </div>
-          ) : (
-            <div className="flex items-center gap-1.5 justify-center py-1 text-[9px] font-black uppercase tracking-wider text-primary/80">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary animate-ping shrink-0"></span>
-              🎙️ Open to place order verbally
-            </div>
-          )}
         </div>
+
+        {/* 5. Floating AI Assistant Block ("Ask Velto AI") */}
+        {!searchQuery.trim() && (
+          <div className="w-full bg-[#101828]/95 border border-white/8 rounded-[2rem] p-4 flex items-center justify-between gap-4 shadow-xl relative overflow-hidden backdrop-blur-xl select-none text-left">
+            <div className="absolute right-[-40px] top-[-40px] w-24 h-24 bg-[#8B5CF6]/15 rounded-full blur-2xl pointer-events-none"></div>
+            
+            <div className="flex items-center gap-3.5 z-10">
+              {/* Glowing Robot Icon */}
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#8B5CF6] to-[#7C3AED] flex items-center justify-center text-white relative shadow-lg">
+                <span className="absolute inset-0 rounded-2xl bg-[#8B5CF6]/30 blur-sm animate-ping"></span>
+                <span className="text-2xl">🤖</span>
+              </div>
+
+              <div>
+                <h3 className="text-xs font-black text-white uppercase tracking-wider flex items-center gap-1">
+                  Ask Velto AI <span className="text-[8px] bg-[#8B5CF6]/20 text-[#8B5CF6] px-2 py-0.5 rounded-full font-black uppercase">Plus</span>
+                </h3>
+                <p className="text-[10px] text-zinc-400 font-semibold mt-0.5">Order using your voice agent.</p>
+                
+                <button 
+                  onClick={startVoiceListening}
+                  className="mt-2.5 bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] text-white text-[9px] font-black uppercase tracking-wider px-3.5 py-1.5 rounded-full transition-all hover:scale-105 active:scale-95 shadow-md flex items-center gap-1 cursor-pointer"
+                >
+                  🎤 Start Speaking
+                </button>
+              </div>
+            </div>
+
+            {/* Voice Wave Animation */}
+            <div className="flex items-center gap-0.5 z-10 h-8 pr-2">
+              <span className="w-1 h-3 bg-[#8B5CF6] rounded-full animate-pulse"></span>
+              <span className="w-1 h-6 bg-[#7C3AED] rounded-full animate-[pulse_1.2s_infinite]"></span>
+              <span className="w-1 h-4 bg-[#8B5CF6] rounded-full animate-[pulse_0.8s_infinite]"></span>
+              <span className="w-1 h-7 bg-[#EC4899] rounded-full animate-pulse"></span>
+              <span className="w-1 h-5 bg-[#8B5CF6] rounded-full animate-[pulse_1s_infinite]"></span>
+            </div>
+          </div>
+        )}
+
+        {/* 6. Circular 3D Categories Grid */}
+        {!searchQuery.trim() && (
+          <div className="w-full flex flex-col gap-3 z-10 text-left">
+            <span className="text-[10px] font-black uppercase text-zinc-400 tracking-widest pl-1">Choose Service</span>
+            <div className="grid grid-cols-6 gap-3 pb-2 w-full">
+              {[
+                { name: 'Food', icon: '🍕', color: 'from-orange-500/10 to-red-500/10 border-orange-500/20' },
+                { name: 'Grocery', icon: '🍓', color: 'from-emerald-500/10 to-green-500/10 border-emerald-500/20' },
+                { name: 'Medicine', icon: '💊', color: 'from-cyan-500/10 to-blue-500/10 border-cyan-500/20' },
+                { name: 'Meat', icon: '🍗', color: 'from-rose-500/10 to-red-500/10 border-rose-500/20' },
+                { name: 'Tiffin', icon: '🍱', color: 'from-amber-500/10 to-yellow-500/10 border-amber-500/20' },
+                { name: 'Pickup', icon: '📦', color: 'from-purple-500/10 to-indigo-500/10 border-purple-500/20' },
+                { name: 'Dine Out', icon: '🍷', color: 'from-pink-500/10 to-rose-500/10 border-pink-500/20' },
+                { name: 'Bakery', icon: '🍰', color: 'from-amber-400/10 to-orange-400/10 border-amber-400/20' },
+                { name: 'Pet Shop', icon: '🐶', color: 'from-yellow-500/10 to-amber-500/10 border-yellow-500/20' },
+                { name: 'Flowers', icon: '💐', color: 'from-pink-500/10 to-purple-500/10 border-pink-500/20' },
+                { name: 'More', icon: '➕', color: 'from-zinc-500/10 to-slate-500/10 border-zinc-500/20' }
+              ].slice(0, 12).map((cat, idx) => (
+                <div 
+                  key={idx}
+                  onClick={() => {
+                    setSelectedCategory(cat.name);
+                    showToast(`Switched to ${cat.name}!`, 'success');
+                  }}
+                  className="flex flex-col items-center gap-1.5 cursor-pointer group"
+                >
+                  <div className={`w-11 h-11 rounded-full bg-gradient-to-br ${cat.color} border flex items-center justify-center shadow-lg group-hover:scale-105 active:scale-95 transition-all`}>
+                    <span className="text-xl select-none">{cat.icon}</span>
+                  </div>
+                  <span className="text-[9px] font-black uppercase text-zinc-400 tracking-wider text-center">{cat.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 7. Quick Services Grid */}
+        {!searchQuery.trim() && (
+          <div className="w-full flex flex-col gap-2 z-10 text-left">
+            <span className="text-[10px] font-black uppercase text-zinc-400 tracking-widest pl-1">Quick Actions</span>
+            <div className="grid grid-cols-4 gap-2.5">
+              {[
+                { name: 'Bolt Delivery', time: '15-20 mins', icon: '⚡', bg: 'from-orange-500/10 to-amber-500/10 border-orange-500/20' },
+                { name: 'Express Grocery', time: '10-15 mins', icon: '🛒', bg: 'from-emerald-500/10 to-green-500/10 border-emerald-500/20' },
+                { name: 'Medicine Delivery', time: '15 mins', icon: '💊', bg: 'from-cyan-500/10 to-blue-500/10 border-cyan-500/20' },
+                { name: 'Schedule Order', time: 'Pick slot', icon: '📅', bg: 'from-purple-500/10 to-pink-500/10 border-purple-500/20' }
+              ].map((serv, idx) => (
+                <div 
+                  key={idx}
+                  onClick={() => {
+                    setSelectedCategory(serv.name.includes('Grocery') ? 'Grocery' : serv.name.includes('Medicine') ? 'Pharmacy' : null);
+                    showToast(`Active: ${serv.name}`, 'info');
+                  }}
+                  className={`bg-gradient-to-b ${serv.bg} border p-3 rounded-2xl flex flex-col justify-between items-start cursor-pointer hover:scale-[1.02] transition-all h-[95px] text-left`}
+                >
+                  <span className="text-lg">{serv.icon}</span>
+                  <div className="mt-1">
+                    <span className="text-[9px] font-black text-white leading-tight block">{serv.name}</span>
+                    <span className="text-[8px] font-bold text-zinc-400 block mt-0.5">{serv.time}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* ⏰ Closed Store Notice Banner */}
         {!storeOpen && (
-          <div className="w-full bg-rose-500/10 border border-rose-500/20 text-rose-600 rounded-2xl p-4 flex items-center gap-3 select-none text-left">
-            <Clock className="w-5 h-5 text-rose-500 animate-pulse shrink-0" />
-            <div className="flex-1">
-              <span className="text-xs font-black uppercase tracking-wider block">Store Operations Closed</span>
-              <p className="text-[10px] font-bold leading-normal mt-0.5">We are currently closed. Delivery start time is {storeConfig.startTime} and closing time is {storeConfig.endTime}. You can still browse products, but ordering is disabled.</p>
+          <div className="w-full bg-[#1b0c0f] border border-rose-500/20 text-rose-500 rounded-2xl p-4 flex items-center justify-between gap-4 relative overflow-hidden select-none text-left z-10">
+            <div className="flex items-start gap-3 z-10 max-w-[65%]">
+              <div className="w-9 h-9 rounded-xl bg-rose-500/10 flex items-center justify-center text-rose-500 shrink-0">
+                <Store size={18} />
+              </div>
+              <div>
+                <span className="text-xs font-black uppercase tracking-wider block text-rose-400">Store Operations Closed</span>
+                <p className="text-[10px] font-bold leading-normal text-zinc-300 mt-1">We are currently closed. Delivery hours: {storeConfig.startTime} to {storeConfig.endTime}. You can browse, but ordering is disabled.</p>
+              </div>
+            </div>
+            {/* Vector cityscape outline on right */}
+            <div className="absolute right-0 top-0 bottom-0 w-[30%] opacity-40 z-0 select-none pointer-events-none flex items-center justify-end">
+              <svg viewBox="0 0 100 100" className="w-full h-full text-rose-500" fill="currentColor">
+                <path d="M10 80h80v-20h-80z" />
+                <path d="M5 60l45-20 45 20z" className="fill-rose-700" />
+                <rect x="25" y="65" width="10" height="15" />
+                <rect x="45" y="65" width="10" height="10" />
+              </svg>
             </div>
           </div>
         )}
 
-        {/* 🚲 Interactive Delivery Rider Animation */}
-        {!searchQuery.trim() && <DeliveryRiderAnimation />}
-
-        {/* ✨ Featured Highlights Carousel (Infinite Auto-slide) */}
+        {/* Dine-out Festival Banner */}
         {!searchQuery.trim() && (
-          <div className="w-full flex flex-col gap-1 z-10">
-            <div className="flex justify-between items-center px-1">
-              <span className="text-[10px] font-black uppercase text-zinc-300 tracking-wider">🔥 Special Highlights</span>
-            </div>
-
-            <div className="relative w-full overflow-hidden rounded-2xl border border-white/10 shadow-lg">
-              <div 
-                className="flex transition-transform duration-500 ease-in-out"
-                style={{ transform: `translateX(-${activeHighlightIndex * 100}%)` }}
-              >
-                {/* Slide 1: Foodie Verse */}
-                <div className="w-full shrink-0 p-0.5">
-                  <div className="relative overflow-hidden rounded-2xl group cursor-pointer h-[105px]">
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#ffd700] via-[#ffe57f] to-[#ffb300] bg-[length:200%_auto] animate-gradient-shift" />
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-shine-effect pointer-events-none" />
-                    <div className="w-full p-4 flex justify-between items-center relative z-10 h-full">
-                      <div className="flex flex-col text-left">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-xl font-black italic tracking-tighter uppercase text-[#3a014c] drop-shadow-sm animate-pulse">FOODIE VERSE</span>
-                          <span className="bg-[#3a014c] text-[#ffd700] text-[8px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider">ORDER NOW</span>
-                        </div>
-                        <span className="text-xs font-black tracking-tight uppercase mt-0.5 text-[#3a014c]">Flat ₹200 OFF & MORE</span>
-                      </div>
-                      <div className="text-3xl animate-[bounce_2s_infinite] shrink-0 drop-shadow-md select-none">🍕</div>
-                    </div>
-                  </div>
+          <div 
+            onClick={() => {
+              showToast('Dine-Out Festival is booking now!', 'success');
+            }}
+            className="w-full h-[115px] rounded-[2rem] overflow-hidden relative cursor-pointer group border border-purple-500/10 text-left z-10"
+          >
+            <img 
+              src="https://images.unsplash.com/photo-1544025162-d76694265947?w=600" 
+              alt="Dine Out Fest" 
+              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#7C3AED]/90 via-[#7C3AED]/30 to-transparent" />
+            <div className="w-full p-5 flex justify-between items-center relative z-10 h-full">
+              <div className="flex flex-col justify-end h-full">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xl font-black tracking-tight uppercase text-white">DINE-OUT FEST</span>
+                  <span className="bg-[#EC4899] text-white text-[8px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider">BOOK NOW</span>
                 </div>
-
-                {/* Slide 2: Velto Gold Pass */}
-                <div className="w-full shrink-0 p-0.5">
-                  <div className="relative overflow-hidden rounded-2xl group cursor-pointer h-[105px]">
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#111111] via-[#2a2a2a] to-[#111111] bg-[length:200%_auto] border border-[#ffd700]/20 rounded-2xl" />
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full animate-shine-effect pointer-events-none" />
-                    <div className="w-full p-4 flex justify-between items-center relative z-10 h-full">
-                      <div className="flex flex-col text-left">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-xl font-black italic tracking-tighter uppercase text-[#ffd700] drop-shadow-sm animate-pulse">VELTO GOLD</span>
-                          <span className="bg-[#ffd700] text-black text-[8px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider">EXCLUSIVE</span>
-                        </div>
-                        <span className="text-xs font-black tracking-tight uppercase mt-0.5 text-zinc-300">1st Year Free Pass • Zero Delivery Fees</span>
-                      </div>
-                      <div className="text-3xl animate-[bounce_2s_infinite] shrink-0 drop-shadow-md select-none">👑</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Slide 3: Dine-out Festival (Mockup Style Image Background) */}
-                <div className="w-full shrink-0 p-0.5">
-                  <div 
-                    onClick={() => {
-                      showToast('Dine-Out Festival is booking now!', 'success');
-                    }}
-                    className="relative overflow-hidden rounded-2xl group cursor-pointer h-[105px] border border-purple-500/20 text-left"
-                  >
-                    <img 
-                      src="https://images.unsplash.com/photo-1544025162-d76694265947?w=500" 
-                      alt="Dine Out Fest" 
-                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#7C3AED]/90 via-[#7C3AED]/40 to-transparent" />
-                    <div className="w-full p-4 flex justify-between items-center relative z-10 h-full">
-                      <div className="flex flex-col">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-lg font-black tracking-tight uppercase text-white">DINE-OUT FEST</span>
-                          <span className="bg-[#EC4899] text-white text-[8px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider">BOOK NOW</span>
-                        </div>
-                        <span className="text-xs font-black tracking-tight uppercase mt-1 text-zinc-100">Flat 30% OFF at top fine dining</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Dots Indicators */}
-              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-20">
-                {[0, 1, 2].map((idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setActiveHighlightIndex(idx)}
-                    className={`h-1 rounded-full transition-all duration-300 cursor-pointer ${
-                      activeHighlightIndex === idx ? 'w-3.5 bg-white' : 'w-1 bg-white/40'
-                    }`}
-                  />
-                ))}
+                <span className="text-xs font-black tracking-tight uppercase mt-1 text-zinc-200">Flat 30% OFF at top fine dining</span>
               </div>
             </div>
           </div>
         )}
 
-        {/* 🎪 Auto-Scrolling Active Deals Carousel */}
-        {!searchQuery.trim() && announcements.length > 0 && (
-          <div className="w-full flex flex-col gap-1 z-10">
+        {/* 8. Popular Near You Restaurant list */}
+        {!searchQuery.trim() && (
+          <div className="w-full flex flex-col gap-2.5 z-10 text-left">
             <div className="flex justify-between items-center px-1">
-              <span className="text-[10px] font-black uppercase text-zinc-300 tracking-wider">📢 Active Deals & Alerts</span>
+              <span className="text-[10px] font-black uppercase text-zinc-400 tracking-widest">🔥 Popular Near You</span>
+              <span className="text-[10px] font-black uppercase text-[#FF5F1F] tracking-wider cursor-pointer hover:underline">View all &rarr;</span>
             </div>
-
-            <div className="relative w-full overflow-hidden rounded-3xl">
-              <div 
-                className="flex transition-transform duration-500 ease-in-out"
-                style={{ transform: `translateX(-${activeDealIndex * 100}%)` }}
-              >
-                {announcements.map((ann) => {
-                  let borderLeftColor = 'border-l-primary';
-                  let cardBg = 'bg-white/5 border border-white/10';
-                  let icon = <Megaphone className="text-[#ffd700]" size={16} />;
-                  let badgeText = 'DEAL';
-                  let badgeColor = 'bg-[#ffd700]/25 text-[#ffd700]';
-                  
-                  if (ann.type === 'sos') {
-                    borderLeftColor = 'border-l-rose-500';
-                    cardBg = 'bg-rose-500/10 border border-rose-500/20';
-                    icon = <AlertCircle className="text-rose-400 animate-pulse" size={16} />;
-                    badgeText = 'SOS';
-                    badgeColor = 'bg-rose-500/20 text-rose-300 border border-rose-500/30';
-                  } else if (ann.type === 'diet') {
-                    borderLeftColor = 'border-l-emerald-500';
-                    cardBg = 'bg-emerald-500/10 border border-emerald-500/20';
-                    icon = <Dumbbell className="text-emerald-400" size={16} />;
-                    badgeText = 'DIET';
-                    badgeColor = 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
-                  } else if (ann.type === 'promo') {
-                    borderLeftColor = 'border-l-amber-500';
-                    cardBg = 'bg-amber-500/10 border border-amber-500/20';
-                    icon = <Tag className="text-amber-400" size={16} />;
-                    badgeText = 'CODE';
-                    badgeColor = 'bg-amber-500/20 text-amber-300 border border-amber-500/30';
-                  } else if (ann.type === 'offer') {
-                    borderLeftColor = 'border-l-cyan-500';
-                    cardBg = 'bg-cyan-500/10 border border-cyan-500/20';
-                    icon = <ShoppingBag className="text-cyan-400" size={16} />;
-                    badgeText = 'OFFER';
-                    badgeColor = 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30';
-                  } else {
-                    borderLeftColor = 'border-l-primary';
-                    cardBg = 'bg-primary/10 border border-primary/20';
-                    icon = <Megaphone className="text-[#ffd700]" size={16} />;
-                    badgeText = 'ANNC';
-                    badgeColor = 'bg-primary/20 text-primary-300 border border-primary/30';
-                  }
-
-                  const isGheeAnn = ann.title?.toLowerCase().includes('ghee') || ann.content?.toLowerCase().includes('ghee');
-
-                  if (isGheeAnn) {
-                    return (
-                      <div key={ann.id} className="w-full shrink-0 p-0.5">
-                        <div 
-                          onClick={() => {
-                            setShowGheePreorder(true);
-                            setGheeQuantity(1);
-                          }}
-                          className="w-full h-[140px] rounded-2xl overflow-hidden shadow-lg relative cursor-pointer group border border-amber-600/30 text-left"
-                        >
-                          <img 
-                            src="/ghee-banner.jpg" 
-                            alt="Buffalo & Cow Ghee Promo" 
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
-                          {/* Dark overlay with text */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex flex-col justify-end p-4">
-                            <div className="flex items-center justify-between mb-1">
-                              <span className="text-[8px] font-black tracking-widest px-2.5 py-0.5 rounded-full uppercase bg-amber-500 text-black shadow-md font-sans">
-                                PAN INDIA LAUNCH
-                              </span>
-                              <span className="text-[8px] text-zinc-300 font-medium font-sans">
-                                {new Date(ann.created_at).toLocaleDateString(undefined, { dateStyle: 'short' })}
-                              </span>
-                            </div>
-                            <h3 className="text-sm font-black text-white leading-tight mb-0.5">
-                              🥛 {ann.title.replace('[POPUP]', '').trim()}
-                            </h3>
-                            <p className="text-[10px] text-zinc-200 line-clamp-1 leading-snug">
-                              {ann.content}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  }
-
-                  return (
-                    <div key={ann.id} className="w-full shrink-0 p-0.5">
-                      <div className={`w-full h-[140px] rounded-2xl p-4 ${cardBg} border-l-4 ${borderLeftColor} shadow-lg flex flex-col justify-between text-left relative overflow-hidden backdrop-blur-md`}>
-                        <div className="space-y-1">
-                          <div className="flex items-center justify-between">
-                            <span className={`text-[8px] font-black tracking-widest px-2 py-0.5 rounded-full uppercase ${badgeColor}`}>
-                              {badgeText}
-                            </span>
-                            <span className="text-[8px] text-zinc-300 font-medium">
-                              {new Date(ann.created_at).toLocaleDateString(undefined, { dateStyle: 'short' })}
-                            </span>
-                          </div>
-                          <h3 className="text-xs font-black text-white flex items-center gap-1.5 line-clamp-1">
-                            {icon}
-                            {ann.title}
-                          </h3>
-                          <p className="text-[10px] text-zinc-200 line-clamp-2 leading-snug">
-                            {ann.content}
-                          </p>
-                        </div>
-                        
-                        {ann.type === 'diet' && (
-                          <button
-                            onClick={() => {
-                              setSearchQuery('healthy');
-                              showToast("🥗 Diet Filter Applied! Showing health items.", 'success');
-                            }}
-                            className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-[9px] uppercase py-1 rounded-lg transition-all cursor-pointer"
-                          >
-                            Apply Diet Filter
-                          </button>
-                        )}
-                        {ann.type === 'sos' && (
-                          <button
-                            onClick={() => {
-                              setEmergencyMode(true);
-                              setSearchQuery('Medicine');
-                              showToast("🚨 SOS Mode Activated!", 'warning');
-                            }}
-                            className="w-full bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-[9px] uppercase py-1 rounded-lg transition-all cursor-pointer"
-                          >
-                            Request Dispatch
-                          </button>
-                        )}
-                        {ann.type === 'promo' && (
-                          <button
-                            onClick={() => {
-                              navigator.clipboard.writeText("HEAL20");
-                              showToast("📋 Code 'HEAL20' copied!", 'success');
-                            }}
-                            className="w-full bg-[#ffd700] hover:bg-[#ffe043] text-black font-extrabold text-[9px] uppercase py-1 rounded-lg transition-all cursor-pointer"
-                          >
-                            Copy: HEAL20
-                          </button>
-                        )}
-                        {ann.type === 'offer' && (
-                          <button
-                            onClick={() => {
-                              setSearchQuery('Offer');
-                              showToast("🎉 Special Offers Applied!", 'success');
-                            }}
-                            className="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-extrabold text-[9px] uppercase py-1 rounded-lg transition-all cursor-pointer"
-                          >
-                            View Offers
-                          </button>
-                        )}
-                      </div>
+            
+            <div className="grid grid-cols-3 gap-2.5">
+              {[
+                { name: 'Burger Barn Café', image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300', rate: '4.6', time: '20-25 mins', dist: '2.1 km', promo: '50% OFF' },
+                { name: 'Noodle Nation', image: 'https://images.unsplash.com/photo-1585032226651-759b368d7246?w=300', rate: '4.4', time: '25-30 mins', dist: '2.3 km', promo: '30% OFF' },
+                { name: "La Pino'z Pizza", image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300', rate: '4.5', time: '20-25 mins', dist: '1.8 km', promo: '40% OFF' }
+              ].map((rest, idx) => (
+                <div 
+                  key={idx}
+                  onClick={() => {
+                    setSearchQuery(rest.name);
+                    showToast(`Selected: ${rest.name}`, 'info');
+                  }}
+                  className="bg-[#101828]/95 border border-white/8 rounded-2xl overflow-hidden shadow-xl cursor-pointer hover:scale-[1.02] transition-all flex flex-col justify-between text-left h-[165px]"
+                >
+                  <div className="relative w-full h-[85px]">
+                    <img src={rest.image} alt={rest.name} className="w-full h-full object-cover" />
+                    {/* promo tag */}
+                    <span className="absolute top-1.5 left-1.5 bg-[#FF5F1F] text-white text-[7px] font-black px-1.5 py-0.5 rounded uppercase">
+                      {rest.promo}
+                    </span>
+                    {/* heart */}
+                    <button className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-black/40 flex items-center justify-center text-white/80 hover:text-white">
+                      ♡
+                    </button>
+                  </div>
+                  <div className="p-2.5 flex flex-col justify-between flex-1">
+                    <h4 className="text-[10px] font-black text-white leading-tight line-clamp-1">{rest.name}</h4>
+                    <div className="flex items-center gap-1.5 mt-1">
+                      <span className="text-[8px] font-black text-white bg-emerald-600 px-1 rounded flex items-center gap-0.5">★ {rest.rate}</span>
+                      <span className="text-[8px] text-zinc-400 font-bold">{rest.time}</span>
                     </div>
-                  );
-                })}
-              </div>
-              
-              {/* Dot Indicators */}
-              {announcements.length > 1 && (
-                <div className="flex justify-center gap-1.5 mt-2">
-                  {announcements.map((_, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setActiveDealIndex(idx)}
-                      className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                        activeDealIndex === idx ? 'w-4 bg-[#ffd700]' : 'w-1.5 bg-white/30'
-                      }`}
-                    />
-                  ))}
+                  </div>
                 </div>
-              )}
+              ))}
             </div>
           </div>
         )}
-      </div>
 
-      {/* ─── WHITE/CARD CONTENT BODY CONTAINER ─── */}
+        {/* 9. Live Order Tracking Map Banner */}
+        {!searchQuery.trim() && (
+          <div 
+            onClick={() => router.push('/profile')}
+            className="w-full bg-[#101828]/95 border border-white/8 rounded-[2rem] p-4 shadow-xl relative overflow-hidden backdrop-blur-xl select-none text-left z-10"
+          >
+            <div className="absolute right-[-45px] top-[-45px] w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
+            
+            <div className="flex justify-between items-center gap-4">
+              <div className="flex-1">
+                <span className="text-[9px] font-black text-[#00D26A] uppercase tracking-widest block">Live Order Tracking</span>
+                <h4 className="text-xs font-black text-white mt-1 leading-snug">Your order is on the way! 🚀</h4>
+                <span className="text-[9px] font-semibold text-zinc-400 block mt-0.5">Arriving in <span className="text-[#00D26A] font-black">18 mins</span></span>
+                
+                {/* Route progress */}
+                <div className="flex items-center gap-1.5 mt-3 text-[8px] font-bold text-zinc-400">
+                  <span>🏪 Hub</span>
+                  <div className="flex-1 h-0.5 bg-zinc-800 relative rounded-full">
+                    <div className="absolute left-0 top-0 bottom-0 bg-[#00D26A] w-[60%] rounded-full relative">
+                      <span className="absolute right-0 top-[-3px] w-2 h-2 rounded-full bg-[#00D26A] border border-white animate-ping"></span>
+                    </div>
+                  </div>
+                  <span>🏠 Home</span>
+                </div>
+              </div>
+
+              {/* Rider and Action Button */}
+              <div className="flex flex-col items-center gap-2.5">
+                <div className="w-11 h-11 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-xl">
+                  🛵
+                </div>
+                <button className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white text-[8px] font-black uppercase tracking-wider py-1.5 px-3 rounded-lg transition-all shadow-md">
+                  Track Live &rarr;
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+      </div>\n\n      {/* ─── WHITE/CARD CONTENT BODY CONTAINER ─── */}
       <div id="catalog-start" className="flex flex-col gap-8 mt-6">
         {searchQuery.trim() ? (
           /* 🔍 Global Search Results View (Hides other categories to save space) */
