@@ -114,6 +114,37 @@ export default function Home() {
   const [storeConfig, setStoreConfig] = useState({ startTime: "08:00", endTime: "22:00", isOpen: true });
   const [loading, setLoading] = useState(true);
   const [showSplash, setShowSplash] = useState(true);
+  const [showNotificationsDrawer, setShowNotificationsDrawer] = useState(false);
+  const [customNotifications, setCustomNotifications] = useState([
+    {
+      id: 1,
+      title: "🍳 Breakfast Special Deals",
+      content: "Start your morning right! Ginger tea & crunchy samosas delivered to your door in 10 minutes.",
+      type: "promo",
+      time: "8:00 AM"
+    },
+    {
+      id: 2,
+      title: "🏏 Match Day Combo Active!",
+      content: "Snack combo (Chips + Chai + Noodles) at just ₹99. Order before the match begins!",
+      type: "offer",
+      time: "Evening"
+    },
+    {
+      id: 3,
+      title: "🌧️ Heavy Rain Advisory",
+      content: "Deliveries may be delayed by 5-10 mins. Our riders are traveling safely.",
+      type: "sos",
+      time: "Just Now"
+    },
+    {
+      id: 4,
+      title: "🎁 Welcome Offer: Code WELTO50",
+      content: "Get Flat 50% discount on fresh organic veggies & grocery items on your first checkout.",
+      type: "promo",
+      time: "Yesterday"
+    }
+  ]);
   const [activePill, setActivePill] = useState<'reorder' | 'food'>('food');
   const [vegOnly, setVegOnly] = useState(false);
   const [hasActiveOrder, setHasActiveOrder] = useState(false);
@@ -1785,7 +1816,10 @@ export default function Home() {
  
           <div className="flex items-center gap-3">
             {/* Bell notification button */}
-            <button className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:scale-105 active:scale-95 transition-transform cursor-pointer relative">
+            <button 
+              onClick={() => setShowNotificationsDrawer(true)}
+              className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:scale-105 active:scale-95 transition-transform cursor-pointer relative"
+            >
               <span className="absolute top-2 right-2.5 w-2 h-2 bg-primary rounded-full animate-ping"></span>
               <span className="absolute top-2 right-2.5 w-2 h-2 bg-primary rounded-full"></span>
               <svg viewBox="0 0 24 24" className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -3455,6 +3489,90 @@ export default function Home() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+      {/* 🔔 Notifications Drawer panel */}
+      {showNotificationsDrawer && (
+        <div className="fixed inset-0 z-50 overflow-hidden select-none">
+          {/* Overlay backdrop */}
+          <div 
+            onClick={() => setShowNotificationsDrawer(false)}
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300"
+          />
+
+          <div className="absolute inset-y-0 right-0 max-w-sm w-full bg-card border-l border-border flex flex-col justify-between shadow-2xl animate-in slide-in-from-right duration-300 text-left">
+            
+            {/* Header */}
+            <div className="p-4 border-b border-border flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-black uppercase tracking-wider text-foreground">Notification Box</h3>
+                <p className="text-[10px] text-muted-foreground font-semibold">Simulated Swiggy & Zepto Style alerts</p>
+              </div>
+              <button 
+                onClick={() => setShowNotificationsDrawer(false)}
+                className="w-8 h-8 rounded-full hover:bg-accent flex items-center justify-center text-muted-foreground hover:text-foreground cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* List */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+              {customNotifications.map((notif) => (
+                <div key={notif.id} className="p-3.5 rounded-2xl bg-muted/40 border border-border/80 flex flex-col justify-between gap-3 hover:border-primary/40 transition-all">
+                  <div className="space-y-1">
+                    <div className="flex justify-between items-center">
+                      <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-wider ${
+                        notif.type === 'sos' ? 'bg-rose-500/10 text-rose-500' :
+                        notif.type === 'offer' ? 'bg-[#b5ff3b]/20 text-emerald-400' :
+                        'bg-blue-500/10 text-blue-500'
+                      }`}>
+                        {notif.type}
+                      </span>
+                      <span className="text-[8px] font-semibold text-muted-foreground">{notif.time}</span>
+                    </div>
+                    <h4 className="text-xs font-black text-foreground">{notif.title}</h4>
+                    <p className="text-[10px] text-muted-foreground font-medium leading-relaxed">{notif.content}</p>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      if (typeof window !== 'undefined') {
+                        if ('Notification' in window) {
+                          if (Notification.permission === 'granted') {
+                            import('@/lib/notifications').then((mod) => {
+                              mod.showLocalNotification(notif.title, notif.content);
+                            });
+                          } else {
+                            alert("Please enable notification permissions first! (Tap allow on the browser popups).");
+                            Notification.requestPermission();
+                          }
+                        }
+                      }
+                    }}
+                    className="w-full bg-[#12271a] hover:bg-[#1c3c28] text-white text-[9px] font-black uppercase tracking-wider py-2 rounded-xl transition-all cursor-pointer border border-[#1e3c27] flex items-center justify-center gap-1 shadow-sm"
+                  >
+                    🔔 Try Mobile Screen Alert
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            {/* Footer / CTA */}
+            <div className="p-4 bg-muted/20 border-t border-border/60">
+              <button 
+                onClick={() => {
+                  import('@/lib/notifications').then((mod) => {
+                    mod.showLocalNotification("🎉 Live Alerts Setup Active!", "Velto is monitoring your instant deliveries in real-time.");
+                  });
+                }}
+                className="w-full bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-wider py-3.5 rounded-2xl hover:scale-[1.01] active:scale-95 transition-all shadow-md cursor-pointer"
+              >
+                Send General Test Notification
+              </button>
+            </div>
+
           </div>
         </div>
       )}
