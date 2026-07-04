@@ -1,4 +1,5 @@
 'use client';
+import Script from 'next/script';
 import { Search, MapPin, Clock, ShoppingBag, Apple, Leaf, Egg, Cookie, CupSoda, Flame, Plus, Sparkles, Zap, AlertCircle, Compass, HelpCircle, Mic, Bot, Send, Dumbbell, Coffee, Heart, Utensils, Calendar, ShieldCheck, Tag, Sparkle, Store, Users, DollarSign, Shield, HeartHandshake, Navigation, Pill, Truck, Wallet, Wrench, Megaphone, ChevronDown, User as UserIcon, History, Headphones, Bike, Scan } from 'lucide-react';
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
@@ -115,6 +116,21 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [showSplash, setShowSplash] = useState(true);
   const [showNotificationsDrawer, setShowNotificationsDrawer] = useState(false);
+  const [showWalletModal, setShowWalletModal] = useState(false);
+  const [walletBalance, setWalletBalance] = useState<number>(500);
+  const [topUpAmount, setTopUpAmount] = useState('500');
+  const [walletLoading, setWalletLoading] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const bal = localStorage.getItem('velto_wallet_balance');
+      if (bal) {
+        setWalletBalance(parseFloat(bal));
+      } else {
+        localStorage.setItem('velto_wallet_balance', '500');
+      }
+    }
+  }, [showWalletModal]);
   const [customNotifications, setCustomNotifications] = useState([
     {
       id: 1,
@@ -1831,7 +1847,7 @@ export default function Home() {
 
             {/* Wallet button */}
             <button 
-              onClick={() => router.push('/profile')}
+              onClick={() => setShowWalletModal(true)}
               className="w-9 h-9 rounded-xl bg-[#101828]/95 border border-white/8 flex items-center justify-center text-white hover:scale-105 active:scale-95 transition-all cursor-pointer"
             >
               <Wallet size={16} className="text-zinc-300" />
@@ -2228,7 +2244,9 @@ export default function Home() {
           </div>
         )}
 
-      </div>\n\n      {/* ─── WHITE/CARD CONTENT BODY CONTAINER ─── */}
+      </div>
+
+      {/* ─── WHITE/CARD CONTENT BODY CONTAINER ─── */}
       <div id="catalog-start" className="flex flex-col gap-8 mt-6">
         {searchQuery.trim() ? (
           /* 🔍 Global Search Results View (Hides other categories to save space) */
@@ -3473,6 +3491,136 @@ export default function Home() {
           </div>
         </div>
       )}
+      {/* 💳 Wallet Modal (Razorpay Top-Up) */}
+      {showWalletModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xl animate-in fade-in duration-300 select-none">
+          <div className="relative w-full max-w-sm bg-[#101828] border border-white/10 rounded-[2rem] p-6 shadow-2xl flex flex-col gap-5 text-left">
+            
+            {/* Header */}
+            <div className="flex justify-between items-center border-b border-white/5 pb-3">
+              <div>
+                <h3 className="text-sm font-black uppercase tracking-wider text-white">Velto Wallet</h3>
+                <p className="text-[10px] text-zinc-400 font-semibold mt-0.5">Top-up instantly using Razorpay</p>
+              </div>
+              <button 
+                onClick={() => setShowWalletModal(false)}
+                className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-zinc-400 hover:text-white cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Balance Display */}
+            <div className="bg-gradient-to-r from-[#FF5F1F] via-[#FF8A00] to-[#FF3D71] rounded-2xl p-5 text-white flex flex-col justify-between h-32 relative overflow-hidden border border-white/10">
+              <div className="absolute right-[-20px] bottom-[-20px] w-24 h-24 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
+              <span className="text-[10px] font-black uppercase tracking-widest text-white/80">Available Balance</span>
+              <h2 className="text-3xl font-black tracking-tight mt-2">₹{walletBalance.toFixed(2)}</h2>
+              <span className="text-[8px] font-black uppercase tracking-wider text-white/60 mt-1">Unified Family Credit Active</span>
+            </div>
+
+            {/* Inputs & Quick add */}
+            <div className="space-y-3.5">
+              <label className="block text-[10px] font-black uppercase tracking-wider text-zinc-400">Add Money (INR)</label>
+              
+              <div className="relative">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 font-black text-sm">₹</span>
+                <input 
+                  type="number"
+                  value={topUpAmount}
+                  onChange={(e) => setTopUpAmount(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-8 pr-4 text-white text-sm font-bold focus:outline-none focus:border-[#FF5F1F]"
+                  placeholder="Enter amount"
+                />
+              </div>
+
+              {/* Quick buttons */}
+              <div className="grid grid-cols-3 gap-2">
+                {['100', '500', '1000'].map((amt) => (
+                  <button
+                    key={amt}
+                    onClick={() => setTopUpAmount(amt)}
+                    className="bg-white/5 hover:bg-white/10 border border-white/10 py-2 rounded-xl text-xs font-black text-white cursor-pointer transition-all"
+                  >
+                    + ₹{amt}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Proceed Online Payment Razorpay */}
+            <button
+              disabled={walletLoading}
+              onClick={async () => {
+                const amt = parseFloat(topUpAmount);
+                if (isNaN(amt) || amt <= 0) {
+                  alert("Please enter a valid amount to top up.");
+                  return;
+                }
+                setWalletLoading(true);
+
+                try {
+                  const res = await fetch('/api/razorpay/create-order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ amount: amt }),
+                  });
+                  const orderData = await res.json();
+
+                  if (orderData.error) {
+                    alert(orderData.error);
+                    setWalletLoading(false);
+                    return;
+                  }
+
+                  const options = {
+                    key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_placeholder', 
+                    amount: orderData.amount,
+                    currency: orderData.currency,
+                    name: 'Velto Wallet Topup',
+                    description: 'Instant Wallet Add Money',
+                    order_id: orderData.id,
+                    handler: async function (response: any) {
+                      const newBal = walletBalance + amt;
+                      localStorage.setItem('velto_wallet_balance', newBal.toString());
+                      setWalletBalance(newBal);
+                      
+                      // Trigger notifications
+                      import('@/lib/notifications').then((mod) => {
+                        mod.showLocalNotification('💳 Wallet Top-Up Successful!', `₹${amt.toFixed(2)} successfully added to your Velto Wallet balance.`);
+                      });
+                      
+                      showToast(`Successfully added ₹${amt} to your Wallet!`, 'success');
+                      setWalletLoading(false);
+                      setShowWalletModal(false);
+                    },
+                    prefill: {
+                      name: user?.email || 'Customer',
+                      email: user?.email || 'customer@velto.com'
+                    },
+                    theme: { color: '#ff5f1f' }
+                  };
+
+                  const rzp = new (window as any).Razorpay(options);
+                  rzp.on('payment.failed', function (resp: any) {
+                    alert(`Payment failed: ${resp.error.description}`);
+                    setWalletLoading(false);
+                  });
+                  rzp.open();
+
+                } catch (e) {
+                  alert("Network error: Wallet Topup failed.");
+                  setWalletLoading(false);
+                }
+              }}
+              className="w-full bg-gradient-to-r from-[#FF5F1F] via-[#FF8A00] to-[#FF3D71] text-white text-xs font-black uppercase tracking-wider py-4 rounded-2xl hover:scale-[1.01] active:scale-95 transition-all shadow-lg cursor-pointer flex items-center justify-center gap-1.5"
+            >
+              {walletLoading ? "Processing Payment..." : "Proceed with Razorpay"}
+            </button>
+
+          </div>
+        </div>
+      )}
+
       {/* 🔔 Notifications Drawer panel */}
       {showNotificationsDrawer && (
         <div className="fixed inset-0 z-50 overflow-hidden select-none">

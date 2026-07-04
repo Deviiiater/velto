@@ -87,7 +87,7 @@ export function ActiveOrderFloatingBar() {
 
   return (
     <div className="fixed bottom-[100px] left-1/2 -translate-x-1/2 w-[90%] max-w-lg z-[9999] animate-in slide-in-from-bottom-4 duration-300">
-      <div className="bg-card/90 backdrop-blur-md border border-primary/45 rounded-2xl p-4 shadow-[0_8px_30px_rgb(147,51,234,0.15)] flex justify-between items-center gap-4">
+      <div className="bg-[#101828]/95 backdrop-blur-xl border border-[#FF5F1F]/30 rounded-2xl p-4 shadow-[0_8px_30px_rgba(255,95,31,0.15)] flex justify-between items-center gap-4 text-white">
         <div className="flex items-center gap-3">
           {/* Pulsing indicator */}
           <span className="relative flex h-3 w-3">
@@ -104,7 +104,7 @@ export function ActiveOrderFloatingBar() {
 
         <Link 
           href={`/orders/${activeOrder.id}`} 
-          className="bg-primary hover:bg-primary/95 text-primary-foreground font-bold text-xs py-2.5 px-4 rounded-xl flex items-center gap-1.5 transition-all shadow-[0_4px_12px_rgba(147,51,234,0.2)] whitespace-nowrap"
+          className="bg-gradient-to-r from-[#FF5F1F] via-[#FF8A00] to-[#FF3D71] text-white font-black uppercase text-[10px] tracking-wider py-2.5 px-4 rounded-xl flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95 shadow-lg whitespace-nowrap"
         >
           {t('trackLive', language)} <ArrowRight size={14} />
         </Link>

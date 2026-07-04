@@ -66,7 +66,7 @@ export default function CartPage() {
   const [loading, setLoading] = useState(false);
   const [address, setAddress] = useState('');
   const [phone, setPhone] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState<'online' | 'cod'>('online');
+  const [paymentMethod, setPaymentMethod] = useState<'online' | 'cod' | 'wallet'>('online');
   const [showAddressPicker, setShowAddressPicker] = useState(false);
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [tiffinStartDay, setTiffinStartDay] = useState('Monday');
@@ -345,6 +345,33 @@ export default function CartPage() {
     setLoading(true);
 
     try {
+      if (paymentMethod === 'wallet') {
+        const walletBalance = parseFloat(localStorage.getItem('velto_wallet_balance') || '500');
+        if (walletBalance < grandTotal) {
+          alert(`Insufficient Wallet Balance! Need ₹${grandTotal.toFixed(2)}, Current Balance: ₹${walletBalance.toFixed(2)}. Please add money to your wallet.`);
+          setLoading(false);
+          return;
+        }
+        
+        // Deduct balance
+        const newBalance = walletBalance - grandTotal;
+        localStorage.setItem('velto_wallet_balance', newBalance.toString());
+        
+        const orderId = await saveOrderToDB('paid');
+        if (orderId) {
+          showLocalNotification('💳 Paid via Velto Wallet!', `₹${grandTotal.toFixed(2)} deducted. Order placed successfully.`);
+          clearCart();
+          setSuccessOrderId(orderId);
+          setShowSuccessAnim(true);
+          setTimeout(() => {
+            router.push(`/orders/${orderId}`);
+          }, 2000);
+          return;
+        }
+        setLoading(false);
+        return;
+      }
+
       if (paymentMethod === 'cod') {
         const orderId = await saveOrderToDB('pending');
         if (orderId) {
@@ -1027,6 +1054,18 @@ export default function CartPage() {
               <CreditCard size={20} className={paymentMethod === 'online' ? 'text-primary' : 'text-muted-foreground'} />
               <span className="font-medium text-sm">{t('payOnline', language)}</span>
             </label>
+            
+            <label className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-colors ${paymentMethod === 'wallet' ? 'border-primary bg-primary/5' : 'border-border hover:bg-accent'}`}>
+              <input type="radio" name="payment" value="wallet" checked={paymentMethod === 'wallet'} onChange={() => setPaymentMethod('wallet')} className="hidden" />
+              <Wallet size={20} className={paymentMethod === 'wallet' ? 'text-primary' : 'text-muted-foreground'} />
+              <div className="flex-1 flex justify-between items-center">
+                <span className="font-medium text-sm">Velto Wallet</span>
+                <span className="text-xs font-bold text-emerald-500">
+                  Balance: ₹{parseFloat(typeof window !== 'undefined' ? localStorage.getItem('velto_wallet_balance') || '500' : '500').toFixed(2)}
+                </span>
+              </div>
+            </label>
+
             <label className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-colors ${paymentMethod === 'cod' ? 'border-primary bg-primary/5' : 'border-border hover:bg-accent'}`}>
               <input type="radio" name="payment" value="cod" checked={paymentMethod === 'cod'} onChange={() => setPaymentMethod('cod')} className="hidden" />
               <Banknote size={20} className={paymentMethod === 'cod' ? 'text-primary' : 'text-muted-foreground'} />
