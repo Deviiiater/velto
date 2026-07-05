@@ -2199,13 +2199,13 @@ export default function Home() {
         {/* 6. Circular 3D Categories Grid */}
         {!searchQuery.trim() && (
           <div className="w-full flex flex-col gap-3 z-10 text-left">
-            <span className="text-[10px] font-black uppercase text-zinc-400 tracking-widest pl-1">Choose Service</span>
+            <span className="text-[10px] font-black uppercase text-zinc-300 tracking-widest pl-1">Choose Service</span>
             <div className="grid grid-cols-4 gap-3 pb-2 w-full">
               {[
-                { name: 'Grocery Shop', icon: '🍓', color: 'from-emerald-500/10 to-green-500/10 border-emerald-500/20' },
-                { name: 'Pharmacy Meds', icon: '💊', color: 'from-cyan-500/10 to-blue-500/10 border-cyan-500/20' },
-                { name: 'Send Courier', icon: '📦', color: 'from-purple-500/10 to-indigo-500/10 border-purple-500/20' },
-                { name: 'Food Delivery', icon: '🍕', color: 'from-orange-500/10 to-red-500/10 border-orange-500/20' }
+                { name: 'Grocery Shop', icon: '🍓', color: 'from-emerald-500/20 to-green-500/20 border-emerald-500/40' },
+                { name: 'Pharmacy Meds', icon: '💊', color: 'from-cyan-500/20 to-blue-500/20 border-cyan-500/40' },
+                { name: 'Send Courier', icon: '📦', color: 'from-purple-500/20 to-indigo-500/20 border-purple-500/40' },
+                { name: 'Food Delivery', icon: '🍕', color: 'from-orange-500/20 to-red-500/20 border-orange-500/40' }
               ].map((cat, idx) => (
                 <div 
                   key={idx}
@@ -2231,7 +2231,7 @@ export default function Home() {
                   <div className={`w-11 h-11 rounded-full bg-gradient-to-br ${cat.color} border flex items-center justify-center shadow-lg group-hover:scale-105 active:scale-95 transition-all`}>
                     <span className="text-xl select-none">{cat.icon}</span>
                   </div>
-                  <span className="text-[9px] font-black uppercase text-zinc-400 tracking-wider text-center">{cat.name}</span>
+                  <span className="text-[9px] font-black uppercase text-zinc-200 tracking-wider text-center">{cat.name}</span>
                 </div>
               ))}
             </div>
