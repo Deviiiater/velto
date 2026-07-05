@@ -1931,7 +1931,7 @@ export default function Home() {
               <span className="text-[9px] text-zinc-400 font-semibold uppercase tracking-widest leading-none">Delivering to</span>
               <div className="flex items-center gap-1 mt-0.5">
                 <span className="text-xs sm:text-sm font-black tracking-tight text-white flex items-center gap-1">
-                  Bhopal, Madhya Pradesh
+                  {currentLocation || 'Select Location'}
                   <ChevronDown size={14} className="text-[#FF5F1F] group-hover:translate-y-0.5 transition-transform" />
                 </span>
               </div>
