@@ -2391,44 +2391,7 @@ export default function Home() {
           </div>
         )}
 
-        {/* 9. Live Order Tracking Map Banner */}
-        {!searchQuery.trim() && (
-          <div 
-            onClick={() => router.push('/profile')}
-            className="w-full bg-[#101828]/95 border border-white/8 rounded-[2rem] p-4 shadow-xl relative overflow-hidden backdrop-blur-xl select-none text-left z-10"
-          >
-            <div className="absolute right-[-45px] top-[-45px] w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
-            
-            <div className="flex justify-between items-center gap-4">
-              <div className="flex-1">
-                <span className="text-[9px] font-black text-[#00D26A] uppercase tracking-widest block">Live Order Tracking</span>
-                <h4 className="text-xs font-black text-white mt-1 leading-snug">Your order is on the way! 🚀</h4>
-                <span className="text-[9px] font-semibold text-zinc-400 block mt-0.5">Arriving in <span className="text-[#00D26A] font-black">18 mins</span></span>
-                
-                {/* Route progress */}
-                <div className="flex items-center gap-1.5 mt-3 text-[8px] font-bold text-zinc-400">
-                  <span>🏪 Hub</span>
-                  <div className="flex-1 h-0.5 bg-zinc-800 relative rounded-full">
-                    <div className="absolute left-0 top-0 bottom-0 bg-[#00D26A] w-[60%] rounded-full relative">
-                      <span className="absolute right-0 top-[-3px] w-2 h-2 rounded-full bg-[#00D26A] border border-white animate-ping"></span>
-                    </div>
-                  </div>
-                  <span>🏠 Home</span>
-                </div>
-              </div>
 
-              {/* Rider and Action Button */}
-              <div className="flex flex-col items-center gap-2.5">
-                <div className="w-11 h-11 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-xl">
-                  🛵
-                </div>
-                <button className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white text-[8px] font-black uppercase tracking-wider py-1.5 px-3 rounded-lg transition-all shadow-md">
-                  Track Live &rarr;
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
 
       </div>
 
@@ -3954,6 +3917,41 @@ export default function Home() {
                 Cancel
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* 🚴 FLOATING ACTIVE ORDER TRACKER (Capsule styled above Bottom Nav) */}
+      {hasActiveOrder && (
+        <div 
+          onClick={() => router.push('/profile')}
+          className="fixed bottom-[96px] left-1/2 -translate-x-1/2 w-[92%] max-w-lg z-[998] bg-[#09090B]/95 border border-[#FF5F1F]/30 hover:border-[#FF5F1F]/60 rounded-3xl p-3.5 shadow-[0_20px_50px_rgba(0,0,0,0.9)] backdrop-blur-xl transition-all duration-300 animate-in slide-in-from-bottom-12 cursor-pointer flex justify-between items-center gap-4 text-left select-none"
+        >
+          {/* Glowing dynamic background pulse */}
+          <div className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-[#FF5F1F]/10 rounded-full blur-xl pointer-events-none"></div>
+          
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping"></span>
+              <span className="h-2 w-2 rounded-full bg-emerald-500 absolute"></span>
+              <span className="text-[9px] font-black text-[#00D26A] uppercase tracking-widest pl-3.5">Active Delivery Dispatch</span>
+            </div>
+            <h4 className="text-xs font-black text-white mt-1 truncate">Rider is zooming to your doorstep! 🛵</h4>
+            <div className="flex items-center gap-1.5 mt-2 text-[8px] font-bold text-zinc-400">
+              <span>🏪 Hub</span>
+              <div className="flex-1 h-0.5 bg-zinc-800 relative rounded-full">
+                <div className="absolute left-0 top-0 bottom-0 bg-[#00D26A] w-[60%] rounded-full">
+                  <span className="absolute right-0 top-[-3px] w-2 h-2 rounded-full bg-[#00D26A] border border-white animate-ping"></span>
+                </div>
+              </div>
+              <span>🏠 Home</span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-[10px] font-black bg-[#FF5F1F] text-white px-2.5 py-1.5 rounded-xl uppercase tracking-wider shadow-md hover:bg-[#FF8A00] transition-colors">
+              Track Live &rarr;
+            </span>
           </div>
         </div>
       )}
