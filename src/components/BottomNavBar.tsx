@@ -2,56 +2,36 @@
 import { useState, useEffect } from 'react';
 import { useCart } from '@/context/CartContext';
 import { useRouter, usePathname } from 'next/navigation';
-import { Utensils, Zap, Tag, ShoppingBag, History } from 'lucide-react';
+import { Home, Bot, Zap, Compass, User } from 'lucide-react';
 
 export function BottomNavBar() {
   const { cart } = useCart();
   const router = useRouter();
   const pathname = usePathname();
 
-  const [activeTab, setActiveTab] = useState<string>('');
+  const [activeTab, setActiveTab] = useState<string>('home');
 
-  // Listen to state changes from page.tsx to update highlighted icon
   useEffect(() => {
-    const handleStateChange = (e: Event) => {
-      const detail = (e as CustomEvent).detail;
-      if (!detail) return;
-
-      const { activeSuperService, studentMode, searchQuery, activePill } = detail;
-      
-      if (studentMode) {
-        setActiveTab('bolt');
-      } else if (searchQuery?.toLowerCase().includes('offer')) {
-        setActiveTab('offer');
-      } else if (activePill === 'reorder') {
-        setActiveTab('reorder');
-      } else if (activeSuperService === 'food') {
-        setActiveTab('food');
-      } else {
-        setActiveTab('');
-      }
-    };
-
-    window.addEventListener('page-state-change', handleStateChange);
-    return () => window.removeEventListener('page-state-change', handleStateChange);
-  }, []);
-
-  // Set active tab based on path initially or reset if not on home page
-  useEffect(() => {
-    if (pathname !== '/') {
-      setActiveTab(pathname === '/cart' ? 'cart' : '');
+    if (pathname === '/') {
+      setActiveTab('home');
+    } else if (pathname === '/profile') {
+      setActiveTab('profile');
+    } else if (pathname === '/cart') {
+      setActiveTab('cart');
     }
   }, [pathname]);
 
-  const handleClick = (type: string, targetPath: string) => {
-    if (pathname === '/') {
-      window.dispatchEvent(new CustomEvent('bottom-nav-click', { detail: { type } }));
+  const handleClick = (tab: string, targetPath: string) => {
+    setActiveTab(tab);
+    if (tab === 'ai') {
+      // Trigger voice ordering overlay or AI chat on home screen
+      window.dispatchEvent(new CustomEvent('bottom-nav-click', { detail: { type: 'ai' } }));
+      if (pathname !== '/') router.push('/');
+    } else if (tab === 'explore') {
+      window.dispatchEvent(new CustomEvent('bottom-nav-click', { detail: { type: 'explore' } }));
+      if (pathname !== '/') router.push('/');
     } else {
       router.push(targetPath);
-      // Wait for navigation before sending the event
-      setTimeout(() => {
-        window.dispatchEvent(new CustomEvent('bottom-nav-click', { detail: { type } }));
-      }, 150);
     }
   };
 
@@ -68,98 +48,86 @@ export function BottomNavBar() {
 
   return (
     <div 
-      className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-lg z-[999] bg-[#09090B]/90 backdrop-blur-xl py-2 px-3 flex justify-between items-center rounded-[2rem] border border-white/5 shadow-[0_15px_40px_rgba(0,0,0,0.85)] transform-gpu will-change-transform"
+      className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-lg z-[999] bg-[#09090B]/90 backdrop-blur-xl py-2.5 px-3.5 flex justify-between items-center rounded-[2rem] border border-white/5 shadow-[0_15px_40px_rgba(0,0,0,0.85)] transform-gpu will-change-transform"
       style={{ position: 'fixed', left: '50%' }}
     >
-      {/* 1. FOOD TAB */}
+      {/* 1. HOME TAB */}
       <button
-        onClick={() => handleClick('food', '/')}
+        onClick={() => handleClick('home', '/')}
         className={`flex items-center gap-1.5 px-4 py-2.5 rounded-full transition-all duration-300 cursor-pointer ${
-          (activeTab === 'food' || activeTab === '') && pathname === '/'
+          activeTab === 'home' && pathname === '/'
             ? 'bg-gradient-to-r from-[#EC4899] to-[#FF5F1F] text-white shadow-lg font-black scale-105'
             : 'text-zinc-400 hover:text-zinc-200'
         }`}
       >
-        <Utensils size={15} />
-        {((activeTab === 'food' || activeTab === '') && pathname === '/') && (
-          <span className="text-[10px] uppercase tracking-wider animate-in fade-in duration-300">Food</span>
+        <Home size={15} />
+        {(activeTab === 'home' && pathname === '/') && (
+          <span className="text-[10px] uppercase tracking-wider animate-in fade-in duration-300">Home</span>
         )}
       </button>
 
-      {/* 2. BOLT TAB */}
+      {/* 2. AI TAB */}
+      <button
+        onClick={() => handleClick('ai', '/')}
+        className={`flex items-center gap-1.5 px-4 py-2.5 rounded-full transition-all duration-300 cursor-pointer relative ${
+          activeTab === 'ai'
+            ? 'bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] text-white shadow-lg font-black scale-105'
+            : 'text-zinc-400 hover:text-zinc-200'
+        }`}
+      >
+        <Bot size={15} />
+        {activeTab === 'ai' && (
+          <span className="text-[10px] uppercase tracking-wider animate-in fade-in duration-300">AI Assist</span>
+        )}
+      </button>
+
+      {/* 3. BOLT TAB */}
       <button
         onClick={() => handleClick('bolt', '/')}
         className={`flex items-center gap-1.5 px-4 py-2.5 rounded-full transition-all duration-300 cursor-pointer relative ${
-          activeTab === 'bolt' && pathname === '/'
+          activeTab === 'bolt'
             ? 'bg-gradient-to-r from-[#EC4899] to-[#FF5F1F] text-white shadow-lg font-black scale-105'
             : 'text-zinc-400 hover:text-zinc-200'
         }`}
       >
         <div className="relative flex items-center">
           <Zap size={15} />
-          {!(activeTab === 'bolt' && pathname === '/') && (
-            <span className="absolute -top-3.5 -right-6 bg-[#ff5f1f] text-white text-[7px] font-black px-1.5 py-0.5 rounded-full scale-90 tracking-tighter">15 MIN</span>
+          {activeTab !== 'bolt' && (
+            <span className="absolute -top-3.5 -right-6 bg-[#ff5f1f] text-white text-[7px] font-black px-1.5 py-0.5 rounded-full scale-90 tracking-tighter">10 MIN</span>
           )}
         </div>
-        {(activeTab === 'bolt' && pathname === '/') && (
+        {activeTab === 'bolt' && (
           <span className="text-[10px] uppercase tracking-wider animate-in fade-in duration-300">Bolt</span>
         )}
       </button>
 
-      {/* 3. 99 STORE TAB */}
+      {/* 4. EXPLORE TAB */}
       <button
-        onClick={() => handleClick('offer', '/')}
+        onClick={() => handleClick('explore', '/')}
         className={`flex items-center gap-1.5 px-4 py-2.5 rounded-full transition-all duration-300 cursor-pointer relative ${
-          activeTab === 'offer' && pathname === '/'
+          activeTab === 'explore'
             ? 'bg-gradient-to-r from-[#EC4899] to-[#FF5F1F] text-white shadow-lg font-black scale-105'
             : 'text-zinc-400 hover:text-zinc-200'
         }`}
       >
-        <div className="relative flex items-center">
-          <Tag size={15} />
-          {!(activeTab === 'offer' && pathname === '/') && (
-            <span className="absolute -top-3.5 -right-4 bg-amber-500 text-black font-extrabold text-[8px] px-1 rounded-full">99</span>
-          )}
-        </div>
-        {(activeTab === 'offer' && pathname === '/') && (
-          <span className="text-[10px] uppercase tracking-wider animate-in fade-in duration-300">99 Store</span>
+        <Compass size={15} />
+        {activeTab === 'explore' && (
+          <span className="text-[10px] uppercase tracking-wider animate-in fade-in duration-300">Explore</span>
         )}
       </button>
 
-      {/* 4. CART TAB */}
+      {/* 5. PROFILE TAB */}
       <button
-        onClick={() => router.push('/cart')}
-        className={`flex items-center gap-1.5 px-4 py-2.5 rounded-full transition-all duration-300 cursor-pointer relative ${
-          pathname === '/cart'
-            ? 'bg-gradient-to-r from-[#EC4899] to-[#FF5F1F] text-white shadow-lg font-black scale-105'
-            : 'text-zinc-400 hover:text-zinc-200'
-        }`}
-      >
-        <div className="relative flex items-center">
-          <ShoppingBag size={15} />
-          {cart.length > 0 && !(pathname === '/cart') && (
-            <span className="absolute -top-3.5 -right-3.5 bg-[#ff5f1f] text-white text-[7px] font-black w-4.5 h-4.5 rounded-full flex items-center justify-center shadow-sm">
-              {cart.length}
-            </span>
-          )}
-        </div>
-        {(pathname === '/cart') && (
-          <span className="text-[10px] uppercase tracking-wider animate-in fade-in duration-300">Cart</span>
-        )}
-      </button>
-
-      {/* 5. REORDER TAB */}
-      <button
-        onClick={() => handleClick('reorder', '/')}
+        onClick={() => handleClick('profile', '/profile')}
         className={`flex items-center gap-1.5 px-4 py-2.5 rounded-full transition-all duration-300 cursor-pointer ${
-          activeTab === 'reorder' && pathname === '/'
+          activeTab === 'profile'
             ? 'bg-gradient-to-r from-[#EC4899] to-[#FF5F1F] text-white shadow-lg font-black scale-105'
             : 'text-zinc-400 hover:text-zinc-200'
         }`}
       >
-        <History size={15} />
-        {(activeTab === 'reorder' && pathname === '/') && (
-          <span className="text-[10px] uppercase tracking-wider animate-in fade-in duration-300">Reorder</span>
+        <User size={15} />
+        {activeTab === 'profile' && (
+          <span className="text-[10px] uppercase tracking-wider animate-in fade-in duration-300">Profile</span>
         )}
       </button>
     </div>

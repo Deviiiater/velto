@@ -26,11 +26,44 @@ export default function StaffAuthGuard({
   const [profileLoading, setProfileLoading] = useState(true);
   const [userRole, setUserRole] = useState<'customer' | 'rider' | 'admin' | 'warehouse' | 'kitchen' | 'vendor' | null>(null);
   
-  // Login Form States
+  // Login & Registration Form States
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [storeName, setStoreName] = useState('');
+  const [isRegistering, setIsRegistering] = useState(false);
   const [loginLoading, setLoginLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginLoading(true);
+    setLoginError(null);
+    try {
+      const { data, error } = await client.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            role: 'vendor',
+            full_name: storeName
+          }
+        }
+      });
+      if (error) throw error;
+      
+      // Clear skip-sync flag upon successful registration
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem(`velto-skip-sync-${portalId}`);
+      }
+      
+      alert("Vendor registered successfully! You are now logged in.");
+      setIsRegistering(false);
+    } catch (err: any) {
+      setLoginError(err.message || 'Registration failed.');
+    } finally {
+      setLoginLoading(false);
+    }
+  };
 
   const allowedRolesKey = allowedRoles.join(',');
 
@@ -218,31 +251,45 @@ export default function StaffAuthGuard({
           </div>
           <div>
             <h1 className="text-2xl font-black tracking-tight flex items-center justify-center gap-1.5 text-foreground">
-              {portalName}
+              {isRegistering ? "Register Vendor Store" : portalName}
             </h1>
             <p className="text-xs text-muted-foreground font-medium mt-1.5">
-              Secure staff node authorization required. Please authenticate.
+              {isRegistering ? "Create your merchant store account on Velto" : "Secure staff node authorization required. Please authenticate."}
             </p>
           </div>
         </div>
 
         {/* Informative warning if user is logged into the wrong role */}
-        {user && !hasAccess && (
+        {user && !hasAccess && !isRegistering && (
           <div className="p-3.5 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-xl text-xs font-semibold text-center leading-relaxed relative z-10">
             ⚠️ Authenticated as <strong className="uppercase">{userRole}</strong>.<br />
             Please sign in with a <strong className="uppercase text-foreground">{allowedRoles.join('/')}</strong> account to access this panel.
           </div>
         )}
 
-        <form onSubmit={handleLogin} className="space-y-4 relative z-10">
+        <form onSubmit={isRegistering ? handleRegister : handleLogin} className="space-y-4 relative z-10">
           {loginError && (
             <div className="p-3.5 bg-destructive/10 text-destructive border border-destructive/20 rounded-xl text-xs font-semibold text-center leading-relaxed">
               ⚠️ {loginError}
             </div>
           )}
           
+          {isRegistering && (
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1.5">Store / Brand Name</label>
+              <input
+                type="text"
+                value={storeName}
+                onChange={(e) => setStoreName(e.target.value)}
+                className="w-full p-3 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-sm font-medium"
+                placeholder="e.g. Burger Point"
+                required
+              />
+            </div>
+          )}
+
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1.5">Staff Email</label>
+            <label className="block text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1.5">Email Address</label>
             <input
               type="email"
               value={email}
@@ -268,10 +315,12 @@ export default function StaffAuthGuard({
           <button
             type="submit"
             disabled={loginLoading}
-            className="w-full bg-primary text-primary-foreground py-3.5 rounded-xl font-extrabold hover:bg-primary/90 transition-all flex justify-center items-center gap-2 text-sm shadow-md disabled:opacity-70 mt-6"
+            className="w-full bg-primary text-primary-foreground py-3.5 rounded-xl font-extrabold hover:bg-primary/90 transition-all flex justify-center items-center gap-2 text-sm shadow-md disabled:opacity-70 mt-6 cursor-pointer"
           >
             {loginLoading ? (
               <Loader2 className="w-4 h-4 animate-spin" />
+            ) : isRegistering ? (
+              <><Sparkles size={16} /> Register Store</>
             ) : (
               <><LogIn size={16} /> Authenticate Session</>
             )}
@@ -279,10 +328,22 @@ export default function StaffAuthGuard({
         </form>
 
         <div className="flex flex-col gap-2.5 text-center relative z-10 border-t border-border/50 pt-4">
-          {user && (
+          {portalId === 'vendor' && (
+            <button
+              onClick={() => {
+                setIsRegistering(!isRegistering);
+                setLoginError(null);
+              }}
+              className="text-xs text-primary hover:underline transition-all font-bold uppercase tracking-wider cursor-pointer"
+            >
+              {isRegistering ? "Already have a store? Login" : "Don't have a store? Register Store"}
+            </button>
+          )}
+
+          {user && !isRegistering && (
             <button 
               onClick={handleSignOut}
-              className="inline-flex items-center justify-center gap-1 text-xs text-destructive hover:text-destructive/80 transition-colors font-bold uppercase tracking-wider"
+              className="inline-flex items-center justify-center gap-1 text-xs text-destructive hover:text-destructive/80 transition-colors font-bold uppercase tracking-wider cursor-pointer"
             >
               <Lock size={12} /> Sign Out of {userRole?.toUpperCase()} Session
             </button>

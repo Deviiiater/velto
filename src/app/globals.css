@@ -209,3 +209,93 @@
   filter: none !important;
 }
 
+/* 💎 Premium Vision Styling Integrations */
+.spring-transition {
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.magnetic-hover:hover {
+  transform: scale(1.06) translateZ(10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Glass Reflection Sheen */
+.glass-reflection {
+  position: relative;
+  overflow: hidden;
+}
+.glass-reflection::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 45%,
+    rgba(255, 255, 255, 0.15) 50%,
+    transparent 55%
+  );
+  transform: rotate(45deg);
+  transition: transform 0.8s ease;
+}
+.glass-reflection:hover::after {
+  transform: translate(50%, 50%) rotate(45deg);
+}
+
+/* Weather Environment Overlays */
+.weather-rainy {
+  background: radial-gradient(circle at 10% 20%, #0c1a2e 0%, #030812 100%) !important;
+}
+.weather-rainy::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 0);
+  background-size: 24px 32px;
+  animation: rain-fall 1.5s linear infinite;
+  opacity: 0.5;
+  z-index: 100;
+}
+@keyframes rain-fall {
+  0% { background-position: 0px 0px; }
+  100% { background-position: 24px 300px; }
+}
+
+.weather-sunny {
+  background: radial-gradient(circle at 10% 20%, #201306 0%, #07070b 100%) !important;
+}
+.weather-sunny::after {
+  content: '';
+  position: fixed;
+  top: -200px;
+  right: -200px;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(255, 126, 33, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.weather-winter {
+  background: radial-gradient(circle at 10% 20%, #111a2e 0%, #05080f 100%) !important;
+}
+.weather-winter::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle at center, rgba(255, 255, 255, 0.4) 1px, transparent 1px);
+  background-size: 40px 40px;
+  animation: snow-drift 10s linear infinite;
+  opacity: 0.3;
+  z-index: 100;
+}
+@keyframes snow-drift {
+  0% { background-position: 0px 0px; }
+  100% { background-position: 100px 100px; }
+}
+
+

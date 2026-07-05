@@ -362,27 +362,49 @@ export default function OrderTrackerPage({ params }: { params: Promise<{ id: str
 
       {/* Live Rider Dispatch & Transit Status Card (Only for non-Tiffins) */}
       {!isTiffinSubscription && order.status === 'out_for_delivery' && parsedAddress.riderInfo && (
-        <div className="bg-primary/5 border border-primary/20 rounded-2xl p-5 shadow-sm space-y-4">
-          <div className="flex justify-between items-center border-b border-primary/10 pb-3">
-            <h2 className="font-bold text-sm text-primary flex items-center gap-1.5">
-              <Bike size={16} className="text-primary animate-bounce-short" /> {t('activeRiderDispatchDetails', language)}
+        <div className="bg-[#101828]/95 border border-primary/20 rounded-[2rem] p-6 shadow-xl space-y-5 relative overflow-hidden backdrop-blur-xl">
+          <div className="absolute right-[-20px] top-[-20px] w-24 h-24 bg-primary/10 rounded-full blur-2xl pointer-events-none"></div>
+          
+          <div className="flex justify-between items-center border-b border-white/5 pb-3">
+            <h2 className="font-bold text-sm text-primary flex items-center gap-1.5 uppercase tracking-wider">
+              <Bike size={16} className="text-primary animate-bounce-short" /> Telemetry Flight Tracker
             </h2>
-            <span className="text-[10px] bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 rounded-full font-black uppercase tracking-wider animate-pulse">
+            <span className="text-[10px] bg-primary/20 text-primary border border-primary/20 px-3 py-0.5 rounded-full font-black uppercase tracking-wider animate-pulse">
               {t('enRoute', language)}
             </span>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <span className="block text-[8px] font-black uppercase text-muted-foreground tracking-wider">{t('assignedCourierPartner', language)}</span>
-              <p className="text-sm font-bold text-foreground">{parsedAddress.riderInfo.split(" | ")[0]}</p>
-              <p className="text-[10px] text-muted-foreground font-semibold">{parsedAddress.riderInfo.split(" | ")[1]}</p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="space-y-1 bg-white/5 p-3 rounded-2xl border border-white/5">
+              <span className="block text-[8px] font-black uppercase text-zinc-400 tracking-wider">Assigned Courier</span>
+              <p className="text-xs font-bold text-white">{parsedAddress.riderInfo.split(" | ")[0]}</p>
+              <p className="text-[9px] text-zinc-500 font-semibold">{parsedAddress.riderInfo.split(" | ")[1] || 'Velto Fleet Rider'}</p>
             </div>
-            <div className="space-y-1">
-              <span className="block text-[8px] font-black uppercase text-muted-foreground tracking-wider">{t('liveTransitSituation', language)}</span>
-              <p className="text-sm font-bold text-amber-500 flex items-center gap-1.5">
-                <AlertCircle size={14} className="text-amber-500 animate-pulse" /> {parsedAddress.situation}
-              </p>
-              <p className="text-[10px] text-muted-foreground font-semibold">{t('etaUpdatedDynamically', language)}</p>
+            
+            <div className="space-y-1 bg-white/5 p-3 rounded-2xl border border-white/5">
+              <span className="block text-[8px] font-black uppercase text-zinc-400 tracking-wider">Rider Vehicle Stats</span>
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className="text-xs font-black text-white">⚡ 34 km/h</span>
+                <span className="text-[9px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded-md font-bold">88% Batt</span>
+              </div>
+              <p className="text-[9px] text-zinc-500 font-semibold">Electric Eco Mode Active</p>
+            </div>
+
+            <div className="space-y-1 bg-white/5 p-3 rounded-2xl border border-white/5">
+              <span className="block text-[8px] font-black uppercase text-zinc-400 tracking-wider">Container Temp</span>
+              <p className="text-xs font-bold text-sky-400">❄️ 4.2°C (Cold-Locked)</p>
+              <p className="text-[9px] text-zinc-500 font-semibold">Active Cold-Chain Container</p>
+            </div>
+          </div>
+
+          <div className="space-y-2 pt-2">
+            <div className="flex justify-between items-center text-[10px]">
+              <span className="font-bold text-zinc-400">DELIVERY SITUATION</span>
+              <span className="font-black text-amber-500 uppercase">{parsedAddress.situation}</span>
+            </div>
+            {/* Animated progress bar */}
+            <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+              <div className="h-full bg-gradient-to-r from-primary to-[#7C3AED] rounded-full animate-[shine-effect_2.5s_infinite]" style={{ width: '68%' }}></div>
             </div>
           </div>
         </div>

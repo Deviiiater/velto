@@ -357,27 +357,55 @@ export default function RiderPanel() {
       </div>
 
       {/* Rider Performance Stats */}
-      <div className="bg-card border border-border rounded-2xl p-5 shadow-sm space-y-4">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-          <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-            🚴‍♂️ Rider Performance & Shift Deliveries (Day-Wise)
+      <div className="bg-[#101828]/95 border border-white/5 rounded-2xl p-6 shadow-sm space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-white/5 pb-3">
+          <h3 className="text-xs font-black uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+            🚴‍♂️ Shift Performance Dashboard
           </h3>
-          <span className="text-xs bg-primary/10 text-primary px-3 py-1 rounded-full font-bold">
+          <span className="text-xs bg-primary/20 text-primary px-3 py-1 rounded-full font-black">
             Total Deliveries: {totalCompleted}
           </span>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+          <div className="bg-white/5 border border-white/5 rounded-xl p-4 flex flex-col justify-center text-left">
+            <span className="text-[9px] text-zinc-400 font-black uppercase tracking-wider">Today's Earnings</span>
+            <span className="text-xl font-black text-[#FF5F1F] mt-1">₹2,450.00</span>
+            <span className="text-[8px] text-zinc-500 font-semibold mt-1">Includes ₹380 tips</span>
+          </div>
+
+          <div className="bg-white/5 border border-white/5 rounded-xl p-4 flex flex-col justify-center text-left">
+            <span className="text-[9px] text-zinc-400 font-black uppercase tracking-wider">Shift Distance</span>
+            <span className="text-xl font-black text-white mt-1">48.6 km</span>
+            <span className="text-[8px] text-zinc-500 font-semibold mt-1">12 Trips completed</span>
+          </div>
+
+          <div className="bg-white/5 border border-white/5 rounded-xl p-4 flex flex-col justify-center text-left">
+            <span className="text-[9px] text-zinc-400 font-black uppercase tracking-wider">Rating & Tips</span>
+            <span className="text-xl font-black text-white mt-1">⭐ 4.95</span>
+            <span className="text-[8px] text-zinc-500 font-semibold mt-1">#3 on Leaderboard</span>
+          </div>
+
+          <div className="bg-white/5 border border-white/5 rounded-xl p-4 flex flex-col justify-center text-left">
+            <span className="text-[9px] text-zinc-400 font-black uppercase tracking-wider">Carbon & Fuel Saved</span>
+            <span className="text-xl font-black text-emerald-400 mt-1">4.2 kg CO₂</span>
+            <span className="text-[8px] text-zinc-500 font-semibold mt-1">Electric vehicle savings</span>
+          </div>
+
+          <div className="bg-white/5 border border-white/5 rounded-xl p-4 flex flex-col justify-center text-left">
+            <span className="text-[9px] text-zinc-400 font-black uppercase tracking-wider">Battery Health</span>
+            <span className="text-xl font-black text-sky-400 mt-1">96% Status</span>
+            <span className="text-[8px] text-zinc-500 font-semibold mt-1">Goal: 12/15 runs</span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 pt-2">
           {completedStats.map((stat, idx) => (
-            <div key={idx} className="bg-accent/40 border border-border/80 rounded-xl p-3.5 flex flex-col items-center justify-center text-center shadow-inner">
-              <span className="text-[10px] text-muted-foreground font-black uppercase tracking-wider">{stat.date}</span>
-              <span className="text-lg font-black text-primary mt-1">{stat.count} {stat.count === 1 ? 'Delivery' : 'Deliveries'}</span>
+            <div key={idx} className="bg-white/5 border border-white/5 rounded-xl p-3 flex flex-col items-center justify-center text-center">
+              <span className="text-[9px] text-zinc-400 font-black uppercase tracking-wider">{stat.date}</span>
+              <span className="text-sm font-black text-primary mt-1">{stat.count} {stat.count === 1 ? 'Delivery' : 'Deliveries'}</span>
             </div>
           ))}
-          {completedStats.length === 0 && (
-            <div className="col-span-full py-4 text-center text-xs text-muted-foreground italic">
-              No deliveries tracked in this shift yet.
-            </div>
-          )}
         </div>
       </div>
 

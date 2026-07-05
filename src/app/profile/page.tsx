@@ -160,34 +160,44 @@ export default function ProfilePage() {
       </div>
 
       {/* Dynamic Personal Dispatch Stats Panel */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-card border border-border rounded-2xl p-5 shadow-sm flex items-center gap-4 hover:border-primary/30 transition-colors">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="bg-[#101828]/95 border border-white/5 rounded-2xl p-5 shadow-sm flex items-center gap-4 hover:border-primary/30 transition-colors">
           <div className="p-3.5 bg-primary/10 text-primary rounded-xl">
             <ClipboardList size={24} />
           </div>
           <div>
-            <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">{t('totalOrdersPlaced', language)}</span>
-            <h3 className="text-2xl font-black text-foreground mt-0.5">{orders.length}</h3>
+            <span className="text-[10px] font-black uppercase tracking-wider text-zinc-400">{t('totalOrdersPlaced', language)}</span>
+            <h3 className="text-2xl font-black text-white mt-0.5">{orders.length}</h3>
           </div>
         </div>
 
-        <div className="bg-card border border-border rounded-2xl p-5 shadow-sm flex items-center gap-4 hover:border-primary/30 transition-colors">
+        <div className="bg-[#101828]/95 border border-white/5 rounded-2xl p-5 shadow-sm flex items-center gap-4 hover:border-primary/30 transition-colors">
           <div className="p-3.5 bg-emerald-500/10 text-emerald-500 rounded-xl">
             <DollarSign size={24} />
           </div>
           <div>
-            <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">{t('totalSpend', language)}</span>
-            <h3 className="text-2xl font-black text-foreground mt-0.5">₹{totalSpend.toFixed(2)}</h3>
+            <span className="text-[10px] font-black uppercase tracking-wider text-zinc-400">{t('totalSpend', language)}</span>
+            <h3 className="text-2xl font-black text-white mt-0.5">₹{totalSpend.toFixed(2)}</h3>
           </div>
         </div>
 
-        <div className="bg-card border border-border rounded-2xl p-5 shadow-sm flex items-center gap-4 hover:border-primary/30 transition-colors">
-          <div className="p-3.5 bg-indigo-500/10 text-indigo-500 rounded-xl">
-            <Calendar size={24} />
+        <div className="bg-[#101828]/95 border border-white/5 rounded-2xl p-5 shadow-sm flex items-center gap-4 hover:border-primary/30 transition-colors">
+          <div className="p-3.5 bg-amber-500/10 text-amber-500 rounded-xl flex items-center justify-center">
+            <span className="text-xl">🪙</span>
           </div>
           <div>
-            <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">{t('activeDays', language)}</span>
-            <h3 className="text-2xl font-black text-foreground mt-0.5">{dayWiseStats.length}</h3>
+            <span className="text-[10px] font-black uppercase tracking-wider text-zinc-400">Velto Coins</span>
+            <h3 className="text-2xl font-black text-white mt-0.5">4,820</h3>
+          </div>
+        </div>
+
+        <div className="bg-[#101828]/95 border border-white/5 rounded-2xl p-5 shadow-sm flex items-center gap-4 hover:border-primary/30 transition-colors">
+          <div className="p-3.5 bg-pink-500/10 text-pink-500 rounded-xl flex items-center justify-center">
+            <span className="text-xl">🎫</span>
+          </div>
+          <div>
+            <span className="text-[10px] font-black uppercase tracking-wider text-zinc-400">Gift Vouchers</span>
+            <h3 className="text-2xl font-black text-white mt-0.5">3 Active</h3>
           </div>
         </div>
       </div>
