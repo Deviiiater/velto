@@ -2199,21 +2199,15 @@ export default function Home() {
         {/* 6. Circular 3D Categories Grid */}
         {!searchQuery.trim() && (
           <div className="w-full flex flex-col gap-3 z-10 text-left">
-            <span className="text-[10px] font-black uppercase text-zinc-400 tracking-widest pl-1">Choose Service</span>
-            <div className="grid grid-cols-6 gap-3 pb-2 w-full">
+            <span className="text-[10px] font-black uppercase text-zinc-400 tracking-widest pl-1">Explore Services</span>
+            <div className="grid grid-cols-5 gap-3 pb-2 w-full">
               {[
                 { name: 'Food', icon: '🍕', color: 'from-orange-500/10 to-red-500/10 border-orange-500/20' },
                 { name: 'Grocery', icon: '🍓', color: 'from-emerald-500/10 to-green-500/10 border-emerald-500/20' },
                 { name: 'Medicine', icon: '💊', color: 'from-cyan-500/10 to-blue-500/10 border-cyan-500/20' },
-                { name: 'Meat', icon: '🍗', color: 'from-rose-500/10 to-red-500/10 border-rose-500/20' },
                 { name: 'Tiffin', icon: '🍱', color: 'from-amber-500/10 to-yellow-500/10 border-amber-500/20' },
-                { name: 'Pickup', icon: '📦', color: 'from-purple-500/10 to-indigo-500/10 border-purple-500/20' },
-                { name: 'Dine Out', icon: '🍷', color: 'from-pink-500/10 to-rose-500/10 border-pink-500/20' },
-                { name: 'Bakery', icon: '🍰', color: 'from-amber-400/10 to-orange-400/10 border-amber-400/20' },
-                { name: 'Pet Shop', icon: '🐶', color: 'from-yellow-500/10 to-amber-500/10 border-yellow-500/20' },
-                { name: 'Flowers', icon: '💐', color: 'from-pink-500/10 to-purple-500/10 border-pink-500/20' },
-                { name: 'More', icon: '➕', color: 'from-zinc-500/10 to-slate-500/10 border-zinc-500/20' }
-              ].slice(0, 12).map((cat, idx) => (
+                { name: 'Pickup', icon: '📦', color: 'from-purple-500/10 to-indigo-500/10 border-purple-500/20' }
+              ].map((cat, idx) => (
                 <div 
                   key={idx}
                   onClick={() => {
@@ -2233,12 +2227,6 @@ export default function Home() {
                     } else if (name === 'Pickup') {
                       setActiveSuperService('courier');
                       setSelectedCategory('Courier');
-                    } else if (name === 'Dine Out') {
-                      setActiveSuperService('food');
-                      setSelectedCategory('Cloud Kitchen');
-                    } else if (name === 'Bakery') {
-                      setActiveSuperService('grocery');
-                      setSelectedCategory('Dairy & Bread');
                     } else {
                       setSelectedCategory(name);
                     }
