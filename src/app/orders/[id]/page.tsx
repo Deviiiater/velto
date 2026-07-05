@@ -7,6 +7,7 @@ import { Check, ClipboardList, MapPin, Truck, ShoppingBag, ArrowLeft, ShieldAler
 import { useSettings } from '@/context/SettingsContext';
 import { t } from '@/lib/translations';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import AlertToast from '@/components/AlertToast';
 
 type OrderItem = {
@@ -80,6 +81,7 @@ export default function OrderTrackerPage({ params }: { params: Promise<{ id: str
   const { id } = use(params);
   const { user } = useAuth();
   const { language } = useSettings();
+  const router = useRouter();
   const [order, setOrder] = useState<Order | null>(null);
   const prevStatusRef = useRef<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -115,6 +117,25 @@ export default function OrderTrackerPage({ params }: { params: Promise<{ id: str
         .single();
 
       if (error) throw error;
+
+      // Separate Dashboard Security: Ensure customer can only view their own orders
+      if (data && user && data.user_id !== user.id) {
+        const { data: profile } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', user.id)
+          .single();
+          
+        const isStaff = profile && ['admin', 'rider', 'kitchen', 'warehouse'].includes(profile.role);
+        if (!isStaff) {
+          setOrder(null);
+          setLoading(false);
+          alert("Access Denied: You do not have permission to view other customer's dashboards or orders.");
+          router.push('/');
+          return;
+        }
+      }
+
       let processedOrder = data;
       if (data && data.status !== 'delivered' && data.status !== 'cancelled') {
         const createdAt = new Date(data.created_at);

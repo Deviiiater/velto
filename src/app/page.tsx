@@ -1995,7 +1995,7 @@ export default function Home() {
               onClick={() => router.push('/profile')}
               className="relative w-9 h-9 rounded-xl border border-[#7C3AED]/35 hover:scale-105 active:scale-95 transition-all shadow-lg flex items-center justify-center bg-gradient-to-tr from-[#7C3AED] to-[#EC4899] shrink-0 overflow-hidden"
             >
-              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" alt="Mohit Profile" className="w-full h-full object-cover" />
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" alt={`${profileName || 'User'} Profile`} className="w-full h-full object-cover" />
               {user && (
                 <span className="absolute bottom-0 right-0 w-2 h-2 bg-emerald-500 border border-[#070B14] rounded-full"></span>
               )}
@@ -2008,7 +2008,7 @@ export default function Home() {
           <span className="text-xs font-semibold text-[#FF5F1F] tracking-wide block capitalize">
             Good {timeOfDay} {timeOfDay === 'morning' ? '🌅' : timeOfDay === 'afternoon' ? '☀️' : timeOfDay === 'evening' ? '🌆' : '🌃'}
           </span>
-          <h1 className="text-3xl font-black text-white tracking-tight uppercase leading-none mt-1">Mohit</h1>
+          <h1 className="text-3xl font-black text-white tracking-tight uppercase leading-none mt-1">{profileName || 'User'}</h1>
         </div>
 
         {/* 3. Hero Pizza Banner with floating ingredients */}
