@@ -2199,7 +2199,7 @@ export default function Home() {
         {/* 6. Circular 3D Categories Grid */}
         {!searchQuery.trim() && (
           <div className="w-full flex flex-col gap-3 z-10 text-left">
-            <span className="text-[10px] font-black uppercase text-zinc-400 tracking-widest pl-1">Explore Services</span>
+            <span className="text-[10px] font-black uppercase text-zinc-400 tracking-widest pl-1">Choose Service</span>
             <div className="grid grid-cols-4 gap-3 pb-2 w-full">
               {[
                 { name: 'Grocery Shop', icon: '🍓', color: 'from-emerald-500/10 to-green-500/10 border-emerald-500/20' },
