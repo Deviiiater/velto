@@ -259,6 +259,40 @@ function App() {
             ))}
           </div>
 
+          {/* 🖥️ AI Digital Twin HUD & Fleet Analytics */}
+          <div className="glass-panel" style={{ marginTop: '1.5rem', padding: '1.5rem', textAlign: 'left' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid rgba(255,255,255,0.08)', pb: '0.75rem' }}>
+              <h3 style={{ fontSize: '0.85rem', fontWeight: 900, color: 'var(--primary)', letterSpacing: '1px', textTransform: 'uppercase' }}>
+                🤖 digital twin command center
+              </h3>
+              <span className="text-zinc-500 text-[10px] font-bold">ROUTE STABILIZATION ACTIVE</span>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
+              <div style={{ background: 'rgba(255,255,255,0.02)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.04)' }}>
+                <span style={{ fontSize: '9px', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Obstacle Alerts</span>
+                <p style={{ fontSize: '14px', fontWeight: 800, color: 'orange', marginTop: '4px' }}>⚠️ Sector 4-B Block</p>
+                <span style={{ fontSize: '8px', color: 'rgba(255,255,255,0.4)' }}>Dijkstra auto-repathing online</span>
+              </div>
+
+              <div style={{ background: 'rgba(255,255,255,0.02)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.04)' }}>
+                <span style={{ fontSize: '9px', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Charging Grid</span>
+                <p style={{ fontSize: '14px', fontWeight: 800, color: '#00ffaa', marginTop: '4px' }}>⚡ 3 Hubs Nominal</p>
+                <span style={{ fontSize: '8px', color: 'rgba(255,255,255,0.4)' }}>Average capacity 92%</span>
+              </div>
+
+              <div style={{ background: 'rgba(255,255,255,0.02)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.04)' }}>
+                <span style={{ fontSize: '9px', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Delivery Success</span>
+                <p style={{ fontSize: '14px', fontWeight: 800, color: 'var(--secondary)', marginTop: '4px' }}>🏆 99.85% Success</p>
+                <span style={{ fontSize: '8px', color: 'rgba(255,255,255,0.4)' }}>142 missions in last 24h</span>
+              </div>
+            </div>
+
+            <div style={{ padding: '0.75rem', background: 'rgba(255, 71, 126, 0.05)', border: '1px dashed var(--accent)', borderRadius: '12px', fontSize: '10px', color: 'var(--text-main)' }}>
+              🎯 <strong>Neural Route Optimization:</strong> Telemetry matches real-time spatial positioning of e-robos. Active digital twins syncing with `velto.delivery` orders database.
+            </div>
+          </div>
+
           {/* Terminal Console log section */}
           <div className="glass-panel terminal-panel">
             <div className="terminal-header">
