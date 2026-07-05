@@ -164,6 +164,7 @@ export default function Home() {
   const [activePill, setActivePill] = useState<'reorder' | 'food'>('food');
   const [vegOnly, setVegOnly] = useState(false);
   const [hasActiveOrder, setHasActiveOrder] = useState(false);
+  const [activeOrderStatus, setActiveOrderStatus] = useState<string>('pending');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedVendor, setSelectedVendor] = useState<string | null>(null);
   const [activeModule, setActiveModule] = useState<'instamart' | 'kitchen'>('instamart');
@@ -332,11 +333,14 @@ export default function Home() {
           .limit(1);
         if (!error && data && data.length > 0) {
           setHasActiveOrder(true);
+          setActiveOrderStatus(data[0].status);
         } else {
           setHasActiveOrder(false);
+          setActiveOrderStatus('');
         }
       } catch (err) {
         setHasActiveOrder(false);
+        setActiveOrderStatus('');
       }
     }
     checkActiveOrder();
@@ -3934,17 +3938,51 @@ export default function Home() {
             <div className="flex items-center gap-1.5">
               <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping"></span>
               <span className="h-2 w-2 rounded-full bg-emerald-500 absolute"></span>
-              <span className="text-[9px] font-black text-[#00D26A] uppercase tracking-widest pl-3.5">Active Delivery Dispatch</span>
+              <span className="text-[9px] font-black text-[#00D26A] uppercase tracking-widest pl-3.5">Active Delivery Tracker</span>
             </div>
-            <h4 className="text-xs font-black text-white mt-1 truncate">Rider is zooming to your doorstep! 🛵</h4>
-            <div className="flex items-center gap-1.5 mt-2 text-[8px] font-bold text-zinc-400">
-              <span>🏪 Hub</span>
-              <div className="flex-1 h-0.5 bg-zinc-800 relative rounded-full">
-                <div className="absolute left-0 top-0 bottom-0 bg-[#00D26A] w-[60%] rounded-full">
-                  <span className="absolute right-0 top-[-3px] w-2 h-2 rounded-full bg-[#00D26A] border border-white animate-ping"></span>
+            
+            <h4 className="text-xs font-black text-white mt-1 truncate">
+              {activeOrderStatus === 'pending' && "Order placed, preparing soon... 🕒"}
+              {activeOrderStatus === 'accepted' && "Order prepared & packed! 🛍️"}
+              {activeOrderStatus === 'packing' && "Rider assigned at the hub 🛵"}
+              {activeOrderStatus === 'out_for_delivery' && "Rider is out for delivery! 🚀"}
+              {!activeOrderStatus && "Processing your delivery request..."}
+            </h4>
+
+            {/* Stepper Status Indicators */}
+            <div className="flex items-center justify-between gap-1 mt-3 w-full border-t border-white/5 pt-2">
+              {[
+                { label: 'Prepared', done: ['accepted', 'packing', 'out_for_delivery'].includes(activeOrderStatus), active: activeOrderStatus === 'pending' || activeOrderStatus === 'accepted' },
+                { label: 'Rider Assigned', done: ['packing', 'out_for_delivery'].includes(activeOrderStatus), active: activeOrderStatus === 'packing' },
+                { label: 'Out for Delivery', done: activeOrderStatus === 'out_for_delivery', active: activeOrderStatus === 'out_for_delivery' }
+              ].map((step, idx) => (
+                <div key={idx} className="flex-1 flex flex-col items-center relative">
+                  {/* Step bubble */}
+                  <div className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[7px] font-black z-10 transition-colors duration-300 ${
+                    step.done ? 'bg-[#00D26A] text-white' : step.active ? 'bg-[#FF5F1F] text-white animate-pulse' : 'bg-zinc-800 text-zinc-500'
+                  }`}>
+                    {step.active ? (
+                      <span className="w-1 h-1 bg-white rounded-full"></span>
+                    ) : step.done ? (
+                      '✓'
+                    ) : (
+                      idx + 1
+                    )}
+                  </div>
+                  {/* Step label */}
+                  <span className={`text-[7px] font-black uppercase tracking-tight mt-1 transition-colors duration-300 ${
+                    step.active ? 'text-[#FF5F1F]' : step.done ? 'text-[#00D26A]' : 'text-zinc-500'
+                  }`}>
+                    {step.label}
+                  </span>
+                  {/* Connecting Line */}
+                  {idx < 2 && (
+                    <div className="absolute left-[50%] right-[-50%] top-[6px] h-[1.5px] bg-zinc-800 -z-0">
+                      <div className={`h-full bg-[#00D26A] transition-all duration-500`} style={{ width: step.done ? '100%' : '0%' }}></div>
+                    </div>
+                  )}
                 </div>
-              </div>
-              <span>🏠 Home</span>
+              ))}
             </div>
           </div>
 
