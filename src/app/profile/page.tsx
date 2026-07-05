@@ -45,9 +45,53 @@ export default function ProfilePage() {
   const [loadingData, setLoadingData] = useState(true);
   const [toast, setToast] = useState<{message: string, type: 'success'|'error'} | null>(null);
   const [refundOrderId, setRefundOrderId] = useState<string | null>(null);
+  const [friends, setFriends] = useState<{ id: string; name: string; email: string; status: string }[]>([]);
 
   const showToast = (message: string, type: 'success'|'error') => {
     setToast({ message, type });
+  };
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('velto_friends');
+      if (saved) {
+        setFriends(JSON.parse(saved));
+      } else {
+        const defaultFriends = [
+          { id: '1', name: 'Rohan Sharma', email: 'rohan.s@velto.com', status: 'Online' },
+          { id: '2', name: 'Priya Verma', email: 'priya.v@hostel.edu', status: 'Idle' },
+          { id: '3', name: 'Aman Gupta', email: 'aman.gupta@college.in', status: 'In Cart Poll' }
+        ];
+        localStorage.setItem('velto_friends', JSON.stringify(defaultFriends));
+        setFriends(defaultFriends);
+      }
+    }
+  }, []);
+
+  const handleAddFriend = () => {
+    const name = prompt("Enter friend's full name:");
+    if (!name) return;
+    const email = prompt("Enter friend's email address:");
+    if (!email) return;
+
+    const newFriend = {
+      id: 'f-' + Date.now(),
+      name,
+      email,
+      status: 'Online'
+    };
+
+    const updated = [...friends, newFriend];
+    setFriends(updated);
+    localStorage.setItem('velto_friends', JSON.stringify(updated));
+    showToast(`${name} has been added to your poll contacts list!`, 'success');
+  };
+
+  const handleRemoveFriend = (id: string, name: string) => {
+    const updated = friends.filter(f => f.id !== id);
+    setFriends(updated);
+    localStorage.setItem('velto_friends', JSON.stringify(updated));
+    showToast(`${name} removed from poll contacts.`, 'success');
   };
 
   const fetchCustomerData = async (userId: string) => {
@@ -278,6 +322,54 @@ export default function ProfilePage() {
           {dayWiseStats.length === 0 && (
             <div className="col-span-full py-4 text-center text-xs text-muted-foreground italic">
               {t('noDispatches', language)}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* 🤝 Friends & Live Group Poll Contacts */}
+      <div className="bg-card border border-border rounded-2xl p-6 shadow-sm space-y-4">
+        <div className="flex justify-between items-center border-b border-border pb-3">
+          <div>
+            <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+              🤝 Friends & Live Group Poll Contacts
+            </h3>
+            <p className="text-xs text-muted-foreground font-semibold mt-0.5">
+              Add your squad email addresses to instantly invite them to split bills or vote on meal menus.
+            </p>
+          </div>
+          <button
+            onClick={handleAddFriend}
+            className="bg-gradient-to-r from-[#7C3AED] to-[#EC4899] text-white text-xs font-black uppercase py-1.5 px-3 rounded-lg hover:opacity-90 transition-all cursor-pointer"
+          >
+            + Add Friend
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {friends.map((friend) => (
+            <div key={friend.id} className="bg-accent/25 border border-border/60 rounded-xl p-4 flex justify-between items-center relative overflow-hidden group">
+              <div>
+                <h4 className="text-xs font-black text-foreground flex items-center gap-1.5">
+                  {friend.name}
+                  <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                </h4>
+                <span className="text-[10px] text-muted-foreground font-medium block mt-0.5">{friend.email}</span>
+                <span className="text-[8px] bg-white/5 border border-white/10 text-zinc-300 font-bold uppercase tracking-wider px-1.5 py-0.5 rounded mt-1.5 inline-block">
+                  {friend.status}
+                </span>
+              </div>
+              <button
+                onClick={() => handleRemoveFriend(friend.id, friend.name)}
+                className="text-[10px] font-black text-rose-500 hover:text-rose-400 p-1 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+          {friends.length === 0 && (
+            <div className="col-span-full py-6 text-center text-xs text-muted-foreground italic">
+              No squad contacts saved. Click '+ Add Friend' to build your group ordering crew.
             </div>
           )}
         </div>
