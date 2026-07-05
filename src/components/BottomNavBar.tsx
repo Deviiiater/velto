@@ -30,6 +30,12 @@ export function BottomNavBar() {
     } else if (tab === 'explore') {
       window.dispatchEvent(new CustomEvent('bottom-nav-click', { detail: { type: 'explore' } }));
       if (pathname !== '/') router.push('/');
+    } else if (tab === 'bolt') {
+      window.dispatchEvent(new CustomEvent('bottom-nav-click', { detail: { type: 'bolt' } }));
+      if (pathname !== '/') router.push('/');
+    } else if (tab === 'home') {
+      window.dispatchEvent(new CustomEvent('bottom-nav-click', { detail: { type: 'home' } }));
+      if (pathname !== '/') router.push('/');
     } else {
       router.push(targetPath);
     }

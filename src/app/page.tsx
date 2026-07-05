@@ -612,6 +612,36 @@ export default function Home() {
       if (!detail) return;
       
       switch (detail.type) {
+        case 'home':
+          setActiveSuperService('grocery');
+          setActiveModule('instamart');
+          setActivePill('food');
+          setSelectedCategory(null);
+          setStudentMode(false);
+          setSearchQuery('');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          break;
+        case 'ai':
+          setActiveSuperService('grocery');
+          setActivePill('food');
+          setSearchQuery('');
+          setTimeout(() => {
+            document.getElementById('ai-order-builder')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            document.getElementById('ai-input-field')?.focus();
+          }, 100);
+          break;
+        case 'bolt':
+          setActiveSuperService('grocery');
+          setStudentMode(true);
+          setSearchQuery('Combo');
+          break;
+        case 'explore':
+          setActiveSuperService('grocery');
+          setSearchQuery('');
+          setTimeout(() => {
+            document.getElementById('choose-service-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 100);
+          break;
         case 'food':
           setActiveSuperService('food');
           setActiveModule('kitchen');
@@ -619,10 +649,6 @@ export default function Home() {
           setSelectedCategory(null);
           setStudentMode(false);
           setSearchQuery('');
-          break;
-        case 'bolt':
-          setStudentMode(true);
-          setSearchQuery('Combo');
           break;
         case 'offer':
           setSearchQuery('offer');
@@ -2116,7 +2142,7 @@ export default function Home() {
 
         {/* 5. Floating AI Assistant Block ("Ask Velto AI") */}
         {!searchQuery.trim() && (
-          <div className="w-full bg-[#101828]/95 border border-white/8 rounded-[2rem] p-5 flex flex-col gap-4 shadow-xl relative overflow-hidden backdrop-blur-xl select-none text-left">
+          <div id="ai-order-builder" className="w-full bg-[#101828]/95 border border-white/8 rounded-[2rem] p-5 flex flex-col gap-4 shadow-xl relative overflow-hidden backdrop-blur-xl select-none text-left">
             <div className="absolute right-[-40px] top-[-40px] w-24 h-24 bg-[#8B5CF6]/15 rounded-full blur-2xl pointer-events-none"></div>
             
             <div className="flex items-center justify-between gap-4">
@@ -2180,6 +2206,7 @@ export default function Home() {
             {/* AI Order Builder Input */}
             <form onSubmit={handleAiOrderBuilder} className="z-10 mt-1 w-full flex gap-2">
               <input
+                id="ai-input-field"
                 type="text"
                 placeholder="Type 'dinner for 5 under 1200'..."
                 value={aiOrderBuilderPrompt}
@@ -2198,7 +2225,7 @@ export default function Home() {
 
         {/* 6. Circular 3D Categories Grid */}
         {!searchQuery.trim() && (
-          <div className="w-full flex flex-col gap-3 z-10 text-left">
+          <div id="choose-service-section" className="w-full flex flex-col gap-3 z-10 text-left">
             <span className="text-[10px] font-black uppercase text-zinc-300 tracking-widest pl-1">Choose Service</span>
             <div className="grid grid-cols-4 gap-3 pb-2 w-full">
               {[
