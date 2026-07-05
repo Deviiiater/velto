@@ -114,7 +114,7 @@ export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [storeConfig, setStoreConfig] = useState({ startTime: "08:00", endTime: "22:00", isOpen: true });
   const [loading, setLoading] = useState(true);
-  const [showSplash, setShowSplash] = useState(true);
+  const [showSplash, setShowSplash] = useState(false);
   const [showNotificationsDrawer, setShowNotificationsDrawer] = useState(false);
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [walletBalance, setWalletBalance] = useState<number>(500);
@@ -2265,6 +2265,75 @@ export default function Home() {
                   <span className="text-[9px] font-black uppercase text-zinc-200 tracking-wider text-center">{cat.name}</span>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* 📲 PWA App Download & Installation Guide */}
+        {!searchQuery.trim() && (
+          <div className="w-full bg-[#101828]/90 border border-white/10 rounded-[2rem] p-5 shadow-xl relative overflow-hidden backdrop-blur-xl select-none text-left z-10">
+            <div className="absolute right-[-45px] top-[-45px] w-24 h-24 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
+            
+            <div className="flex justify-between items-center gap-4 border-b border-white/5 pb-3">
+              <div>
+                <span className="text-[9px] font-black text-amber-500 uppercase tracking-widest block">Velto Progressive Web App</span>
+                <h4 className="text-xs font-black text-white mt-1 leading-snug">⚡ Install Velto App for Mobile</h4>
+              </div>
+              <span className="text-xl">📲</span>
+            </div>
+
+            <p className="text-[10px] text-zinc-400 font-semibold leading-relaxed mt-2.5">
+              Add Velto to your device home screen for lighting-fast loading, lower data usage, offline cart support, and instant tracking notifications.
+            </p>
+
+            <div className="grid grid-cols-2 gap-3 mt-4">
+              {/* Android Card */}
+              <button
+                onClick={async () => {
+                  if (deferredPrompt) {
+                    await handleInstallClick();
+                  } else {
+                    alert(
+                      language === 'hi'
+                        ? "🤖 एंड्रॉइड / क्रोम पर इंस्टॉल करने के लिए: क्रोम मेनू (ऊपर दाएं तीन बिंदु ⋮) पर क्लिक करें और 'होम स्क्रीन पर जोड़ें' या 'ऐप इंस्टॉल करें' चुनें।"
+                        : language === 'hinglish'
+                        ? "🤖 Android / Chrome par install karne ke liye: Chrome menu (top right 3 dots ⋮) par click karein aur 'Add to Home screen' ya 'Install app' select karein."
+                        : "🤖 To install on Android/Chrome: Tap the browser menu (⋮) and select 'Add to Home screen' or 'Install App'."
+                    );
+                  }
+                }}
+                className="bg-white/5 hover:bg-white/10 border border-white/8 rounded-xl p-3 flex flex-col items-start gap-1 text-left cursor-pointer transition-all active:scale-95"
+              >
+                <div className="flex items-center gap-1.5">
+                  <span className="text-sm">🤖</span>
+                  <span className="text-[10px] font-black text-white uppercase tracking-wider">Android / Chrome</span>
+                </div>
+                <span className="text-[8px] text-zinc-400 font-bold leading-normal mt-1">
+                  {deferredPrompt ? "⚡ Tap to Install Now" : "👉 Tap for Instructions"}
+                </span>
+              </button>
+
+              {/* iOS Card */}
+              <button
+                onClick={() => {
+                  alert(
+                    language === 'hi'
+                      ? "🍏 आईओएस (सफारी) पर इंस्टॉल करने के लिए:\n\n1. सफारी ब्राउज़र में नीचे 'शेयर' आइकन (↑) पर टैप करें।\n2. मेनू में नीचे स्क्रॉल करें और 'होम स्क्रीन में जोड़ें' (+) चुनें।"
+                      : language === 'hinglish'
+                      ? "🍏 iOS (Safari) par install karne ke liye:\n\n1. Safari browser mein niche 'Share' icon (↑) par tap karein.\n2. Menu mein niche scroll karein aur 'Add to Home Screen' (+) select karein."
+                      : "🍏 To install on iOS (Safari):\n\n1. Tap the Share button (↑) in the Safari toolbar.\n2. Scroll down and select 'Add to Home Screen' (+)."
+                  );
+                }}
+                className="bg-white/5 hover:bg-white/10 border border-white/8 rounded-xl p-3 flex flex-col items-start gap-1 text-left cursor-pointer transition-all active:scale-95"
+              >
+                <div className="flex items-center gap-1.5">
+                  <span className="text-sm">🍏</span>
+                  <span className="text-[10px] font-black text-white uppercase tracking-wider">Apple iOS</span>
+                </div>
+                <span className="text-[8px] text-zinc-400 font-bold leading-normal mt-1">
+                  👉 Tap for Instructions
+                </span>
+              </button>
             </div>
           </div>
         )}
