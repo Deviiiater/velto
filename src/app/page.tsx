@@ -2200,35 +2200,29 @@ export default function Home() {
         {!searchQuery.trim() && (
           <div className="w-full flex flex-col gap-3 z-10 text-left">
             <span className="text-[10px] font-black uppercase text-zinc-400 tracking-widest pl-1">Explore Services</span>
-            <div className="grid grid-cols-5 gap-3 pb-2 w-full">
+            <div className="grid grid-cols-4 gap-3 pb-2 w-full">
               {[
-                { name: 'Food', icon: '🍕', color: 'from-orange-500/10 to-red-500/10 border-orange-500/20' },
-                { name: 'Grocery', icon: '🍓', color: 'from-emerald-500/10 to-green-500/10 border-emerald-500/20' },
-                { name: 'Medicine', icon: '💊', color: 'from-cyan-500/10 to-blue-500/10 border-cyan-500/20' },
-                { name: 'Tiffin', icon: '🍱', color: 'from-amber-500/10 to-yellow-500/10 border-amber-500/20' },
-                { name: 'Pickup', icon: '📦', color: 'from-purple-500/10 to-indigo-500/10 border-purple-500/20' }
+                { name: 'Grocery Shop', icon: '🍓', color: 'from-emerald-500/10 to-green-500/10 border-emerald-500/20' },
+                { name: 'Pharmacy Meds', icon: '💊', color: 'from-cyan-500/10 to-blue-500/10 border-cyan-500/20' },
+                { name: 'Send Courier', icon: '📦', color: 'from-purple-500/10 to-indigo-500/10 border-purple-500/20' },
+                { name: 'Food Delivery', icon: '🍕', color: 'from-orange-500/10 to-red-500/10 border-orange-500/20' }
               ].map((cat, idx) => (
                 <div 
                   key={idx}
                   onClick={() => {
                     const name = cat.name;
-                    if (name === 'Food') {
-                      setActiveSuperService('food');
-                      setSelectedCategory(null);
-                    } else if (name === 'Grocery') {
+                    if (name === 'Grocery Shop') {
                       setActiveSuperService('grocery');
                       setSelectedCategory(null);
-                    } else if (name === 'Medicine') {
+                    } else if (name === 'Pharmacy Meds') {
                       setActiveSuperService('pharmacy');
                       setSelectedCategory('Pharmacy');
-                    } else if (name === 'Tiffin') {
-                      setActiveSuperService('food');
-                      setSelectedCategory('Tiffin Service');
-                    } else if (name === 'Pickup') {
+                    } else if (name === 'Send Courier') {
                       setActiveSuperService('courier');
                       setSelectedCategory('Courier');
-                    } else {
-                      setSelectedCategory(name);
+                    } else if (name === 'Food Delivery') {
+                      setActiveSuperService('food');
+                      setSelectedCategory(null);
                     }
                     showToast(`Switched to ${name}!`, 'success');
                   }}
