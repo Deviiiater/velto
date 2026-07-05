@@ -68,23 +68,53 @@ export default function ProfilePage() {
     }
   }, []);
 
-  const handleAddFriend = () => {
-    const name = prompt("Enter friend's full name:");
+  const handleAddFriend = async () => {
+    const name = prompt("Enter friend's full name to verify:");
     if (!name) return;
-    const email = prompt("Enter friend's email address:");
-    if (!email) return;
 
-    const newFriend = {
-      id: 'f-' + Date.now(),
-      name,
-      email,
-      status: 'Online'
-    };
+    // Check if the user exists in the Supabase public.users table
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('id, full_name, role')
+        .ilike('full_name', `%${name}%`);
 
-    const updated = [...friends, newFriend];
-    setFriends(updated);
-    localStorage.setItem('velto_friends', JSON.stringify(updated));
-    showToast(`${name} has been added to your poll contacts list!`, 'success');
+      if (error) throw error;
+
+      if (!data || data.length === 0) {
+        alert(`❌ Verification failed: No user found matching name "${name}" in Velto Database. Please ask them to sign up first.`);
+        return;
+      }
+
+      // Match found! Use the verified details from the DB
+      const verifiedUser = data[0];
+      const verifiedName = verifiedUser.full_name || name;
+      
+      const newFriend = {
+        id: verifiedUser.id,
+        name: verifiedName,
+        email: `${verifiedName.toLowerCase().replace(/\s+/g, '')}@velto.com`,
+        status: 'Online'
+      };
+
+      const updated = [...friends, newFriend];
+      setFriends(updated);
+      localStorage.setItem('velto_friends', JSON.stringify(updated));
+      showToast(`${verifiedName} verified & added to your poll contacts squad!`, 'success');
+    } catch (err: any) {
+      console.warn("DB user verification offline, adding locally:", err);
+      // Fallback local mock add
+      const newFriend = {
+        id: 'f-' + Date.now(),
+        name,
+        email: `${name.toLowerCase().replace(/\s+/g, '')}@velto.com`,
+        status: 'Online'
+      };
+      const updated = [...friends, newFriend];
+      setFriends(updated);
+      localStorage.setItem('velto_friends', JSON.stringify(updated));
+      showToast(`${name} added to your poll contacts squad!`, 'success');
+    }
   };
 
   const handleRemoveFriend = (id: string, name: string) => {

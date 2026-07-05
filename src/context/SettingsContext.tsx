@@ -72,10 +72,40 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
   });
 
   const castGroupVote = (itemId: string) => {
-    setGroupCartVotes(prev => ({
-      ...prev,
-      [itemId]: (prev[itemId] || 0) + 1
-    }));
+    setGroupCartVotes(prev => {
+      const next = { ...prev, [itemId]: (prev[itemId] || 0) + 1 };
+      
+      // Auto-simulate a friend voting on another option 1.2 seconds later
+      setTimeout(() => {
+        const options = ['samosa', 'pizza', 'biryani'];
+        const otherOptions = options.filter(o => o !== itemId);
+        const randomOption = otherOptions[Math.floor(Math.random() * otherOptions.length)];
+        
+        // Grab a friend name if saved
+        let friendName = "Rohan Sharma";
+        if (typeof window !== 'undefined') {
+          const saved = localStorage.getItem('velto_friends');
+          if (saved) {
+            const friendsArr = JSON.parse(saved);
+            if (friendsArr.length > 0) {
+              friendName = friendsArr[Math.floor(Math.random() * friendsArr.length)].name;
+            }
+          }
+        }
+        
+        setGroupCartVotes(current => ({
+          ...current,
+          [randomOption]: (current[randomOption] || 0) + 1
+        }));
+        
+        // Broadcast custom notification alert toast
+        window.dispatchEvent(new CustomEvent('toast-alert', { 
+          detail: { message: `🗳️ ${friendName} voted for ${randomOption === 'samosa' ? 'Samosa Combo' : randomOption === 'pizza' ? 'Tandoori Pizza' : 'Paneer Biryani'}!`, type: 'success' } 
+        }));
+      }, 1200);
+
+      return next;
+    });
   };
 
   const setLowInternetMode = (val: boolean) => {

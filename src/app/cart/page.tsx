@@ -12,6 +12,7 @@ import { AddressPicker } from '@/components/AddressPicker';
 import { useRouter } from 'next/navigation';
 import { showLocalNotification } from '@/lib/notifications';
 import { t } from '@/lib/translations';
+import AlertToast from '@/components/AlertToast';
 
 const CITY_CENTERS: Record<string, { lat: number; lng: number }> = {
   'Lucknow': { lat: 26.8467, lng: 80.9462 },
@@ -77,6 +78,18 @@ export default function CartPage() {
   const [thankYouMessage, setThankYouMessage] = useState(false);
   const [personalNote, setPersonalNote] = useState('');
   const [groupCartMembers, setGroupCartMembers] = useState<any[]>([]);
+  const [toast, setToast] = useState<{message: string, type: 'success'|'error'} | null>(null);
+
+  useEffect(() => {
+    const handleToastAlert = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail) {
+        setToast({ message: detail.message, type: detail.type });
+      }
+    };
+    window.addEventListener('toast-alert', handleToastAlert);
+    return () => window.removeEventListener('toast-alert', handleToastAlert);
+  }, []);
 
   // Success Animation State
   const [showSuccessAnim, setShowSuccessAnim] = useState(false);
@@ -124,6 +137,30 @@ export default function CartPage() {
       if (localAddr) setAddress(localAddr);
     }
   }, [user]);
+
+  // Sync local friends to group cart members list
+  useEffect(() => {
+    if (groupCartActive && typeof window !== 'undefined') {
+      const savedFriends = localStorage.getItem('velto_friends');
+      if (savedFriends) {
+        const parsed = JSON.parse(savedFriends);
+        const members = parsed.map((f: any) => ({
+          name: f.name,
+          items: [
+            { name: 'Samosa Combo', price: 90, quantity: 1 }
+          ]
+        }));
+        setGroupCartMembers(members);
+      } else {
+        setGroupCartMembers([
+          { name: 'Rohan Sharma', items: [{ name: 'Samosa Combo', price: 90, quantity: 1 }] },
+          { name: 'Priya Verma', items: [{ name: 'Tandoori Pizza', price: 220, quantity: 1 }] }
+        ]);
+      }
+    } else {
+      setGroupCartMembers([]);
+    }
+  }, [groupCartActive]);
 
   const saveOrderToDB = async (paymentStatus: string, razorpayId?: string) => {
     if (!user) {
@@ -1306,6 +1343,7 @@ export default function CartPage() {
         )}
       </AnimatePresence>
 
+      {toast && <AlertToast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
     </div>
   );
 }
