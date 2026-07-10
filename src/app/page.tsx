@@ -1900,7 +1900,7 @@ export default function Home() {
         </div>
       )}
       {/* 🏆 Apple Design Award / Dribbble Quality Header Area */}
-      <div className="-mx-4 -mt-4 p-4 sm:-mx-8 sm:-mt-8 sm:p-6 bg-[#070B14] text-white flex flex-col gap-5 relative overflow-hidden pb-6 font-sans">
+      <div className="-mx-4 -mt-4 p-4 sm:-mx-8 sm:-mt-8 sm:p-6 bg-transparent text-white flex flex-col gap-5 relative overflow-hidden pb-6 font-sans">
         
         {/* Simulator controls for developer preview */}
         <div className="relative z-50 flex flex-wrap gap-2 items-center justify-between p-2 rounded-2xl bg-white/5 border border-white/10 text-[10px]">
