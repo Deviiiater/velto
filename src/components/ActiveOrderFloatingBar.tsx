@@ -87,7 +87,7 @@ export function ActiveOrderFloatingBar() {
 
   return (
     <div className="fixed bottom-[96px] left-1/2 -translate-x-1/2 w-[92%] max-w-lg z-[998] animate-in slide-in-from-bottom-12 duration-300">
-      <div className="bg-[#09090B]/95 backdrop-blur-xl border border-[#FF5F1F]/30 hover:border-[#FF5F1F]/60 rounded-3xl p-3.5 shadow-[0_20px_50px_rgba(0,0,0,0.9)] flex justify-between items-center gap-4 text-white">
+      <div className="glass-panel border border-[#FF5F1F]/30 hover:border-[#FF5F1F]/60 rounded-3xl p-3.5 shadow-[0_20px_50px_rgba(0,0,0,0.9)] flex justify-between items-center gap-4 text-foreground">
         {/* Glowing dynamic background pulse */}
         <div className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-[#FF5F1F]/10 rounded-full blur-xl pointer-events-none"></div>
 
@@ -98,7 +98,7 @@ export function ActiveOrderFloatingBar() {
             <span className="text-[9px] font-black text-[#00D26A] uppercase tracking-widest pl-3.5">{t('veltoActiveOrder', language)}</span>
           </div>
 
-          <h4 className="text-xs font-black text-white mt-1 truncate">
+          <h4 className="text-xs font-black text-foreground mt-1 truncate">
             {activeOrder.status === 'pending' && "Order placed, preparing soon... 🕒"}
             {activeOrder.status === 'accepted' && "Order prepared & packed! 🛍️"}
             {activeOrder.status === 'packing' && "Rider assigned at the hub 🛵"}
@@ -106,7 +106,7 @@ export function ActiveOrderFloatingBar() {
           </h4>
 
           {/* Stepper Status Indicators */}
-          <div className="flex items-center justify-between gap-1 mt-3 w-full border-t border-white/5 pt-2">
+          <div className="flex items-center justify-between gap-1 mt-3 w-full border-t border-foreground/5 pt-2">
             {[
               { label: 'Prepared', done: ['accepted', 'packing', 'out_for_delivery'].includes(activeOrder.status), active: activeOrder.status === 'pending' || activeOrder.status === 'accepted' },
               { label: 'Rider Assigned', done: ['packing', 'out_for_delivery'].includes(activeOrder.status), active: activeOrder.status === 'packing' },

@@ -1954,13 +1954,13 @@ export default function Home() {
         {/* 1. Header Bar: Location, Bell, Wallet, Profile */}
         <div className="flex justify-between items-center z-10 select-none">
           <div className="flex items-center gap-2.5 cursor-pointer group" onClick={() => setShowLocationSelector(true)}>
-            <div className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white shrink-0 group-hover:scale-105 transition-all">
+            <div className="w-9 h-9 rounded-full bg-foreground/5 border border-foreground/10 flex items-center justify-center text-foreground shrink-0 group-hover:scale-105 transition-all">
               <MapPin size={16} className="text-[#FF5F1F] animate-bounce-short" />
             </div>
             <div className="flex flex-col text-left">
               <span className="text-[9px] text-zinc-400 font-semibold uppercase tracking-widest leading-none">Delivering to</span>
               <div className="flex items-center gap-1 mt-0.5">
-                <span className="text-xs sm:text-sm font-black tracking-tight text-white flex items-center gap-1">
+                <span className="text-xs sm:text-sm font-black tracking-tight text-foreground flex items-center gap-1">
                   {currentLocation || 'Select Location'}
                   <ChevronDown size={14} className="text-[#FF5F1F] group-hover:translate-y-0.5 transition-transform" />
                 </span>
@@ -1972,11 +1972,11 @@ export default function Home() {
             {/* Bell notification button */}
             <button 
               onClick={() => setShowNotificationsDrawer(true)}
-              className="w-9 h-9 rounded-xl bg-[#101828]/95 border border-white/8 flex items-center justify-center text-white hover:scale-105 active:scale-95 transition-all cursor-pointer relative"
+              className="w-9 h-9 rounded-xl glass-panel flex items-center justify-center text-foreground hover:scale-105 active:scale-95 transition-all cursor-pointer relative"
             >
               <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-[#FF5F1F] rounded-full animate-ping"></span>
               <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-[#FF5F1F] rounded-full"></span>
-              <svg viewBox="0 0 24 24" className="w-4.5 h-4.5 text-zinc-300" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg viewBox="0 0 24 24" className="w-4.5 h-4.5 text-zinc-400 dark:text-zinc-300" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
                 <path d="M13.73 21a2 2 0 0 1-3.46 0" />
               </svg>
@@ -1985,9 +1985,9 @@ export default function Home() {
             {/* Wallet button */}
             <button 
               onClick={() => setShowWalletModal(true)}
-              className="w-9 h-9 rounded-xl bg-[#101828]/95 border border-white/8 flex items-center justify-center text-white hover:scale-105 active:scale-95 transition-all cursor-pointer"
+              className="w-9 h-9 rounded-xl glass-panel flex items-center justify-center text-foreground hover:scale-105 active:scale-95 transition-all cursor-pointer"
             >
-              <Wallet size={16} className="text-zinc-300" />
+              <Wallet size={16} className="text-zinc-400 dark:text-zinc-300" />
             </button>
  
             {/* Profile Avatar */}
@@ -2008,7 +2008,7 @@ export default function Home() {
           <span className="text-xs font-semibold text-[#FF5F1F] tracking-wide block capitalize">
             Good {timeOfDay} {timeOfDay === 'morning' ? '🌅' : timeOfDay === 'afternoon' ? '☀️' : timeOfDay === 'evening' ? '🌆' : '🌃'}
           </span>
-          <h1 className="text-3xl font-black text-white tracking-tight uppercase leading-none mt-1">{profileName || 'User'}</h1>
+          <h1 className="text-3xl font-black text-foreground tracking-tight uppercase leading-none mt-1">{profileName || 'User'}</h1>
         </div>
 
         {/* 3. Hero Pizza Banner with floating ingredients */}
@@ -2578,8 +2578,8 @@ export default function Home() {
                 }}
                 className={`relative overflow-hidden p-4 rounded-3xl border text-left transition-all duration-300 cursor-pointer ${
                   activeSuperService === 'grocery' 
-                    ? 'border-primary bg-gradient-to-br from-primary/15 via-background to-primary/5 ring-1 ring-primary shadow-md scale-[1.02]' 
-                    : 'border-border bg-card hover:border-primary/30'
+                    ? 'border-primary glass-panel bg-gradient-to-br from-primary/15 via-background to-primary/5 ring-1 ring-primary shadow-md scale-[1.02]' 
+                    : 'border-border glass-panel hover:border-primary/30'
                 }`}
               >
                 <span className="absolute top-2.5 right-3.5 text-[7px] bg-primary/10 text-primary font-extrabold px-1.5 py-0.5 rounded-full uppercase tracking-wider">10 Min</span>
@@ -2608,8 +2608,8 @@ export default function Home() {
                 }}
                 className={`relative overflow-hidden p-4 rounded-3xl border text-left transition-all duration-300 cursor-pointer ${
                   activeSuperService === 'food' 
-                    ? 'border-primary bg-gradient-to-br from-primary/15 via-background to-primary/5 ring-1 ring-primary shadow-md scale-[1.02]' 
-                    : 'border-border bg-card hover:border-primary/30'
+                    ? 'border-primary glass-panel bg-gradient-to-br from-primary/15 via-background to-primary/5 ring-1 ring-primary shadow-md scale-[1.02]' 
+                    : 'border-border glass-panel hover:border-primary/30'
                 }`}
               >
                 <span className="absolute top-2.5 right-3.5 text-[7px] bg-primary/10 text-primary font-extrabold px-1.5 py-0.5 rounded-full uppercase tracking-wider animate-pulse">Live</span>
@@ -2636,8 +2636,8 @@ export default function Home() {
                 }}
                 className={`relative overflow-hidden p-4 rounded-3xl border text-left transition-all duration-300 cursor-pointer ${
                   activeSuperService === 'pharmacy' 
-                    ? 'border-primary bg-gradient-to-br from-primary/15 via-background to-primary/5 ring-1 ring-primary shadow-md scale-[1.02]' 
-                    : 'border-border bg-card hover:border-primary/30'
+                    ? 'border-primary glass-panel bg-gradient-to-br from-primary/15 via-background to-primary/5 ring-1 ring-primary shadow-md scale-[1.02]' 
+                    : 'border-border glass-panel hover:border-primary/30'
                 }`}
               >
                 <span className="absolute top-2.5 right-3.5 text-[7px] bg-primary/10 text-primary font-extrabold px-1.5 py-0.5 rounded-full uppercase tracking-wider">24/7 SOS</span>
@@ -2664,8 +2664,8 @@ export default function Home() {
                 }}
                 className={`relative overflow-hidden p-4 rounded-3xl border text-left transition-all duration-300 cursor-pointer ${
                   activeSuperService === 'courier' 
-                    ? 'border-primary bg-gradient-to-br from-primary/15 via-background to-primary/5 ring-1 ring-primary shadow-md scale-[1.02]' 
-                    : 'border-border bg-card hover:border-primary/30'
+                    ? 'border-primary glass-panel bg-gradient-to-br from-primary/15 via-background to-primary/5 ring-1 ring-primary shadow-md scale-[1.02]' 
+                    : 'border-border glass-panel hover:border-primary/30'
                 }`}
               >
                 <span className="absolute top-2.5 right-3.5 text-[7px] bg-primary/10 text-primary font-extrabold px-1.5 py-0.5 rounded-full uppercase tracking-wider">Same Day</span>

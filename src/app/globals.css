@@ -246,6 +246,9 @@
 
 /* Weather Environment Overlays */
 .weather-rainy {
+  background: radial-gradient(circle at 10% 20%, #f0f7ff 0%, #fbf9f7 100%) !important;
+}
+.dark .weather-rainy {
   background: radial-gradient(circle at 10% 20%, #0c1a2e 0%, #030812 100%) !important;
 }
 .weather-rainy::after {
@@ -253,11 +256,14 @@
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 0);
+  background-image: radial-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 0);
   background-size: 24px 32px;
   animation: rain-fall 1.5s linear infinite;
   opacity: 0.5;
   z-index: 100;
+}
+.dark .weather-rainy::after {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 0);
 }
 @keyframes rain-fall {
   0% { background-position: 0px 0px; }
@@ -265,6 +271,9 @@
 }
 
 .weather-sunny {
+  background: radial-gradient(circle at 10% 20%, #fff7ed 0%, #fbf9f7 100%) !important;
+}
+.dark .weather-sunny {
   background: radial-gradient(circle at 10% 20%, #201306 0%, #07070b 100%) !important;
 }
 .weather-sunny::after {
@@ -274,12 +283,18 @@
   right: -200px;
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba(255, 126, 33, 0.15) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 126, 33, 0.1) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
 }
+.dark .weather-sunny::after {
+  background: radial-gradient(circle, rgba(255, 126, 33, 0.15) 0%, transparent 70%);
+}
 
 .weather-winter {
+  background: radial-gradient(circle at 10% 20%, #f1f5f9 0%, #fbf9f7 100%) !important;
+}
+.dark .weather-winter {
   background: radial-gradient(circle at 10% 20%, #111a2e 0%, #05080f 100%) !important;
 }
 .weather-winter::after {
@@ -287,6 +302,13 @@
   position: fixed;
   inset: 0;
   pointer-events: none;
+  background-image: radial-gradient(circle at center, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+  background-size: 40px 40px;
+  animation: snow-drift 10s linear infinite;
+  opacity: 0.3;
+  z-index: 100;
+}
+.dark .weather-winter::after {
   background-image: radial-gradient(circle at center, rgba(255, 255, 255, 0.4) 1px, transparent 1px);
   background-size: 40px 40px;
   animation: snow-drift 10s linear infinite;
