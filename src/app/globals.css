@@ -298,4 +298,56 @@
   100% { background-position: 100px 100px; }
 }
 
+/* 🧪 Premium iOS Liquid Glass Mode Refractions */
+.liquid-glass-enabled .glass-panel {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.15), 0 20px 40px 0 rgba(0, 0, 0, 0.5) !important;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Light mode Liquid Glass variant */
+:root:not(.dark).liquid-glass-enabled .glass-panel {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.45) 100%) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border: 1px solid rgba(255, 90, 0, 0.15) !important;
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.7), 0 20px 40px 0 rgba(255, 90, 0, 0.04) !important;
+  color: #2a1b15 !important;
+}
+
+.liquid-glass-enabled .glass-panel::before {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.05) 50%, transparent 100%) !important;
+}
+
+.liquid-glass-enabled .glass-panel:hover {
+  border-color: rgba(255, 95, 31, 0.4) !important;
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.2), 0 25px 50px 0 rgba(255, 95, 31, 0.08) !important;
+  transform: translateY(-1px);
+}
+
+/* Disable blurs when Liquid Glass is disabled or in lite mode to save data/battery */
+:root:not(.liquid-glass-enabled) .glass-panel,
+.lite-mode .glass-panel {
+  background: #12131a !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+:root:not(.dark):not(.liquid-glass-enabled) .glass-panel,
+:root:not(.dark).lite-mode .glass-panel {
+  background: #f4f2ee !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  color: #2a1b15 !important;
+}
+
+:root:not(.liquid-glass-enabled) .glass-panel::before,
+.lite-mode .glass-panel::before {
+  display: none !important;
+}
+
 

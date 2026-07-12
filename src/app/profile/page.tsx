@@ -39,7 +39,7 @@ type Complaint = {
 
 export default function ProfilePage() {
   const { user, loading: authLoading } = useAuth();
-  const { language } = useSettings();
+  const { language, lowInternetMode, setLowInternetMode, oneIndiaPass, setOneIndiaPass, liquidGlassMode, setLiquidGlassMode } = useSettings();
   const [orders, setOrders] = useState<Order[]>([]);
   const [complaints, setComplaints] = useState<Complaint[]>([]);
   const [loadingData, setLoadingData] = useState(true);
@@ -272,6 +272,95 @@ export default function ProfilePage() {
           <div>
             <span className="text-[10px] font-black uppercase tracking-wider text-zinc-400">Gift Vouchers</span>
             <h3 className="text-2xl font-black text-white mt-0.5">3 Active</h3>
+          </div>
+        </div>
+      </div>
+
+      {/* ⚙️ App Preferences & Graphics Control Center */}
+      <div className="bg-card border border-border rounded-2xl p-6 shadow-sm space-y-5">
+        <div>
+          <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+            ⚙️ App Preferences & Engine Configuration
+          </h3>
+          <p className="text-xs text-muted-foreground font-semibold mt-0.5">
+            Optimize graphic details, network usage, and subscription levels for your device.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+          {/* Liquid Glass Mode */}
+          <div className="flex items-center justify-between bg-accent/25 border border-border/60 rounded-2xl p-4.5 text-left">
+            <div className="space-y-1">
+              <h4 className="text-xs font-black text-foreground flex items-center gap-1.5">
+                🧪 Liquid Glass UI
+              </h4>
+              <p className="text-[10px] text-muted-foreground font-medium leading-relaxed">
+                Enables premium iOS 26 glass refractions & reflection effects.
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                setLiquidGlassMode(!liquidGlassMode);
+                showToast(`Liquid Glass Mode is now ${!liquidGlassMode ? 'Enabled' : 'Disabled'}!`, 'success');
+              }}
+              className={`relative w-10 h-6 rounded-full transition-colors duration-300 flex items-center shrink-0 cursor-pointer ${
+                liquidGlassMode ? 'bg-[#FF5F1F]' : 'bg-zinc-700'
+              }`}
+            >
+              <span className={`absolute w-5 h-5 rounded-full bg-white shadow-md transition-transform duration-300 ${
+                liquidGlassMode ? 'translate-x-[18px]' : 'translate-x-[2px]'
+              }`} />
+            </button>
+          </div>
+
+          {/* Low Internet / Lite Mode */}
+          <div className="flex items-center justify-between bg-accent/25 border border-border/60 rounded-2xl p-4.5 text-left">
+            <div className="space-y-1">
+              <h4 className="text-xs font-black text-foreground flex items-center gap-1.5">
+                🔌 Data Saving / Lite Mode
+              </h4>
+              <p className="text-[10px] text-muted-foreground font-medium leading-relaxed">
+                Bypasses heavy image loading and disables transitions.
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                setLowInternetMode(!lowInternetMode);
+                showToast(`Data Saving Mode is now ${!lowInternetMode ? 'Enabled' : 'Disabled'}!`, 'success');
+              }}
+              className={`relative w-10 h-6 rounded-full transition-colors duration-300 flex items-center shrink-0 cursor-pointer ${
+                lowInternetMode ? 'bg-[#FF5F1F]' : 'bg-zinc-700'
+              }`}
+            >
+              <span className={`absolute w-5 h-5 rounded-full bg-white shadow-md transition-transform duration-300 ${
+                lowInternetMode ? 'translate-x-[18px]' : 'translate-x-[2px]'
+              }`} />
+            </button>
+          </div>
+
+          {/* One India Pass Membership Status */}
+          <div className="flex items-center justify-between bg-accent/25 border border-border/60 rounded-2xl p-4.5 text-left">
+            <div className="space-y-1">
+              <h4 className="text-xs font-black text-foreground flex items-center gap-1.5">
+                👑 One India Pass
+              </h4>
+              <p className="text-[10px] text-muted-foreground font-medium leading-relaxed">
+                Unlocks free deliveries and zero platform charge across stores.
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                setOneIndiaPass(!oneIndiaPass);
+                showToast(`One India Pass is now ${!oneIndiaPass ? 'Active' : 'Inactive'}!`, 'success');
+              }}
+              className={`relative w-10 h-6 rounded-full transition-colors duration-300 flex items-center shrink-0 cursor-pointer ${
+                oneIndiaPass ? 'bg-[#FF5F1F]' : 'bg-zinc-700'
+              }`}
+            >
+              <span className={`absolute w-5 h-5 rounded-full bg-white shadow-md transition-transform duration-300 ${
+                oneIndiaPass ? 'translate-x-[18px]' : 'translate-x-[2px]'
+              }`} />
+            </button>
           </div>
         </div>
       </div>

@@ -23,6 +23,8 @@ type SettingsContextType = {
   setDontRush: (val: boolean) => void;
   riderTip: number;
   setRiderTip: (val: number) => void;
+  liquidGlassMode: boolean;
+  setLiquidGlassMode: (val: boolean) => void;
 };
 
 const SettingsContext = createContext<SettingsContextType>({
@@ -42,6 +44,8 @@ const SettingsContext = createContext<SettingsContextType>({
   setDontRush: () => {},
   riderTip: 0,
   setRiderTip: () => {},
+  liquidGlassMode: true,
+  setLiquidGlassMode: () => {},
 });
 
 export const SettingsProvider = ({ children }: { children: React.ReactNode }) => {
@@ -51,6 +55,7 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
   const [groupCartActive, setGroupCartActive] = useState(false);
   const [dontRush, setDontRush] = useState(false);
   const [riderTip, setRiderTip] = useState(0);
+  const [liquidGlassMode, setLiquidGlassModeState] = useState(true);
 
   // Simulated group members who order together
   const [groupCartMembers, setGroupCartMembers] = useState<Member[]>([
@@ -130,6 +135,14 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
     }
   };
 
+  const setLiquidGlassMode = (val: boolean) => {
+    setLiquidGlassModeState(val);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('velto_liquid_glass', val ? 'true' : 'false');
+      document.documentElement.classList.toggle('liquid-glass-enabled', val);
+    }
+  };
+
   // Hydrate on mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -139,6 +152,15 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
       setOneIndiaPassState(localStorage.getItem('velto_one_india_pass') === 'true');
       const savedLang = localStorage.getItem('velto_language') as 'en' | 'hi' | 'hinglish';
       if (savedLang) setLanguageState(savedLang);
+      
+      const savedGlass = localStorage.getItem('velto_liquid_glass');
+      if (savedGlass) {
+        const isGlass = savedGlass === 'true';
+        setLiquidGlassModeState(isGlass);
+        document.documentElement.classList.toggle('liquid-glass-enabled', isGlass);
+      } else {
+        document.documentElement.classList.add('liquid-glass-enabled');
+      }
     }
   }, []);
 
@@ -161,6 +183,8 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
         setDontRush,
         riderTip,
         setRiderTip,
+        liquidGlassMode,
+        setLiquidGlassMode,
       }}
     >
       {children}
