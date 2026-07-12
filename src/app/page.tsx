@@ -1652,69 +1652,74 @@ export default function Home() {
     const currentSlide = onboardingSlides[onboardingStep];
 
     return (
-      <div className={`min-h-screen bg-gradient-to-b ${currentSlide.bg} flex flex-col items-center justify-between p-6 text-center transition-all duration-500 ease-in-out`}>
-        {/* Top Status Indicators (matching Figma design) */}
-        <div className="w-full max-w-md flex justify-between items-center text-xs font-black text-foreground/80 pt-2 px-2">
-          <span>9:41</span>
-          <div className="flex items-center gap-1.5">
-            <span>📶</span>
-            <span>🛜</span>
-            <span>🔋</span>
+      <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4 bg-background/85 backdrop-blur-xl animate-in fade-in duration-300">
+        <div className="relative w-full max-w-sm overflow-hidden rounded-[2.5rem] bg-card border border-[#FF5F1F]/30 text-foreground shadow-2xl p-6 text-center animate-in zoom-in-95 duration-300 glass-panel">
+          {/* Ambient decorative gradient blobbies */}
+          <div className="absolute -right-12 -top-12 w-32 h-32 bg-primary/10 rounded-full blur-[40px] pointer-events-none"></div>
+          <div className="absolute -left-12 -bottom-12 w-32 h-32 bg-[#7C3AED]/10 rounded-full blur-[40px] pointer-events-none"></div>
+
+          {/* Top Indicators */}
+          <div className="w-full flex justify-between items-center text-[9px] font-black uppercase text-zinc-400 tracking-widest mb-4">
+            <span>Step {onboardingStep + 1} of {onboardingSlides.length}</span>
+            <span className="text-primary font-black uppercase">Velto Guide</span>
           </div>
-        </div>
 
-        {/* Content Container */}
-        <div className="w-full max-w-md flex-1 flex flex-col items-center justify-center gap-8 py-8">
-          {currentSlide.illustration}
+          {/* Illustration Container */}
+          <div className="w-full h-44 flex items-center justify-center bg-foreground/5 rounded-3xl border border-foreground/5 p-4 mb-5 relative overflow-hidden group shadow-inner">
+            <div className="scale-[0.8] group-hover:scale-[0.85] transition-transform duration-300">
+              {currentSlide.illustration}
+            </div>
+          </div>
 
-          <div className="space-y-4 px-4">
-            <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight leading-tight">
+          {/* Content info */}
+          <div className="space-y-2 mb-5">
+            <h2 className="text-base font-black tracking-tight text-foreground uppercase">
               {currentSlide.title}
-            </h1>
-            <p className="text-xs sm:text-sm text-muted-foreground font-semibold leading-relaxed">
+            </h2>
+            <p className="text-[10px] text-muted-foreground font-semibold leading-relaxed px-2">
               {currentSlide.description}
             </p>
           </div>
-        </div>
 
-        {/* Action Bottom Drawer */}
-        <div className="w-full max-w-md space-y-6 pb-8 px-4">
-          {/* Pagination Indicators */}
-          <div className="flex justify-center gap-2">
-            {onboardingSlides.map((_, idx) => (
-              <span
-                key={idx}
-                className={`h-2 rounded-full transition-all duration-300 ${
-                  onboardingStep === idx ? 'w-6 bg-primary' : 'w-2 bg-zinc-300 dark:bg-zinc-700'
-                }`}
-              ></span>
-            ))}
-          </div>
+          {/* Controls Footer */}
+          <div className="space-y-4">
+            {/* Pagination dots */}
+            <div className="flex justify-center gap-2">
+              {onboardingSlides.map((_, idx) => (
+                <span
+                  key={idx}
+                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                    onboardingStep === idx ? 'w-5 bg-primary' : 'w-1.5 bg-zinc-300 dark:bg-zinc-700'
+                  }`}
+                ></span>
+              ))}
+            </div>
 
-          {/* Action Buttons */}
-          <div className="space-y-3">
-            <button
-              onClick={() => {
-                if (onboardingStep < onboardingSlides.length - 1) {
-                  setOnboardingStep(prev => prev + 1);
-                } else {
+            {/* Action buttons */}
+            <div className="flex gap-2.5 pt-1">
+              <button
+                onClick={() => {
                   localStorage.setItem('velto_onboarding_dismissed', 'true');
                   setShowOnboarding(false);
-                }
-              }}
-              className="w-full bg-primary text-primary-foreground py-4 rounded-3xl font-black text-sm uppercase tracking-wider hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-primary/20 cursor-pointer"
-            >
-              {onboardingStep === onboardingSlides.length - 1 ? 'Get Started' : 'Next'}
-            </button>
-            <button
-              onClick={() => {
-                localStorage.setItem('velto_onboarding_dismissed', 'true');
-                setShowOnboarding(false);
-              }}
-              className="text-xs font-black text-muted-foreground hover:text-foreground tracking-widest uppercase py-2 cursor-pointer transition-colors"
-            >
-              Skip
-            </button>
+                }}
+                className="flex-1 bg-accent hover:bg-accent/80 text-foreground text-xs font-black uppercase tracking-wider py-3.5 rounded-2xl transition-all cursor-pointer border border-border/80"
+              >
+                Skip
+              </button>
+              <button
+                onClick={() => {
+                  if (onboardingStep < onboardingSlides.length - 1) {
+                    setOnboardingStep(prev => prev + 1);
+                  } else {
+                    localStorage.setItem('velto_onboarding_dismissed', 'true');
+                    setShowOnboarding(false);
+                  }
+                }}
+                className="flex-1 bg-gradient-to-r from-[#FF5F1F] via-[#FF8A00] to-[#FF3D71] text-white text-xs font-black uppercase tracking-wider py-3.5 rounded-2xl hover:scale-[1.01] active:scale-95 transition-all shadow-lg cursor-pointer text-center"
+              >
+                {onboardingStep === onboardingSlides.length - 1 ? 'Get Started' : 'Next'}
+              </button>
+            </div>
           </div>
         </div>
       </div>
