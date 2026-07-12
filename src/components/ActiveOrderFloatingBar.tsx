@@ -86,7 +86,7 @@ export function ActiveOrderFloatingBar() {
   };
 
   return (
-    <div className="fixed bottom-[96px] left-1/2 -translate-x-1/2 w-[92%] max-w-lg z-[998] animate-in slide-in-from-bottom-12 duration-300">
+    <div className="fixed bottom-[90px] left-1/2 -translate-x-1/2 w-[92%] max-w-lg z-[998] animate-in slide-in-from-bottom-12 duration-300">
       <div className="glass-panel border border-[#FF5F1F]/30 hover:border-[#FF5F1F]/60 rounded-3xl p-3.5 shadow-[0_20px_50px_rgba(0,0,0,0.9)] flex justify-between items-center gap-4 text-foreground">
         {/* Glowing dynamic background pulse */}
         <div className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-[#FF5F1F]/10 rounded-full blur-xl pointer-events-none"></div>
