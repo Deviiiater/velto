@@ -74,6 +74,7 @@ export default function AdminDashboard() {
   const [startTime, setStartTime] = useState('08:00');
   const [endTime, setEndTime] = useState('22:00');
   const [isOpenState, setIsOpenState] = useState(true);
+  const [onlyMedicineEnabled, setOnlyMedicineEnabled] = useState(false);
   const [savingTimings, setSavingTimings] = useState(false);
 
   // Product form state
@@ -157,6 +158,7 @@ export default function AdminDashboard() {
             setStartTime(parsed.startTime || '08:00');
             setEndTime(parsed.endTime || '22:00');
             setIsOpenState(parsed.isOpen !== false);
+            setOnlyMedicineEnabled(!!parsed.onlyMedicineEnabled);
           } catch(e) {}
         }
       } else {
@@ -183,6 +185,7 @@ export default function AdminDashboard() {
             setStartTime(p.startTime || '08:00');
             setEndTime(p.endTime || '22:00');
             setIsOpenState(p.isOpen !== false);
+            setOnlyMedicineEnabled(!!p.onlyMedicineEnabled);
           } catch(e) {}
         }
       } catch (err) {
@@ -1590,10 +1593,23 @@ export default function AdminDashboard() {
                       </label>
                     </div>
 
+                    <div className="flex items-center gap-3 p-4 bg-muted/30 border border-border rounded-2xl">
+                      <input 
+                        type="checkbox" 
+                        id="onlyMedicineCheck"
+                        checked={onlyMedicineEnabled}
+                        onChange={e => setOnlyMedicineEnabled(e.target.checked)}
+                        className="w-4 h-4 rounded text-primary focus:ring-primary border-border cursor-pointer"
+                      />
+                      <label htmlFor="onlyMedicineCheck" className="text-xs font-bold text-foreground cursor-pointer select-none">
+                        Restrict Order to Medicine Only (Disable Grocery, Food, Courier)
+                      </label>
+                    </div>
+
                     <button
                       onClick={async () => {
                         setSavingTimings(true);
-                        const configData = { startTime, endTime, isOpen: isOpenState };
+                        const configData = { startTime, endTime, isOpen: isOpenState, onlyMedicineEnabled };
                         const title = '[STORE_CONFIG]';
                         const content = JSON.stringify(configData);
                         try {

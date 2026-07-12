@@ -169,6 +169,28 @@ export default function CartPage() {
     }
     
     try {
+      // Check if Admin has locked other services (only Medicine active)
+      const local = localStorage.getItem('velto_announcements');
+      if (local) {
+        try {
+          const parsed = JSON.parse(local);
+          const configAnn = parsed.find((ann: any) => ann.title?.includes('[STORE_CONFIG]'));
+          if (configAnn) {
+            const config = JSON.parse(configAnn.content);
+            if (config.onlyMedicineEnabled) {
+              const hasNonMedicine = cart.some(item => {
+                const cat = item.category?.toLowerCase() || '';
+                return !(cat.includes('pharmacy') || cat.includes('medicine') || cat.includes('meds'));
+              });
+              if (hasNonMedicine) {
+                alert("🚨 Ordering Restriction: Admin has temporarily restricted ordering on Grocery, Cloud Kitchen, and Courier. Only Pharmacy & Medicine items can be checked out at this moment. Please remove non-medicine items from your basket.");
+                return false;
+              }
+            }
+          }
+        } catch(e) {}
+      }
+
       // Upsert user's default address/phone (creates public profile if missing)
       const { error: userError } = await supabase.from('users').upsert({ id: user.id, address, phone });
       if (userError) throw userError;

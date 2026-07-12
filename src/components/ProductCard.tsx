@@ -72,6 +72,15 @@ export function ProductCard({ product }: { product: Product }) {
         const configAnn = parsed.find((ann: any) => ann.title?.includes('[STORE_CONFIG]'));
         if (configAnn) {
           const config = JSON.parse(configAnn.content);
+          
+          if (config.onlyMedicineEnabled) {
+            const cat = product.category?.toLowerCase() || '';
+            const isMedicine = cat.includes('pharmacy') || cat.includes('medicine') || cat.includes('meds');
+            if (!isMedicine) {
+              return 'only_medicine_locked';
+            }
+          }
+
           if (!config.isOpen) return false;
           const now = new Date();
           const currentHour = now.getHours();
@@ -91,7 +100,9 @@ export function ProductCard({ product }: { product: Product }) {
     return true;
   };
   
-  const storeOpen = checkStoreOpen();
+  const storeOpenState = checkStoreOpen();
+  const storeOpen = storeOpenState === true;
+  const isMedicineLocked = storeOpenState === 'only_medicine_locked';
 
   // Determistic Hygiene trust scores based on product ID charCode
   const trustSeed = product.id ? product.id.charCodeAt(0) % 7 + 92 : 95;
@@ -195,6 +206,14 @@ export function ProductCard({ product }: { product: Product }) {
           <span className="text-[10px] font-black text-rose-500 bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-xl">
             OUT
           </span>
+        ) : isMedicineLocked ? (
+          <button 
+            onClick={() => alert("🚨 Service Temporarily Disabled: Admin has locked orders on Grocery, Food, and Courier. Only Pharmacy/Medicine items are active at this moment.")}
+            className="bg-zinc-300 dark:bg-zinc-700 text-zinc-500 dark:text-zinc-400 w-8 h-8 rounded-full cursor-not-allowed flex items-center justify-center shrink-0"
+            title="Service Disabled"
+          >
+            <Plus size={16} className="stroke-[3]" />
+          </button>
         ) : !storeOpen ? (
           <button 
             onClick={() => alert("⏳ Store is currently CLOSED. Ordering is disabled.")}

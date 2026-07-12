@@ -112,7 +112,7 @@ export default function Home() {
   }, [user, authLoading, router]);
 
   const [products, setProducts] = useState<Product[]>([]);
-  const [storeConfig, setStoreConfig] = useState({ startTime: "08:00", endTime: "22:00", isOpen: true });
+  const [storeConfig, setStoreConfig] = useState({ startTime: "08:00", endTime: "22:00", isOpen: true, onlyMedicineEnabled: false });
   const [loading, setLoading] = useState(true);
   const [showSplash, setShowSplash] = useState(false);
   const [showNotificationsDrawer, setShowNotificationsDrawer] = useState(false);
@@ -460,7 +460,8 @@ export default function Home() {
           setStoreConfig({
             startTime: parsed.startTime || '08:00',
             endTime: parsed.endTime || '22:00',
-            isOpen: parsed.isOpen !== false
+            isOpen: parsed.isOpen !== false,
+            onlyMedicineEnabled: !!parsed.onlyMedicineEnabled
           });
         } catch(e) {}
       }
@@ -2388,6 +2389,21 @@ export default function Home() {
                 <rect x="25" y="65" width="10" height="15" />
                 <rect x="45" y="65" width="10" height="10" />
               </svg>
+            </div>
+          </div>
+        )}
+
+        {/* 🚨 Medicine Only Lock Notice Banner */}
+        {storeOpen && storeConfig.onlyMedicineEnabled && (
+          <div className="w-full bg-[#1b0c0f] border border-amber-500/20 text-amber-500 rounded-2xl p-4 flex items-center justify-between gap-4 relative overflow-hidden select-none text-left z-10">
+            <div className="flex items-start gap-3 z-10 max-w-[75%]">
+              <div className="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-500 shrink-0">
+                <Pill size={18} />
+              </div>
+              <div>
+                <span className="text-xs font-black uppercase tracking-wider block text-amber-400">Emergency Pharmacy Only Mode</span>
+                <p className="text-[10px] font-bold leading-normal text-zinc-300 mt-1">Admin has temporarily restricted ordering on Grocery, Cloud Kitchen, and Courier. Only Pharmacy & Medicine orders can be placed.</p>
+              </div>
             </div>
           </div>
         )}
