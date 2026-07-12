@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation';
 import { showLocalNotification } from '@/lib/notifications';
 import { t } from '@/lib/translations';
 import AlertToast from '@/components/AlertToast';
+import { CheckoutLoader } from '@/components/CheckoutLoader';
 
 const CITY_CENTERS: Record<string, { lat: number; lng: number }> = {
   'Lucknow': { lat: 26.8467, lng: 80.9462 },
@@ -93,6 +94,7 @@ export default function CartPage() {
 
   // Success Animation State
   const [showSuccessAnim, setShowSuccessAnim] = useState(false);
+  const [showCheckoutLoader, setShowCheckoutLoader] = useState(false);
   const [successOrderId, setSuccessOrderId] = useState('');
 
   // Dynamic pricing calculations for premium transparency breakdown
@@ -421,10 +423,7 @@ export default function CartPage() {
           showLocalNotification('💳 Paid via Velto Wallet!', `₹${grandTotal.toFixed(2)} deducted. Order placed successfully.`);
           clearCart();
           setSuccessOrderId(orderId);
-          setShowSuccessAnim(true);
-          setTimeout(() => {
-            router.push(`/orders/${orderId}`);
-          }, 2000);
+          setShowCheckoutLoader(true);
           return;
         }
         setLoading(false);
@@ -437,10 +436,7 @@ export default function CartPage() {
           showLocalNotification('🛒 Order Placed successfully!', 'We are preparing your items and assigning a delivery rider.');
           clearCart();
           setSuccessOrderId(orderId);
-          setShowSuccessAnim(true);
-          setTimeout(() => {
-            router.push(`/orders/${orderId}`);
-          }, 2000);
+          setShowCheckoutLoader(true);
           return;
         }
         setLoading(false);
@@ -475,10 +471,7 @@ export default function CartPage() {
             showLocalNotification('🛒 Order Placed successfully!', 'We are preparing your items and assigning a delivery rider.');
             clearCart();
             setSuccessOrderId(orderId);
-            setShowSuccessAnim(true);
-            setTimeout(() => {
-              router.push(`/orders/${orderId}`);
-            }, 2000);
+            setShowCheckoutLoader(true);
           }
         },
         prefill: {
@@ -1364,6 +1357,10 @@ export default function CartPage() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {showCheckoutLoader && (
+        <CheckoutLoader onComplete={() => router.push(`/orders/${successOrderId}`)} />
+      )}
 
       {toast && <AlertToast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
     </div>
