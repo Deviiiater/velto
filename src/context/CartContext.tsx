@@ -43,6 +43,28 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   }, [cart, isClient]);
 
   const addToCart = (product: Product) => {
+    // Validate onlyMedicineEnabled block
+    if (typeof window !== 'undefined') {
+      const local = localStorage.getItem('velto_announcements');
+      if (local) {
+        try {
+          const parsed = JSON.parse(local);
+          const configAnn = parsed.find((ann: any) => ann.title?.includes('[STORE_CONFIG]'));
+          if (configAnn) {
+            const config = JSON.parse(configAnn.content);
+            if (config.onlyMedicineEnabled) {
+              const cat = product.category?.toLowerCase() || '';
+              const isMedicine = cat.includes('pharmacy') || cat.includes('medicine') || cat.includes('meds');
+              if (!isMedicine) {
+                alert("🚨 Ordering Restricted: Admin has restricted operations to Pharmacy/Medicine only. Grocery, Food, and Courier additions are locked.");
+                return;
+              }
+            }
+          }
+        } catch (e) {}
+      }
+    }
+
     setCart((prev) => {
       const existing = prev.find((item) => item.id === product.id);
       if (existing) {
