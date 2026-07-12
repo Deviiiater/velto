@@ -86,7 +86,7 @@ export function FloatingCartBar() {
   const itemsCount = cart.reduce((acc, item) => acc + item.quantity, 0);
 
   // Determine dynamic vertical offset depending on whether active tracking bar is displayed
-  const bottomPositionClass = hasActiveOrder ? 'bottom-[172px]' : 'bottom-[90px]';
+  const bottomPositionClass = hasActiveOrder ? 'bottom-[160px]' : 'bottom-[78px]';
 
   return (
     <div className={`fixed ${bottomPositionClass} left-1/2 -translate-x-1/2 w-[90%] max-w-lg z-[9998] transition-all duration-500 ease-out animate-in slide-in-from-bottom-4`}>

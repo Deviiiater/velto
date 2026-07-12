@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./Providers";
 import { Navbar } from "@/components/Navbar";
+import { SplashLoader } from "@/components/SplashLoader";
 import { ActiveOrderFloatingBar } from "@/components/ActiveOrderFloatingBar";
 import { FloatingCartBar } from "@/components/FloatingCartBar";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -89,6 +90,7 @@ export default function RootLayout({
       </head>
       <body className={`${inter.className} bg-background text-foreground antialiased min-h-screen flex flex-col`}>
         <Providers>
+          <SplashLoader />
           <Navbar />
           <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-8 pb-28">
             {children}

@@ -54,7 +54,7 @@ export function BottomNavBar() {
 
   return (
     <div 
-      className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-lg z-[999] glass-panel py-2.5 px-3.5 flex justify-between items-center rounded-[2rem] border border-white/5 shadow-[0_15px_40px_rgba(0,0,0,0.85)] transform-gpu will-change-transform"
+      className="fixed bottom-2 left-1/2 -translate-x-1/2 w-[92%] max-w-lg z-[999] glass-panel py-2.5 px-3.5 flex justify-between items-center rounded-[2rem] border border-white/5 shadow-[0_15px_40px_rgba(0,0,0,0.85)] transform-gpu will-change-transform"
       style={{ position: 'fixed', left: '50%' }}
     >
       {/* 1. HOME TAB */}
