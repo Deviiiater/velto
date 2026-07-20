@@ -142,12 +142,21 @@ export default function OrderTrackerPage({ params }: { params: Promise<{ id: str
         const now = new Date();
         const diffMs = now.getTime() - createdAt.getTime();
         const diffMins = diffMs / (1000 * 60);
-        if (diffMins >= 60) {
+        
+        // Auto-deliver order if it remains active for 20 minutes or more
+        if (diffMins >= 20) {
+          processedOrder = {
+            ...data,
+            status: 'delivered'
+          };
+          supabase.from('orders').update({ status: 'delivered' }).eq('id', data.id).then();
+        } else if (diffMins >= 60) {
           processedOrder = {
             ...data,
             status: 'cancelled',
             timeoutCancelled: true
           };
+          supabase.from('orders').update({ status: 'cancelled' }).eq('id', data.id).then();
         }
       }
       setOrder(processedOrder);
