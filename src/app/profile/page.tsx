@@ -218,6 +218,7 @@ export default function ProfilePage() {
 
   const dayWiseStats = getDayWiseStats();
   const totalSpend = orders.reduce((sum, o) => sum + Number(o.total_amount), 0);
+  const veltoCoins = orders.reduce((sum, o) => sum + Math.floor(Number(o.total_amount) / 200) * 10, 0);
 
   return (
     <div className="max-w-5xl mx-auto space-y-8 mt-6">
@@ -261,7 +262,7 @@ export default function ProfilePage() {
           </div>
           <div>
             <span className="text-[10px] font-black uppercase tracking-wider text-zinc-400">Velto Coins</span>
-            <h3 className="text-2xl font-black text-white mt-0.5">4,820</h3>
+            <h3 className="text-2xl font-black text-white mt-0.5">{veltoCoins.toLocaleString()}</h3>
           </div>
         </div>
 
