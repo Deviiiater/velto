@@ -62,47 +62,15 @@ export function ProductCard({ product }: { product: Product }) {
   // Check if item is out of stock
   const isOutOfStock = product.stock !== undefined && product.stock <= 0;
 
-  // Check if store is open
-  const checkStoreOpen = () => {
-    if (typeof window === 'undefined') return true;
-    const local = localStorage.getItem('velto_announcements');
-    if (local) {
-      try {
-        const parsed = JSON.parse(local);
-        const configAnn = parsed.find((ann: any) => ann.title?.includes('[STORE_CONFIG]'));
-        if (configAnn) {
-          const config = JSON.parse(configAnn.content);
-          
-          if (config.onlyMedicineEnabled) {
-            const cat = product.category?.toLowerCase() || '';
-            const isMedicine = cat.includes('pharmacy') || cat.includes('medicine') || cat.includes('meds');
-            if (!isMedicine) {
-              return 'only_medicine_locked';
-            }
-          }
+  const { storeConfig, isStoreOpen } = useSettings();
 
-          if (!config.isOpen) return false;
-          const now = new Date();
-          const currentHour = now.getHours();
-          const currentMinute = now.getMinutes();
-          
-          const [startHour, startMin] = config.startTime.split(':').map(Number);
-          const [endHour, endMin] = config.endTime.split(':').map(Number);
-          
-          const currentVal = currentHour * 60 + currentMinute;
-          const startVal = startHour * 60 + startMin;
-          const endVal = endHour * 60 + endMin;
-          
-          return currentVal >= startVal && currentVal <= endVal;
-        }
-      } catch(e) {}
-    }
-    return true;
-  };
-  
-  const storeOpenState = checkStoreOpen();
-  const storeOpen = storeOpenState === true;
-  const isMedicineLocked = storeOpenState === 'only_medicine_locked';
+  const isMedicineLocked = Boolean(
+    storeConfig?.onlyMedicineEnabled && 
+    !(product.category?.toLowerCase() || '').includes('pharmacy') && 
+    !(product.category?.toLowerCase() || '').includes('medicine') &&
+    !(product.category?.toLowerCase() || '').includes('meds')
+  );
+  const storeOpen = isStoreOpen;
 
   // Determistic Hygiene trust scores based on product ID charCode
   const trustSeed = product.id ? product.id.charCodeAt(0) % 7 + 92 : 95;

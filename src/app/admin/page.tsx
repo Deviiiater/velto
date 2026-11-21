@@ -4,12 +4,14 @@ import { getPortalSupabase, supabaseUrl, supabaseAnonKey } from '@/lib/supabase'
 import { 
   PlusCircle, Users, ShoppingBag, ShieldCheck, CheckCircle, 
   UserPlus, Key, ClipboardList, DollarSign, Calendar, 
-  Headphones, Trash2, Edit3, Save, X, Search, Image, Megaphone, CheckSquare, Clock
+  Headphones, Trash2, Edit3, Save, X, Search, Image, Megaphone, CheckSquare, Clock,
+  Store, Pill, AlertTriangle, Sparkles, RotateCcw, Check
 } from 'lucide-react';
 import { createClient } from '@supabase/supabase-js';
 import StaffAuthGuard from '@/components/StaffAuthGuard';
 import Link from 'next/link';
 import DashboardInstallBanner from '@/components/DashboardInstallBanner';
+import { useSettings, checkStoreIsOpen } from '@/context/SettingsContext';
 
 const supabase = getPortalSupabase('admin');
 
@@ -70,12 +72,25 @@ export default function AdminDashboard() {
   // Tabs for administrative functions
   const [activeTab, setActiveTab] = useState<'catalog' | 'staff' | 'tickets' | 'announcements' | 'approvals' | 'timings'>('catalog');
   
-  // Store timing states
-  const [startTime, setStartTime] = useState('08:00');
-  const [endTime, setEndTime] = useState('22:00');
-  const [isOpenState, setIsOpenState] = useState(true);
-  const [onlyMedicineEnabled, setOnlyMedicineEnabled] = useState(false);
+  // Store timing states via SettingsContext
+  const { storeConfig, isStoreOpen: globalStoreOpen, updateStoreConfig } = useSettings();
+  const [startTime, setStartTime] = useState(storeConfig?.startTime || '08:00');
+  const [endTime, setEndTime] = useState(storeConfig?.endTime || '22:00');
+  const [isOpenState, setIsOpenState] = useState(storeConfig?.isOpen !== false);
+  const [onlyMedicineEnabled, setOnlyMedicineEnabled] = useState(Boolean(storeConfig?.onlyMedicineEnabled));
   const [savingTimings, setSavingTimings] = useState(false);
+  const [isTimingDirty, setIsTimingDirty] = useState(false);
+  const [timingSaveSuccess, setTimingSaveSuccess] = useState(false);
+
+  // Sync initial settings when storeConfig changes (only if admin is not actively editing)
+  useEffect(() => {
+    if (!isTimingDirty && storeConfig) {
+      setStartTime(storeConfig.startTime || '08:00');
+      setEndTime(storeConfig.endTime || '22:00');
+      setIsOpenState(storeConfig.isOpen !== false);
+      setOnlyMedicineEnabled(Boolean(storeConfig.onlyMedicineEnabled));
+    }
+  }, [storeConfig, isTimingDirty]);
 
   // Product form state
   const [productForm, setProductForm] = useState<ProductInput>({
@@ -150,9 +165,9 @@ export default function AdminDashboard() {
       if (data) {
         setAnnouncements(data);
         localStorage.setItem('velto_announcements', JSON.stringify(data));
-        // Extract store config
+        // Extract store config only if admin is not actively editing
         const configAnn = data.find((ann: any) => ann.title?.includes('[STORE_CONFIG]'));
-        if (configAnn) {
+        if (configAnn && !isTimingDirty) {
           try {
             const parsed = JSON.parse(configAnn.content);
             setStartTime(parsed.startTime || '08:00');
@@ -179,7 +194,7 @@ export default function AdminDashboard() {
         const parsed = JSON.parse(local);
         setAnnouncements(parsed);
         const configAnn = parsed.find((ann: any) => ann.title?.includes('[STORE_CONFIG]'));
-        if (configAnn) {
+        if (configAnn && !isTimingDirty) {
           try {
             const p = JSON.parse(configAnn.content);
             setStartTime(p.startTime || '08:00');
@@ -734,7 +749,25 @@ export default function AdminDashboard() {
             </h1>
             <p className="text-muted-foreground text-sm">Control inventory, add products, configure staff roles, and oversee support.</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap items-center gap-2.5">
+            {/* Live Store Status pill in admin header */}
+            <button
+              onClick={() => setActiveTab('timings')}
+              className={`px-3.5 py-2 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center gap-2 border shadow-sm cursor-pointer hover:scale-[1.02] active:scale-95 ${
+                globalStoreOpen
+                  ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                  : 'bg-rose-500/10 text-rose-400 border-rose-500/30'
+              }`}
+              title="Click to configure store opening & closing hours"
+            >
+              <span className={`w-2.5 h-2.5 rounded-full ${globalStoreOpen ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`} />
+              <span>{globalStoreOpen ? `STORE OPEN (${storeConfig.startTime} - ${storeConfig.endTime})` : `STORE CLOSED (Opens ${storeConfig.startTime})`}</span>
+              {storeConfig.onlyMedicineEnabled && (
+                <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 text-[9px] font-mono font-bold">
+                  MEDS ONLY
+                </span>
+              )}
+            </button>
             <Link
               href="/support-panel"
               className="bg-accent hover:bg-accent/80 text-foreground border border-border px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-sm"
@@ -1010,26 +1043,36 @@ export default function AdminDashboard() {
           <div className="lg:col-span-2 space-y-6">
             
             {/* Console Tab Selector */}
-            <div className="grid grid-cols-2 sm:grid-cols-5 p-1 bg-accent/40 rounded-2xl border border-border/50 w-full gap-1">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 p-1.5 bg-accent/30 rounded-2xl border border-border/60 w-full gap-1.5 shadow-sm">
               {[
                 { id: 'catalog', name: 'Catalog', icon: <ShoppingBag size={14} /> },
                 { id: 'staff', name: 'Staff', icon: <Users size={14} /> },
                 { id: 'tickets', name: 'Tickets', icon: <Headphones size={14} /> },
                 { id: 'announcements', name: 'Broadcasts', icon: <Megaphone size={14} /> },
                 { id: 'approvals', name: 'Approvals', icon: <CheckSquare size={14} /> },
-                { id: 'timings', name: 'Timings', icon: <Clock size={14} /> }
+                { 
+                  id: 'timings', 
+                  name: 'Timings', 
+                  icon: <Clock size={14} />,
+                  badge: !isOpenState ? 'Closed' : onlyMedicineEnabled ? 'Meds' : undefined
+                }
               ].map(tab => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
-                  className={`py-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 ${
+                  className={`py-3 px-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer relative ${
                     activeTab === tab.id
-                      ? 'bg-primary text-primary-foreground shadow-md'
-                      : 'text-muted-foreground hover:text-foreground'
+                      ? 'bg-primary text-primary-foreground shadow-md scale-[1.02]'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-accent/40'
                   }`}
                 >
                   {tab.icon}
                   <span>{tab.name}</span>
+                  {tab.badge && (
+                    <span className="absolute -top-1 -right-1 px-1.5 py-0.2 rounded-full bg-rose-500 text-white text-[9px] font-mono font-bold animate-pulse">
+                      {tab.badge}
+                    </span>
+                  )}
                 </button>
               ))}
             </div>
@@ -1549,117 +1592,331 @@ export default function AdminDashboard() {
             {/* TAB 5: VENDOR APPROVALS */}
             {/* TAB 6: TIMINGS CONFIG MANAGER */}
             {activeTab === 'timings' && (
-              <div className="bg-card border border-border rounded-2xl p-6 shadow-sm space-y-6 text-left">
-                <div className="border-b border-border pb-3">
-                  <h2 className="text-xl font-bold flex items-center gap-2">
-                    ⏰ Store Operations & Timings
-                  </h2>
-                  <p className="text-xs text-muted-foreground font-semibold mt-0.5">Control store opening hours, closure flags, and ordering windows.</p>
+              <div className="bg-card border border-border rounded-3xl p-6 sm:p-8 shadow-xl space-y-6 text-left relative overflow-hidden">
+                <div className="absolute -right-8 -top-8 w-40 h-40 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
+                
+                {/* Header with Live Status Indicator */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/60 pb-5">
+                  <div>
+                    <h2 className="text-xl sm:text-2xl font-black flex items-center gap-2.5 text-foreground">
+                      <Clock className="text-primary" size={24} /> Store Operations &amp; Timings Engine
+                    </h2>
+                    <p className="text-xs text-muted-foreground font-semibold mt-1">
+                      Configure daily opening &amp; closing hours, enforce emergency shutdown, or restrict sales to pharmacy.
+                    </p>
+                  </div>
+
+                  {/* Real-time Status Badge */}
+                  <div className="flex items-center gap-2">
+                    {(() => {
+                      const isSimOpen = checkStoreIsOpen({ startTime, endTime, isOpen: isOpenState });
+                      return (
+                        <div className={`px-4 py-2 rounded-2xl border text-xs font-black uppercase tracking-wider flex items-center gap-2 shadow-sm ${
+                          isSimOpen 
+                            ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' 
+                            : 'bg-rose-500/15 text-rose-400 border-rose-500/30'
+                        }`}>
+                          <span className={`w-2.5 h-2.5 rounded-full ${isSimOpen ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`} />
+                          <span>{isSimOpen ? 'Store is Currently Open' : 'Store is Currently Closed'}</span>
+                        </div>
+                      );
+                    })()}
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Left Column Settings */}
+                {/* Unsaved Changes Banner */}
+                {isTimingDirty && (
+                  <div className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-3.5 flex items-center justify-between gap-3 text-xs text-amber-400 font-bold animate-in fade-in">
+                    <span className="flex items-center gap-2">
+                      <AlertTriangle size={16} /> You have unsaved timing changes. Click &quot;Save &amp; Sync Timings&quot; to apply.
+                    </span>
+                    <button
+                      onClick={() => {
+                        if (storeConfig) {
+                          setStartTime(storeConfig.startTime || '08:00');
+                          setEndTime(storeConfig.endTime || '22:00');
+                          setIsOpenState(storeConfig.isOpen !== false);
+                          setOnlyMedicineEnabled(Boolean(storeConfig.onlyMedicineEnabled));
+                          setIsTimingDirty(false);
+                        }
+                      }}
+                      className="px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 font-mono text-[10px] uppercase cursor-pointer"
+                    >
+                      Discard Changes
+                    </button>
+                  </div>
+                )}
+
+                {/* Quick Schedule Presets */}
+                <div className="space-y-2">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground block">
+                    ⚡ Quick Schedule Presets (1-Click Apply)
+                  </span>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {[
+                      { name: '24x7 All-Day', start: '00:00', end: '23:59', desc: 'Always Open' },
+                      { name: 'Standard Day', start: '08:00', end: '22:00', desc: '8 AM – 10 PM' },
+                      { name: 'Night Canteen', start: '20:00', end: '04:00', desc: '8 PM – 4 AM (Hostels)' },
+                      { name: 'Early Shift', start: '06:00', end: '15:00', desc: '6 AM – 3 PM' },
+                    ].map((preset, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => {
+                          setStartTime(preset.start);
+                          setEndTime(preset.end);
+                          setIsOpenState(true);
+                          setIsTimingDirty(true);
+                        }}
+                        className={`p-3 rounded-2xl border text-left transition-all cursor-pointer hover:border-primary/50 hover:bg-card flex flex-col justify-between ${
+                          startTime === preset.start && endTime === preset.end && isOpenState
+                            ? 'bg-primary/10 border-primary ring-1 ring-primary/40'
+                            : 'bg-muted/30 border-border/60'
+                        }`}
+                      >
+                        <span className="text-xs font-bold text-foreground">{preset.name}</span>
+                        <span className="text-[10px] font-mono text-muted-foreground mt-0.5">{preset.desc}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                  {/* Left Column Controls */}
                   <div className="space-y-4">
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-black uppercase text-foreground">Opening Hour</label>
+                    
+                    {/* Opening Hour */}
+                    <div className="p-4 rounded-2xl bg-muted/20 border border-border/60 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <label className="text-xs font-black uppercase tracking-wider text-foreground flex items-center gap-1.5">
+                          <span>Opening Time (Start)</span>
+                        </label>
+                        <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-lg bg-primary/10 text-primary border border-primary/20">
+                          {(() => {
+                            const [h, m] = startTime.split(':').map(Number);
+                            if (isNaN(h) || isNaN(m)) return startTime;
+                            const period = h >= 12 ? 'PM' : 'AM';
+                            const h12 = h % 12 || 12;
+                            return `${h12.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')} ${period}`;
+                          })()}
+                        </span>
+                      </div>
                       <input 
                         type="time" 
                         value={startTime}
-                        onChange={e => setStartTime(e.target.value)}
-                        className="p-3 rounded-xl border border-border bg-background text-sm font-bold focus:outline-none focus:ring-2 focus:ring-primary w-full"
+                        onChange={e => {
+                          setStartTime(e.target.value);
+                          setIsTimingDirty(true);
+                        }}
+                        className="p-3 rounded-xl border border-border bg-background text-sm font-bold focus:outline-none focus:ring-2 focus:ring-primary w-full text-foreground cursor-pointer"
                       />
+                      <span className="text-[10px] text-muted-foreground block">
+                        Orders can start being placed from this minute onwards.
+                      </span>
                     </div>
 
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-black uppercase text-foreground">Closing Hour</label>
+                    {/* Closing Hour */}
+                    <div className="p-4 rounded-2xl bg-muted/20 border border-border/60 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <label className="text-xs font-black uppercase tracking-wider text-foreground flex items-center gap-1.5">
+                          <span>Closing Time (End)</span>
+                        </label>
+                        <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-lg bg-primary/10 text-primary border border-primary/20">
+                          {(() => {
+                            const [h, m] = endTime.split(':').map(Number);
+                            if (isNaN(h) || isNaN(m)) return endTime;
+                            const period = h >= 12 ? 'PM' : 'AM';
+                            const h12 = h % 12 || 12;
+                            return `${h12.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')} ${period}`;
+                          })()}
+                        </span>
+                      </div>
                       <input 
                         type="time" 
                         value={endTime}
-                        onChange={e => setEndTime(e.target.value)}
-                        className="p-3 rounded-xl border border-border bg-background text-sm font-bold focus:outline-none focus:ring-2 focus:ring-primary w-full"
+                        onChange={e => {
+                          setEndTime(e.target.value);
+                          setIsTimingDirty(true);
+                        }}
+                        className="p-3 rounded-xl border border-border bg-background text-sm font-bold focus:outline-none focus:ring-2 focus:ring-primary w-full text-foreground cursor-pointer"
                       />
+                      <span className="text-[10px] text-muted-foreground block">
+                        Supports overnight schedules (e.g. opens at 20:00 and closes at 04:00 AM next day).
+                      </span>
                     </div>
 
-                    <div className="flex items-center gap-3 p-4 bg-muted/30 border border-border rounded-2xl">
+                    {/* Master Emergency Open/Close Toggle */}
+                    <div className={`flex items-center justify-between p-4 border rounded-2xl transition-all ${
+                      isOpenState 
+                        ? 'bg-emerald-500/5 border-emerald-500/20' 
+                        : 'bg-rose-500/5 border-rose-500/20'
+                    }`}>
+                      <div className="space-y-0.5 max-w-[80%]">
+                        <label htmlFor="isOpenCheck" className="text-xs font-black uppercase tracking-wider text-foreground cursor-pointer flex items-center gap-2">
+                          <Store size={14} className={isOpenState ? 'text-emerald-400' : 'text-rose-400'} />
+                          <span>{isOpenState ? 'Store Online (Accepting Orders)' : 'Store Emergency Closed'}</span>
+                        </label>
+                        <p className="text-[11px] text-muted-foreground leading-normal">
+                          {isOpenState 
+                            ? 'Store adheres to opening & closing hours schedule above.' 
+                            : 'Overrides schedule and forces store CLOSED immediately across all apps.'}
+                        </p>
+                      </div>
                       <input 
                         type="checkbox" 
                         id="isOpenCheck"
                         checked={isOpenState}
-                        onChange={e => setIsOpenState(e.target.checked)}
-                        className="w-4 h-4 rounded text-primary focus:ring-primary border-border cursor-pointer"
+                        onChange={e => {
+                          setIsOpenState(e.target.checked);
+                          setIsTimingDirty(true);
+                        }}
+                        className="w-5 h-5 rounded-lg text-primary focus:ring-primary border-border cursor-pointer"
                       />
-                      <label htmlFor="isOpenCheck" className="text-xs font-bold text-foreground cursor-pointer select-none">
-                        Store Open (Allows shopping / placing orders)
-                      </label>
                     </div>
 
-                    <div className="flex items-center gap-3 p-4 bg-muted/30 border border-border rounded-2xl">
+                    {/* Medicine Only Lock */}
+                    <div className={`flex items-center justify-between p-4 border rounded-2xl transition-all ${
+                      onlyMedicineEnabled 
+                        ? 'bg-amber-500/10 border-amber-500/30' 
+                        : 'bg-muted/20 border-border/60'
+                    }`}>
+                      <div className="space-y-0.5 max-w-[80%]">
+                        <label htmlFor="onlyMedicineCheck" className="text-xs font-black uppercase tracking-wider text-foreground cursor-pointer flex items-center gap-2">
+                          <Pill size={14} className={onlyMedicineEnabled ? 'text-amber-400' : 'text-muted-foreground'} />
+                          <span>Medicine Only Restriction</span>
+                        </label>
+                        <p className="text-[11px] text-muted-foreground leading-normal">
+                          {onlyMedicineEnabled 
+                            ? 'Grocery, Food, and Courier carts are locked. Only Pharmacy items can be ordered.' 
+                            : 'Normal operations across all categories (Grocery, Food, Meds, Courier).'}
+                        </p>
+                      </div>
                       <input 
                         type="checkbox" 
                         id="onlyMedicineCheck"
                         checked={onlyMedicineEnabled}
-                        onChange={e => setOnlyMedicineEnabled(e.target.checked)}
-                        className="w-4 h-4 rounded text-primary focus:ring-primary border-border cursor-pointer"
+                        onChange={e => {
+                          setOnlyMedicineEnabled(e.target.checked);
+                          setIsTimingDirty(true);
+                        }}
+                        className="w-5 h-5 rounded-lg text-primary focus:ring-primary border-border cursor-pointer"
                       />
-                      <label htmlFor="onlyMedicineCheck" className="text-xs font-bold text-foreground cursor-pointer select-none">
-                        Restrict Order to Medicine Only (Disable Grocery, Food, Courier)
-                      </label>
                     </div>
 
-                    <button
-                      onClick={async () => {
-                        setSavingTimings(true);
-                        const configData = { startTime, endTime, isOpen: isOpenState, onlyMedicineEnabled };
-                        const title = '[STORE_CONFIG]';
-                        const content = JSON.stringify(configData);
-                        try {
-                          await supabase.from('announcements').delete().eq('title', title);
-                          const { error } = await supabase.from('announcements').insert({
-                            title,
-                            content,
-                            type: 'announcement'
-                          });
-                          if (error) throw error;
-                          alert("Store operational timings saved & synced successfully!");
-                        } catch (e: any) {
-                          console.warn("Offline/DB Save failed, writing to local storage");
-                          const list = localStorage.getItem('velto_announcements') ? JSON.parse(localStorage.getItem('velto_announcements')!) : [];
-                          const clean = list.filter((ann: any) => ann.title !== title);
-                          clean.unshift({
-                            id: 'local-store-config-' + Date.now(),
-                            title,
-                            content,
-                            type: 'announcement',
-                            created_at: new Date().toISOString()
-                          });
-                          localStorage.setItem('velto_announcements', JSON.stringify(clean));
-                          alert("Timings saved locally (Offline mode active)!");
-                        } finally {
-                          setSavingTimings(false);
-                          fetchAnnouncements();
-                        }
-                      }}
-                      disabled={savingTimings}
-                      className="w-full bg-primary text-primary-foreground font-black text-xs uppercase tracking-wider py-3.5 rounded-2xl hover:scale-[1.01] active:scale-95 transition-all shadow-md cursor-pointer flex items-center justify-center gap-2"
-                    >
-                      {savingTimings ? 'Saving Settings...' : 'Save Settings'}
-                    </button>
+                    {/* Save Button */}
+                    <div className="pt-2">
+                      <button
+                        onClick={async () => {
+                          setSavingTimings(true);
+                          try {
+                            const ok = await updateStoreConfig({
+                              startTime,
+                              endTime,
+                              isOpen: isOpenState,
+                              onlyMedicineEnabled
+                            });
+                            setIsTimingDirty(false);
+                            setTimingSaveSuccess(true);
+                            setTimeout(() => setTimingSaveSuccess(false), 3500);
+                            alert("✅ Store operational timings saved & synced successfully across all devices!");
+                          } catch (err: any) {
+                            alert("⚠️ Error saving store timings: " + (err?.message || err));
+                          } finally {
+                            setSavingTimings(false);
+                          }
+                        }}
+                        disabled={savingTimings}
+                        className={`w-full py-4 rounded-2xl font-black text-xs uppercase tracking-wider transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer ${
+                          timingSaveSuccess
+                            ? 'bg-emerald-500 text-white shadow-emerald-500/25 scale-[1.01]'
+                            : isTimingDirty
+                            ? 'bg-primary text-primary-foreground shadow-primary/25 hover:bg-primary/90 scale-[1.01]'
+                            : 'bg-primary/80 text-primary-foreground hover:bg-primary'
+                        }`}
+                      >
+                        {savingTimings ? (
+                          <span>Syncing Store Configuration...</span>
+                        ) : timingSaveSuccess ? (
+                          <span className="flex items-center gap-2"><Check size={16} /> Timings Saved &amp; Synced!</span>
+                        ) : (
+                          <span className="flex items-center gap-2"><Save size={16} /> Save &amp; Sync Store Timings</span>
+                        )}
+                      </button>
+                    </div>
+
                   </div>
 
-                  {/* Right Column Stats & Info */}
-                  <div className="bg-muted/10 border border-border/80 rounded-2xl p-5 space-y-3.5 h-fit text-xs font-semibold text-muted-foreground leading-relaxed">
-                    <span className="font-extrabold text-[#ffd700] uppercase tracking-wider block">⚠️ Operational Rules</span>
-                    <p>
-                      - If the current time is outside the opening and closing hours, the store will automatically display as **CLOSED** to users on the homepage.
-                    </p>
-                    <p>
-                      - All cart additions, checkout buttons, and order placement options will be dynamically disabled to prevent out-of-hours orders.
-                    </p>
-                    <p>
-                      - Unchecking **Store Open** forces immediate store closure across all platforms regardless of the hour.
-                    </p>
+                  {/* Right Column: Customer Impact Simulation */}
+                  <div className="space-y-4">
+                    <div className="bg-card border border-border/80 rounded-2xl p-5 space-y-4 h-full flex flex-col justify-between shadow-sm">
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                          <span className="text-xs font-black uppercase tracking-wider text-foreground flex items-center gap-2">
+                            <Sparkles size={14} className="text-primary" /> Live Customer Experience Preview
+                          </span>
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground">
+                            Preview
+                          </span>
+                        </div>
+
+                        {/* Simulation Card */}
+                        {(() => {
+                          const isSimOpen = checkStoreIsOpen({ startTime, endTime, isOpen: isOpenState });
+                          return (
+                            <div className="space-y-3">
+                              {/* Store State Card */}
+                              <div className={`p-4 rounded-xl border space-y-1.5 ${
+                                isSimOpen 
+                                  ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' 
+                                  : 'bg-rose-500/10 border-rose-500/20 text-rose-400'
+                              }`}>
+                                <div className="text-xs font-bold flex items-center gap-2">
+                                  <span>{isSimOpen ? '🟢 What Customers See: OPEN' : '🔴 What Customers See: CLOSED'}</span>
+                                </div>
+                                <p className="text-xs text-foreground/80 leading-relaxed">
+                                  {isSimOpen
+                                    ? 'Customers can browse all aisles, add items to baskets, and checkout with instant 10-minute dispatch.'
+                                    : `Customers will see the Closed Store Notice banner: "We are currently closed. Delivery hours: ${startTime} to ${endTime}". Add to Cart and Checkout are locked.`
+                                  }
+                                </p>
+                              </div>
+
+                              {/* Medicine Lock Card */}
+                              {onlyMedicineEnabled && (
+                                <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 space-y-1">
+                                  <div className="text-xs font-bold flex items-center gap-1.5">
+                                    <Pill size={14} /> Medicine Only Restriction Active
+                                  </div>
+                                  <p className="text-[11px] text-foreground/80">
+                                    Grocery and Food aisles will display &quot;Ordering locked to medicines only&quot;. Only OTC pharmacy items can be checked out.
+                                  </p>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })()}
+
+                        {/* Rules Summary */}
+                        <div className="pt-2 space-y-2 text-xs text-muted-foreground leading-relaxed">
+                          <h4 className="font-bold text-foreground text-xs uppercase tracking-wider">
+                            Operational Engine Behavior
+                          </h4>
+                          <ul className="list-disc list-inside space-y-1 text-[11px]">
+                            <li><strong>Automatic Sync:</strong> Updating timings broadcasts across active customer devices without requiring app restarts.</li>
+                            <li><strong>Overnight Scheduling:</strong> Supported! Setting 20:00 to 04:00 keeps late-night canteens open past midnight.</li>
+                            <li><strong>Emergency Halt:</strong> Unchecking Store Open immediately disables dispatch in case of severe downpours or inventory audits.</li>
+                          </ul>
+                        </div>
+                      </div>
+
+                      <div className="pt-3 border-t border-border/50 text-[10px] text-muted-foreground font-mono flex items-center justify-between">
+                        <span>Engine: Velto StoreOps v2.4</span>
+                        <span className="text-emerald-400 font-bold">Synchronized with Supabase</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
+
               </div>
             )}
 

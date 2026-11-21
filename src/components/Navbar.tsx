@@ -27,7 +27,8 @@ export function Navbar() {
   const { 
     lowInternetMode, setLowInternetMode, 
     oneIndiaPass, setOneIndiaPass, 
-    language, setLanguage 
+    language, setLanguage,
+    storeConfig, isStoreOpen
   } = useSettings();
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [showSettingsDropdown, setShowSettingsDropdown] = useState(false);
@@ -88,6 +89,23 @@ export function Navbar() {
             <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Delivering Freshness. Under 10 Mins. ⚡</span>
           </div>
         </Link>
+
+        {/* Live Operational Store Status Pill */}
+        <div className={`hidden lg:inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold border transition-all ${
+          isStoreOpen 
+            ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' 
+            : 'bg-rose-500/10 text-rose-400 border-rose-500/20'
+        }`}>
+          <span className={`w-2 h-2 rounded-full ${isStoreOpen ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`} />
+          <span className="font-mono text-[11px]">
+            {isStoreOpen ? `Open (${storeConfig.startTime} - ${storeConfig.endTime})` : `Closed (Opens ${storeConfig.startTime})`}
+          </span>
+          {storeConfig.onlyMedicineEnabled && (
+            <span className="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-400 text-[9px] font-mono font-bold">
+              MEDS ONLY
+            </span>
+          )}
+        </div>
       </div>
       <nav className="flex items-center gap-2 sm:gap-4">
         {/* Mobile Home Option */}

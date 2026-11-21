@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./Providers";
 import { Navbar } from "@/components/Navbar";
@@ -8,8 +7,7 @@ import { ActiveOrderFloatingBar } from "@/components/ActiveOrderFloatingBar";
 import { FloatingCartBar } from "@/components/FloatingCartBar";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { BottomNavBar } from "@/components/BottomNavBar";
-
-const inter = Inter({ subsets: ["latin"] });
+import { Footer } from "@/components/Footer";
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.velto.delivery'),
@@ -88,7 +86,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.className} bg-background text-foreground antialiased min-h-screen flex flex-col`}>
+      <body className="font-sans bg-background text-foreground antialiased min-h-screen flex flex-col">
         <Providers>
           <SplashLoader />
           <Navbar />
@@ -98,9 +96,7 @@ export default function RootLayout({
           <ActiveOrderFloatingBar />
           <FloatingCartBar />
           <BottomNavBar />
-          <footer className="border-t border-white/5 bg-[#09090B] pt-6 px-6 pb-28 text-center text-zinc-500 text-xs font-semibold uppercase tracking-wider">
-            &copy; 2026 Velto Platform. All rights reserved.
-          </footer>
+          <Footer />
         </Providers>
         <SpeedInsights />
         <script

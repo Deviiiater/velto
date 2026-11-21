@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
-import { ClipboardList, Package, ExternalLink, Calendar, MapPin, DollarSign, ShieldAlert, CheckCircle, Clock } from 'lucide-react';
+import { ClipboardList, Package, ExternalLink, Calendar, MapPin, DollarSign, ShieldAlert, CheckCircle, Clock, ShieldCheck, Scale, FileText, Lock } from 'lucide-react';
 import { useSettings } from '@/context/SettingsContext';
 import { t } from '@/lib/translations';
 import Link from 'next/link';
@@ -664,6 +664,70 @@ export default function ProfilePage() {
               ))}
             </div>
           )}
+
+          {/* Legal & App Policies */}
+          <div className="bg-card border border-border rounded-2xl p-5 space-y-4 shadow-sm">
+            <h3 className="text-xs font-black uppercase tracking-wider text-foreground flex items-center gap-2">
+              <ShieldCheck size={16} className="text-primary" /> {language === 'hi' ? 'कानूनी एवं नीतियां' : 'Legal & App Policies'}
+            </h3>
+            <p className="text-xs text-muted-foreground">
+              {language === 'hi' 
+                ? 'हमारे सेवा नियम, गोपनीयता नीति, और रेज़रपे रिफंड शर्तों की समीक्षा करें:' 
+                : 'Review our service rules, privacy commitments, and Razorpay refund terms:'}
+            </p>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <Link 
+                href="/rules" 
+                className="p-2.5 rounded-xl bg-accent/40 hover:bg-accent border border-border/50 text-foreground font-semibold flex items-center justify-between transition-colors"
+              >
+                <span className="text-primary font-bold">{language === 'hi' ? 'नियम और कानून' : 'Rules & Regulations'}</span>
+                <ExternalLink size={12} className="text-muted-foreground" />
+              </Link>
+              <Link 
+                href="/terms" 
+                className="p-2.5 rounded-xl bg-accent/40 hover:bg-accent border border-border/50 text-foreground font-semibold flex items-center justify-between transition-colors"
+              >
+                <span>{language === 'hi' ? 'नियम और शर्तें' : 'Terms of Service'}</span>
+                <ExternalLink size={12} className="text-muted-foreground" />
+              </Link>
+              <Link 
+                href="/privacy" 
+                className="p-2.5 rounded-xl bg-accent/40 hover:bg-accent border border-border/50 text-foreground font-semibold flex items-center justify-between transition-colors"
+              >
+                <span>{language === 'hi' ? 'गोपनीयता नीति' : 'Privacy Policy'}</span>
+                <ExternalLink size={12} className="text-muted-foreground" />
+              </Link>
+              <Link 
+                href="/refund" 
+                className="p-2.5 rounded-xl bg-accent/40 hover:bg-accent border border-border/50 text-foreground font-semibold flex items-center justify-between transition-colors"
+              >
+                <span>{language === 'hi' ? 'रिफंड व रद्दीकरण' : 'Refund Policy'}</span>
+                <ExternalLink size={12} className="text-muted-foreground" />
+              </Link>
+              <Link 
+                href="/shipping" 
+                className="p-2.5 rounded-xl bg-accent/40 hover:bg-accent border border-border/50 text-foreground font-semibold flex items-center justify-between transition-colors"
+              >
+                <span>{language === 'hi' ? 'डिलीवरी नीति' : 'Shipping Policy'}</span>
+                <ExternalLink size={12} className="text-muted-foreground" />
+              </Link>
+              <Link 
+                href="/policies" 
+                className="p-2.5 rounded-xl bg-accent/40 hover:bg-accent border border-border/50 text-foreground font-semibold flex items-center justify-between transition-colors"
+              >
+                <span className="text-emerald-400 font-bold">{language === 'hi' ? 'सभी नीतियां' : 'All Policies Hub'}</span>
+                <ExternalLink size={12} className="text-muted-foreground" />
+              </Link>
+            </div>
+            <div className="pt-2 border-t border-border/50 flex items-center justify-between text-[11px] text-muted-foreground">
+              <span className="flex items-center gap-1 text-emerald-400 font-mono">
+                <Lock size={12} /> Razorpay Secured
+              </span>
+              <Link href="/contact" className="text-primary hover:underline font-bold">
+                {language === 'hi' ? 'सहायता केंद्र' : 'Contact Us'} &rarr;
+              </Link>
+            </div>
+          </div>
         </div>
 
       </div>
