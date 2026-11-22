@@ -56,6 +56,17 @@ This monorepo is divided into two primary execution layers:
   * **Rider Dashboard**: `/rider-panel`
   * **Warehouse Manager**: `/warehouse`
   * **Admin Control Center**: `/admin` (Glassmorphism analytics, funnels, and retention charts).
+  * **Legal & Compliance Directory**:
+    * **Rules & Regulations**: `/rules` (Platform code of conduct, campus rules, prohibited goods)
+    * **Policies Hub**: `/policies` (Interactive compliance directory with live clause previews)
+    * **Terms & Conditions**: `/terms`
+    * **Privacy Policy**: `/privacy`
+    * **Refund & Cancellation**: `/refund`
+    * **Shipping & Delivery**: `/shipping`
+    * **Contact & Grievances**: `/contact`
+  * **Payment Gateway**:
+    * **Razorpay Order Creation API**: `/api/razorpay/create-order`
+    * **Razorpay Signature Verification API**: `/api/razorpay/verify-payment`
 
 ---
 
@@ -85,10 +96,15 @@ npm run dev
 Super App defaults to [http://localhost:3000](http://localhost:3000).
 
 ### Environment Configuration (`quickkart-pwa/.env.local`)
-Configure the project connection parameters:
+Configure the project connection and Razorpay credentials:
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+
+# Razorpay Payment Gateway (RBI Authorized)
+RAZORPAY_KEY_ID=rzp_test_YOUR_KEY_ID
+NEXT_PUBLIC_RAZORPAY_KEY_ID=rzp_test_YOUR_KEY_ID
+RAZORPAY_KEY_SECRET=YOUR_KEY_SECRET
 ```
 
 ### Database Schema Initialization
